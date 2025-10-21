@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A-SW Hub - Create Project</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 48px 24px;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #000000;
+        }
+        
+        .logo-text {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+        
+        .page-title {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+        }
+        
+        .page-subtitle {
+            font-size: 16px;
+            color: #666666;
+        }
+        
+        /* Progress Steps */
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 48px;
+            position: relative;
+        }
+        
+        .steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: #e5e5e5;
+            z-index: -1;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f5f5f5;
+            border: 1px solid #e5e5e5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .step.active .step-number {
+            background-color: #000000;
+            color: white;
+            border-color: #000000;
+        }
+        
+        .step.completed .step-number {
+            background-color: #22c55e;
+            color: white;
+            border-color: #22c55e;
+        }
+        
+        .step-label {
+            font-size: 12px;
+            text-align: center;
+            color: #999999;
+        }
+        
+        .step.active .step-label {
+            color: #000000;
+            font-weight: 500;
+        }
+        
+        /* Form */
+        .form-section {
+            background-color: #fafafa;
+            border: 1px solid #e5e5e5;
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .required {
+            color: #ef4444;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e5e5;
+            font-size: 14px;
+            background-color: white;
+            transition: border-color 0.2s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #000000;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e5e5;
+            font-size: 14px;
+            background-color: white;
+            cursor: pointer;
+        }
+        
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e5e5;
+            font-size: 14px;
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .form-help {
+            font-size: 12px;
+            color: #999999;
+            margin-top: 6px;
+        }
+        
+        /* Radio Group */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .radio-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            border: 1px solid #e5e5e5;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .radio-item:hover {
+            border-color: #999999;
+        }
+        
+        .radio-item.selected {
+            border-color: #000000;
+            background-color: #f5f5f5;
+        }
+        
+        .radio-input {
+            margin-top: 2px;
+        }
+        
+        .radio-content {
+            flex: 1;
+        }
+        
+        .radio-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .radio-description {
+            font-size: 12px;
+            color: #666666;
+        }
+        
+        /* Category Pills */
+        .category-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .pill {
+            padding: 8px 16px;
+            border: 1px solid #e5e5e5;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .pill:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .pill.selected {
+            background-color: #000000;
+            color: white;
+            border-color: #000000;
+        }
+        
+        /* Actions */
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 32px;
+            border-top: 1px solid #e5e5e5;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid #e5e5e5;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover:not(:disabled) {
+            background-color: #f5f5f5;
+        }
+        
+        .btn-primary {
+            background-color: #000000;
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background-color: #333333;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Info Box */
+        .info-box {
+            background-color: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            padding: 16px;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+        
+        .info-box-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <span class="logo-text">A-SW Hub</span>
+            </div>
+            
+            <h1 class="page-title">Create New Project</h1>
+            <p class="page-subtitle">Set up your agricultural software project in 4 simple steps</p>
+        </header>
+        
+        <!-- Progress Steps -->
+        <div class="steps">
+            <div class="step completed">
+                <div class="step-number">✓</div>
+                <div class="step-label">Basic Info</div>
+            </div>
+            <div class="step active">
+                <div class="step-number">2</div>
+                <div class="step-label">Repository</div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-label">CI/CD</div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-label">Review</div>
+            </div>
+        </div>
+        
+        <!-- Form Section -->
+        <div class="form-section">
+            <h2 class="section-title">Step 2: Repository Configuration</h2>
+            
+            <div class="info-box">
+                <div class="info-box-title">ℹ️ GitHub Integration</div>
+                Connect your GitHub repository to enable automated CI/CD workflows
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Repository Setup <span class="required">*</span></label>
+                <div class="radio-group">
+                    <div class="radio-item selected">
+                        <input type="radio" name="repo" class="radio-input" checked>
+                        <div class="radio-content">
+                            <div class="radio-title">Create new repository</div>
+                            <div class="radio-description">We'll create a new GitHub repository with initial structure</div>
+                        </div>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" name="repo" class="radio-input">
+                        <div class="radio-content">
+                            <div class="radio-title">Connect existing repository</div>
+                            <div class="radio-description">Link an existing GitHub repository to this project</div>
+                        </div>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" name="repo" class="radio-input">
+                        <div class="radio-content">
+                            <div class="radio-title">Import from other platform</div>
+                            <div class="radio-description">Import from GitLab, Bitbucket, or other Git providers</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Repository Name <span class="required">*</span></label>
+                <input type="text" class="form-input" value="autonomous-rice-planter">
+                <div class="form-help">URL: github.com/a-sw-hub/autonomous-rice-planter</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Default Branch</label>
+                <select class="form-select">
+                    <option>main</option>
+                    <option>master</option>
+                    <option>develop</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Initialize with</label>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" checked> README.md
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" checked> .gitignore (Python + ROS2)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" checked> LICENSE (MIT)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox"> Sample ROS2 package structure
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="actions">
+            <button class="btn">← Previous</button>
+            <div>
+                <button class="btn" style="margin-right: 12px;">Save Draft</button>
+                <button class="btn btn-primary">Next Step →</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

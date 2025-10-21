@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A-SW Hub - Approval Queue</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            line-height: 1.5;
+        }
+        
+        .container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
+        .header {
+            border-bottom: 1px solid #e5e5e5;
+            padding: 24px 32px;
+            background-color: white;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+        
+        .header-stats {
+            display: flex;
+            gap: 32px;
+        }
+        
+        .header-stat {
+            text-align: center;
+        }
+        
+        .header-stat-value {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .header-stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #666666;
+        }
+        
+        /* Filters */
+        .filters {
+            padding: 20px 32px;
+            background-color: #fafafa;
+            border-bottom: 1px solid #e5e5e5;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        
+        .filter-group {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .filter-btn {
+            padding: 6px 12px;
+            font-size: 13px;
+            border: 1px solid #e5e5e5;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .filter-btn.active {
+            background-color: #000000;
+            color: white;
+            border-color: #000000;
+        }
+        
+        .filter-divider {
+            width: 1px;
+            height: 24px;
+            background-color: #e5e5e5;
+            margin: 0 8px;
+        }
+        
+        /* Main Content */
+        .main {
+            flex: 1;
+            padding: 32px;
+        }
+        
+        /* Approval Cards */
+        .approval-grid {
+            display: grid;
+            gap: 24px;
+        }
+        
+        .approval-card {
+            border: 1px solid #e5e5e5;
+            background-color: white;
+            transition: all 0.2s;
+        }
+        
+        .approval-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .approval-card.urgent {
+            border-left: 4px solid #ef4444;
+        }
+        
+        /* Card Header */
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #f5f5f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .card-title-section {
+            flex: 1;
+        }
+        
+        .card-badges {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .badge {
+            padding: 2px 8px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+        
+        .badge.urgent {
+            background-color: #fef2f2;
+            color: #ef4444;
+        }
+        
+        .badge.production {
+            background-color: #000000;
+            color: white;
+        }
+        
+        .badge.staging {
+            background-color: #fbbf24;
+            color: #000000;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .card-meta {
+            font-size: 13px;
+            color: #666666;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid #e5e5e5;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .btn-approve {
+            background-color: #22c55e;
+            color: white;
+            border: none;
+        }
+        
+        .btn-approve:hover {
+            background-color: #16a34a;
+        }
+        
+        .btn-reject {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+        }
+        
+        .btn-reject:hover {
+            background-color: #dc2626;
+        }
+        
+        /* Card Body */
+        .card-body {
+            padding: 24px;
+        }
+        
+        .description {
+            font-size: 14px;
+            color: #333333;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+        
+        .checks-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background-color: #fafafa;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .check-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 14px;
+        }
+        
+        .check-icon.pass {
+            background-color: #dcfce7;
+            color: #22c55e;
+        }
+        
+        .check-icon.warn {
+            background-color: #fef3c7;
+            color: #f59e0b;
+        }
+        
+        .check-icon.fail {
+            background-color: #fee2e2;
+            color: #ef4444;
+        }
+        
+        .check-content {
+            flex: 1;
+        }
+        
+        .check-title {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .check-value {
+            font-size: 11px;
+            color: #666666;
+        }
+        
+        /* Changes Section */
+        .changes-section {
+            padding: 16px;
+            background-color: #f9f9f9;
+            border: 1px solid #f0f0f0;
+            margin-bottom: 24px;
+        }
+        
+        .changes-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .change-item {
+            font-size: 12px;
+            color: #666666;
+            margin-bottom: 4px;
+            padding-left: 16px;
+            position: relative;
+        }
+        
+        .change-item::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+        }
+        
+        /* Card Footer */
+        .card-footer {
+            padding: 16px 24px;
+            background-color: #fafafa;
+            border-top: 1px solid #f5f5f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .requestor {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background-color: #000000;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .requestor-info {
+            font-size: 12px;
+        }
+        
+        .requestor-name {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .request-time {
+            color: #999999;
+        }
+        
+        .details-link {
+            font-size: 13px;
+            color: #666666;
+            text-decoration: none;
+        }
+        
+        .details-link:hover {
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="page-title">Approval Queue</h1>
+                
+                <div class="header-stats">
+                    <div class="header-stat">
+                        <div class="header-stat-value">2</div>
+                        <div class="header-stat-label">Urgent</div>
+                    </div>
+                    <div class="header-stat">
+                        <div class="header-stat-value">6</div>
+                        <div class="header-stat-label">Pending</div>
+                    </div>
+                    <div class="header-stat">
+                        <div class="header-stat-value">14</div>
+                        <div class="header-stat-label">Today</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filter-group">
+                <button class="filter-btn active">All</button>
+                <button class="filter-btn">Build</button>
+                <button class="filter-btn">Deploy</button>
+                <button class="filter-btn">Config</button>
+            </div>
+            
+            <div class="filter-divider"></div>
+            
+            <div class="filter-group">
+                <button class="filter-btn">🔴 Urgent</button>
+                <button class="filter-btn">🟡 Normal</button>
+                <button class="filter-btn">🟢 Low</button>
+            </div>
+            
+            <div class="filter-divider"></div>
+            
+            <div class="filter-group">
+                <button class="filter-btn">Production</button>
+                <button class="filter-btn">Staging</button>
+                <button class="filter-btn">Development</button>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <main class="main">
+            <div class="approval-grid">
+                <!-- Urgent Approval Card -->
+                <div class="approval-card urgent">
+                    <div class="card-header">
+                        <div class="card-title-section">
+                            <div class="card-badges">
+                                <span class="badge urgent">URGENT</span>
+                                <span class="badge production">PRODUCTION</span>
+                            </div>
+                            <h2 class="card-title">Deploy smart-tractor v2.1.0 to Production</h2>
+                            <div class="card-meta">Project: smart-tractor-control • Branch: release/v2.1.0</div>
+                        </div>
+                        
+                        <div class="card-actions">
+                            <button class="btn btn-approve">Approve</button>
+                            <button class="btn btn-reject">Reject</button>
+                            <button class="btn">Hold</button>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <p class="description">
+                            Critical security patch for navigation module. Fixes CVE-2025-1234 vulnerability in GPS processing.
+                            This deployment includes performance improvements and bug fixes for the autonomous control system.
+                        </p>
+                        
+                        <div class="checks-grid">
+                            <div class="check-item">
+                                <div class="check-icon pass">✓</div>
+                                <div class="check-content">
+                                    <div class="check-title">Security Scan</div>
+                                    <div class="check-value">0 vulnerabilities</div>
+                                </div>
+                            </div>
+                            
+                            <div class="check-item">
+                                <div class="check-icon pass">✓</div>
+                                <div class="check-content">
+                                    <div class="check-title">Tests</div>
+                                    <div class="check-value">342/342 passing</div>
+                                </div>
+                            </div>
+                            
+                            <div class="check-item">
+                                <div class="check-icon warn">⚠</div>
+                                <div class="check-content">
+                                    <div class="check-title">Performance</div>
+                                    <div class="check-value">-5% from baseline</div>
+                                </div>
+                            </div>
+                            
+                            <div class="check-item">
+                                <div class="check-icon pass">✓</div>
+                                <div class="check-content">
+                                    <div class="check-title">Code Coverage</div>
+                                    <div class="check-value">87.3%</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="changes-section">
+                            <div class="changes-title">Key Changes (15 files)</div>
+                            <div class="change-item">Fixed GPS coordinate parsing issue</div>
+                            <div class="change-item">Updated navigation algorithm for better obstacle avoidance</div>
+                            <div class="change-item">Improved motor control precision</div>
+                            <div class="change-item">Added telemetry logging for debugging</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="requestor">
+                            <div class="avatar">KP</div>
+                            <div class="requestor-info">
+                                <div class="requestor-name">Kim Park</div>
+                                <div class="request-time">Requested 10 minutes ago</div>
+                            </div>
+                        </div>
+                        
+                        <a href="#" class="details-link">View full details →</a>
+                    </div>
+                </div>
+                
+                <!-- Normal Approval Card -->
+                <div class="approval-card">
+                    <div class="card-header">
+                        <div class="card-title-section">
+                            <div class="card-badges">
+                                <span class="badge staging">STAGING</span>
+                            </div>
+                            <h2 class="card-title">Deploy drone-monitoring v1.3.2 to Staging</h2>
+                            <div class="card-meta">Project: drone-monitoring • Branch: develop</div>
+                        </div>
+                        
+                        <div class="card-actions">
+                            <button class="btn btn-approve">Approve</button>
+                            <button class="btn btn-reject">Reject</button>
+                            <button class="btn">Hold</button>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <p class="description">
+                            New feature release including real-time video streaming, battery optimization, and improved altitude control.
+                        </p>
+                        
+                        <div class="checks-grid">
+                            <div class="check-item">
+                                <div class="check-icon pass">✓</div>
+                                <div class="check-content">
+                                    <div class="check-title">Security Scan</div>
+                                    <div class="check-value">Clean</div>
+                                </div>
+                            </div>
+                            
+                            <div class="check-item">
+                                <div class="check-icon pass">✓</div>
+                                <div class="check-content">
+                                    <div class="check-title">Tests</div>
+                                    <div class="check-value">156/156 passing</div>
+                                </div>
+                            </div>
+                            
+                            <div class="check-item">
+                                <div class="check-icon pass">✓</div>
+                                <div class="check-content">
+                                    <div class="check-title">Performance</div>
+                                    <div class="check-value">+12% improvement</div>
+                                </div>
+                            </div>
+                            
+                            <div class="check-item">
+                                <div class="check-icon pass">✓</div>
+                                <div class="check-content">
+                                    <div class="check-title">Code Coverage</div>
+                                    <div class="check-value">92.1%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="requestor">
+                            <div class="avatar">JL</div>
+                            <div class="requestor-info">
+                                <div class="requestor-name">John Lee</div>
+                                <div class="request-time">Requested 2 hours ago</div>
+                            </div>
+                        </div>
+                        
+                        <a href="#" class="details-link">View full details →</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

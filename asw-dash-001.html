@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A-SW Hub - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            line-height: 1.5;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            border-right: 1px solid #e5e5e5;
+            padding: 24px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #000000;
+        }
+        
+        .logo-text {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+        
+        .nav-section {
+            margin-bottom: 32px;
+        }
+        
+        .nav-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #999999;
+            margin-bottom: 12px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 14px;
+        }
+        
+        .nav-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .nav-item.active {
+            background-color: #000000;
+            color: #ffffff;
+        }
+        
+        /* Main Content */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            border-bottom: 1px solid #e5e5e5;
+            padding: 20px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .icon-button {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e5e5e5;
+            background: white;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .icon-button:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 16px;
+            height: 16px;
+            background-color: #ff0000;
+            color: white;
+            border-radius: 50%;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background-color: #000000;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        /* Content Area */
+        .content {
+            padding: 32px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+        
+        .stat-card {
+            border: 1px solid #e5e5e5;
+            padding: 24px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #666666;
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+        
+        .stat-change {
+            font-size: 12px;
+            color: #666666;
+        }
+        
+        .stat-change.positive {
+            color: #22c55e;
+        }
+        
+        .stat-change.negative {
+            color: #ef4444;
+        }
+        
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+        
+        .chart-card {
+            border: 1px solid #e5e5e5;
+            padding: 24px;
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .chart-placeholder {
+            height: 200px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e5e5e5 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999999;
+            font-size: 14px;
+        }
+        
+        /* Activity Feed */
+        .activity-section {
+            border: 1px solid #e5e5e5;
+            padding: 24px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .view-all {
+            font-size: 13px;
+            color: #666666;
+            text-decoration: none;
+        }
+        
+        .view-all:hover {
+            color: #000000;
+        }
+        
+        .activity-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .activity-icon.success {
+            background-color: #22c55e;
+            color: white;
+        }
+        
+        .activity-icon.error {
+            background-color: #ef4444;
+            color: white;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .activity-meta {
+            font-size: 12px;
+            color: #999999;
+        }
+        
+        .activity-time {
+            font-size: 12px;
+            color: #999999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <span class="logo-text">A-SW Hub</span>
+            </div>
+            
+            <nav>
+                <div class="nav-section">
+                    <div class="nav-title">Main</div>
+                    <div class="nav-item active">Dashboard</div>
+                    <div class="nav-item">Projects</div>
+                    <div class="nav-item">CI/CD</div>
+                    <div class="nav-item">Approvals</div>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-title">Tools</div>
+                    <div class="nav-item">Build Monitor</div>
+                    <div class="nav-item">Quality Gates</div>
+                    <div class="nav-item">Deployment</div>
+                    <div class="nav-item">Analytics</div>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-title">Settings</div>
+                    <div class="nav-item">Profile</div>
+                    <div class="nav-item">Team</div>
+                    <div class="nav-item">API Keys</div>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <div class="main">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1 class="page-title">Dashboard</h1>
+                </div>
+                
+                <div class="header-right">
+                    <div class="icon-button">
+                        🔍
+                    </div>
+                    <div class="icon-button">
+                        🔔
+                        <div class="notification-badge">3</div>
+                    </div>
+                    <div class="user-avatar">JK</div>
+                </div>
+            </header>
+            
+            <!-- Content -->
+            <main class="content">
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Projects</div>
+                        <div class="stat-value">142</div>
+                        <div class="stat-change positive">↑ 5.2% from last week</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-label">Builds Today</div>
+                        <div class="stat-value">28</div>
+                        <div class="stat-change positive">↑ 12 more than yesterday</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-label">Success Rate</div>
+                        <div class="stat-value">87%</div>
+                        <div class="stat-change negative">↓ 3% from last week</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-label">Active Users</div>
+                        <div class="stat-value">85</div>
+                        <div class="stat-change">Currently online</div>
+                    </div>
+                </div>
+                
+                <!-- Charts Section -->
+                <div class="charts-section">
+                    <div class="chart-card">
+                        <h2 class="chart-title">Build Trends (Last 7 Days)</h2>
+                        <div class="chart-placeholder">Build Success/Failure Chart</div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <h2 class="chart-title">Top Languages</h2>
+                        <div class="chart-placeholder">Language Distribution</div>
+                    </div>
+                </div>
+                
+                <!-- Activity Feed -->
+                <div class="activity-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Recent Activity</h2>
+                        <a href="#" class="view-all">View all →</a>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon success">✓</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Build #1234 succeeded</div>
+                            <div class="activity-meta">smart-tractor-control • main branch</div>
+                        </div>
+                        <div class="activity-time">2 min ago</div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon">📝</div>
+                        <div class="activity-content">
+                            <div class="activity-title">New pull request opened</div>
+                            <div class="activity-meta">autonomous-harvester • feat/navigation</div>
+                        </div>
+                        <div class="activity-time">15 min ago</div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon error">✕</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Quality gate failed</div>
+                            <div class="activity-meta">drone-monitoring • Coverage below 70%</div>
+                        </div>
+                        <div class="activity-time">1 hour ago</div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon">🚀</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Deployed to production</div>
+                            <div class="activity-meta">irrigation-controller • v2.1.0</div>
+                        </div>
+                        <div class="activity-time">2 hours ago</div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>
