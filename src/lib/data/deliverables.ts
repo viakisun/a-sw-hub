@@ -396,7 +396,7 @@ export const deliverables: Deliverable[] = [
   {
     id: 'SYS-02-21',
     projectId: 'PRJ-ASW-2026',
-    institutionCode: 'JBN',
+    institutionCode: 'JBNU',
     year: 2,
     phase: 1,
     name: '측위 모듈 v1.0',
@@ -417,7 +417,7 @@ export const deliverables: Deliverable[] = [
   {
     id: 'SYS-02-22',
     projectId: 'PRJ-ASW-2026',
-    institutionCode: 'JBN',
+    institutionCode: 'JBNU',
     year: 2,
     phase: 1,
     name: '환경인지 모듈 v1.0',
@@ -438,7 +438,7 @@ export const deliverables: Deliverable[] = [
   {
     id: 'DATA-02-21',
     projectId: 'PRJ-ASW-2026',
-    institutionCode: 'JBN',
+    institutionCode: 'JBNU',
     year: 2,
     phase: 1,
     name: '학습 DB v1.0',
@@ -459,7 +459,7 @@ export const deliverables: Deliverable[] = [
   {
     id: 'DOC-02-21',
     projectId: 'PRJ-ASW-2026',
-    institutionCode: 'JBN',
+    institutionCode: 'JBNU',
     year: 2,
     phase: 1,
     name: '알고리즘 보고서 v1.0',
@@ -832,7 +832,7 @@ export const deliverables: Deliverable[] = [
   {
     id: 'SYS-03-21',
     projectId: 'PRJ-ASW-2027',
-    institutionCode: 'JBN',
+    institutionCode: 'JBNU',
     year: 3,
     phase: 1,
     name: '측위 고도화 v2.0',
@@ -853,7 +853,7 @@ export const deliverables: Deliverable[] = [
   {
     id: 'SYS-03-22',
     projectId: 'PRJ-ASW-2027',
-    institutionCode: 'JBN',
+    institutionCode: 'JBNU',
     year: 3,
     phase: 1,
     name: '인지 고도화 v2.0',
@@ -874,7 +874,7 @@ export const deliverables: Deliverable[] = [
   {
     id: 'DATA-03-21',
     projectId: 'PRJ-ASW-2027',
-    institutionCode: 'JBN',
+    institutionCode: 'JBNU',
     year: 3,
     phase: 1,
     name: '공간정보 학습셋 v2.0',
@@ -895,7 +895,7 @@ export const deliverables: Deliverable[] = [
   {
     id: 'DOC-03-21',
     projectId: 'PRJ-ASW-2027',
-    institutionCode: 'JBN',
+    institutionCode: 'JBNU',
     year: 3,
     phase: 1,
     name: '강화학습/경량화 보고서 v1.0',
@@ -1225,7 +1225,7 @@ export const deliverables: Deliverable[] = [
   {
     id: 'SYS-04-21',
     projectId: 'PRJ-ASW-2028',
-    institutionCode: 'JBN',
+    institutionCode: 'JBNU',
     year: 4,
     phase: 2,
     name: 'RL-보강 전역 경로계획 모듈 v1.0',
@@ -1246,7 +1246,7 @@ export const deliverables: Deliverable[] = [
   {
     id: 'SYS-04-22',
     projectId: 'PRJ-ASW-2028',
-    institutionCode: 'JBN',
+    institutionCode: 'JBNU',
     year: 4,
     phase: 2,
     name: '비정형 장애물 인지 모듈 v1.0',
@@ -1267,7 +1267,7 @@ export const deliverables: Deliverable[] = [
   {
     id: 'DATA-04-21',
     projectId: 'PRJ-ASW-2028',
-    institutionCode: 'JBN',
+    institutionCode: 'JBNU',
     year: 4,
     phase: 2,
     name: '학습/평가 세트 v1.0',
@@ -1288,7 +1288,7 @@ export const deliverables: Deliverable[] = [
   {
     id: 'DOC-04-21',
     projectId: 'PRJ-ASW-2028',
-    institutionCode: 'JBN',
+    institutionCode: 'JBNU',
     year: 4,
     phase: 2,
     name: '고도화 알고리즘 보고서 v1.0',
@@ -1660,7 +1660,7 @@ export const deliverables: Deliverable[] = [
   {
     id: 'SYS-05-21',
     projectId: 'PRJ-ASW-2029',
-    institutionCode: 'JBN',
+    institutionCode: 'JBNU',
     year: 5,
     phase: 2,
     name: '위치추정 경량화·통합 배포 v1.0',
@@ -1681,7 +1681,7 @@ export const deliverables: Deliverable[] = [
   {
     id: 'SYS-05-22',
     projectId: 'PRJ-ASW-2029',
-    institutionCode: 'JBN',
+    institutionCode: 'JBNU',
     year: 5,
     phase: 2,
     name: 'RL 경로계획 통합 배포 v1.0',
@@ -1702,7 +1702,7 @@ export const deliverables: Deliverable[] = [
   {
     id: 'DATA-05-21',
     projectId: 'PRJ-ASW-2029',
-    institutionCode: 'JBN',
+    institutionCode: 'JBNU',
     year: 5,
     phase: 2,
     name: '실증 기반 튜닝셋 v1.0',
@@ -1723,7 +1723,7 @@ export const deliverables: Deliverable[] = [
   {
     id: 'DOC-05-21',
     projectId: 'PRJ-ASW-2029',
-    institutionCode: 'JBN',
+    institutionCode: 'JBNU',
     year: 5,
     phase: 2,
     name: '통합 개방형 SW 구성·검증 보고서 v1.0',

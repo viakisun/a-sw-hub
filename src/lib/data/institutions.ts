@@ -43,7 +43,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 'INST-003',
-    code: 'JBN',
+    code: 'JBNU',
     name: 'Jeonbuk National University',
     nameKr: '전북대학교',
     type: 'participating',
@@ -155,12 +155,12 @@ export const researchers: Researcher[] = [
     deliverables: ['UI-02-11', 'SYS-03-12', 'SYS-04-12']
   },
 
-  // JBN
+  // JBNU
   {
     id: 'RES-005',
     name: '최민수',
     nameEn: 'Choi Minsu',
-    institutionCode: 'JBN',
+    institutionCode: 'JBNU',
     position: '부교수',
     email: 'mschoi@jbnu.ac.kr',
     expertise: ['측위 알고리즘', 'SLAM', '강화학습'],
@@ -170,7 +170,7 @@ export const researchers: Researcher[] = [
     id: 'RES-006',
     name: '김서연',
     nameEn: 'Kim Seoyeon',
-    institutionCode: 'JBN',
+    institutionCode: 'JBNU',
     position: '조교수',
     email: 'sykim@jbnu.ac.kr',
     expertise: ['환경인지', '컴퓨터비전', '딥러닝'],

@@ -17,7 +17,7 @@ import { deliverables } from './deliverables';
 const COLORS = {
   KITECH: '#000000',
   TYMICT: '#333333',
-  JBN: '#555555',
+  JBNU: '#555555',
   VIA: '#777777',
   OntarioTech: '#999999',
   milestone: '#000000',
@@ -185,17 +185,17 @@ function generateGanttData(): GanttTask[] {
         }))
     },
     {
-      id: 'Y2-JBN',
-      name: 'JBN: 측위·환경인지·공간정보',
+      id: 'Y2-JBNU',
+      name: 'JBNU: 측위·환경인지·공간정보',
       startDate: new Date('2026-01-01'),
       endDate: new Date('2026-11-30'),
-      progress: calculateInstitutionProgress(2, 'JBN'),
+      progress: calculateInstitutionProgress(2, 'JBNU'),
       type: 'deliverable',
-      institution: 'JBN',
-      color: COLORS.JBN,
+      institution: 'JBNU',
+      color: COLORS.JBNU,
       assignees: ['최민수', '김서연'],
       children: deliverables
-        .filter(d => d.year === 2 && d.institutionCode === 'JBN')
+        .filter(d => d.year === 2 && d.institutionCode === 'JBNU')
         .map(d => ({
           id: d.id,
           name: d.name,
@@ -203,8 +203,8 @@ function generateGanttData(): GanttTask[] {
           endDate: d.targetDate,
           progress: d.progress,
           type: 'task' as const,
-          institution: 'JBN',
-          color: COLORS.JBN,
+          institution: 'JBNU',
+          color: COLORS.JBNU,
           dependencies: d.dependencies
         }))
     },
@@ -319,17 +319,17 @@ function generateGanttData(): GanttTask[] {
         }))
     },
     {
-      id: 'Y3-JBN',
-      name: 'JBN: 측위/인지 고도화(경량화·강화학습)',
+      id: 'Y3-JBNU',
+      name: 'JBNU: 측위/인지 고도화(경량화·강화학습)',
       startDate: new Date('2027-01-01'),
       endDate: new Date('2027-11-30'),
-      progress: calculateInstitutionProgress(3, 'JBN'),
+      progress: calculateInstitutionProgress(3, 'JBNU'),
       type: 'deliverable',
-      institution: 'JBN',
-      color: COLORS.JBN,
+      institution: 'JBNU',
+      color: COLORS.JBNU,
       assignees: ['최민수', '김서연'],
       children: deliverables
-        .filter(d => d.year === 3 && d.institutionCode === 'JBN')
+        .filter(d => d.year === 3 && d.institutionCode === 'JBNU')
         .map(d => ({
           id: d.id,
           name: d.name,
@@ -337,8 +337,8 @@ function generateGanttData(): GanttTask[] {
           endDate: d.targetDate,
           progress: d.progress,
           type: 'task' as const,
-          institution: 'JBN',
-          color: COLORS.JBN,
+          institution: 'JBNU',
+          color: COLORS.JBNU,
           dependencies: d.dependencies
         }))
     },
@@ -467,17 +467,17 @@ function generateGanttData(): GanttTask[] {
         }))
     },
     {
-      id: 'Y4-JBN',
-      name: 'JBN: 강화학습 기반 고도화',
+      id: 'Y4-JBNU',
+      name: 'JBNU: 강화학습 기반 고도화',
       startDate: new Date('2028-01-01'),
       endDate: new Date('2028-11-30'),
-      progress: calculateInstitutionProgress(4, 'JBN'),
+      progress: calculateInstitutionProgress(4, 'JBNU'),
       type: 'deliverable',
-      institution: 'JBN',
-      color: COLORS.JBN,
+      institution: 'JBNU',
+      color: COLORS.JBNU,
       assignees: ['최민수', '김서연'],
       children: deliverables
-        .filter(d => d.year === 4 && d.institutionCode === 'JBN')
+        .filter(d => d.year === 4 && d.institutionCode === 'JBNU')
         .map(d => ({
           id: d.id,
           name: d.name,
@@ -485,8 +485,8 @@ function generateGanttData(): GanttTask[] {
           endDate: d.targetDate,
           progress: d.progress,
           type: 'task' as const,
-          institution: 'JBN',
-          color: COLORS.JBN,
+          institution: 'JBNU',
+          color: COLORS.JBNU,
           dependencies: d.dependencies
         }))
     },
@@ -601,17 +601,17 @@ function generateGanttData(): GanttTask[] {
         }))
     },
     {
-      id: 'Y5-JBN',
-      name: 'JBN: 최적화 배포모델',
+      id: 'Y5-JBNU',
+      name: 'JBNU: 최적화 배포모델',
       startDate: new Date('2029-01-01'),
       endDate: new Date('2029-11-30'),
-      progress: calculateInstitutionProgress(5, 'JBN'),
+      progress: calculateInstitutionProgress(5, 'JBNU'),
       type: 'deliverable',
-      institution: 'JBN',
-      color: COLORS.JBN,
+      institution: 'JBNU',
+      color: COLORS.JBNU,
       assignees: ['최민수', '김서연'],
       children: deliverables
-        .filter(d => d.year === 5 && d.institutionCode === 'JBN')
+        .filter(d => d.year === 5 && d.institutionCode === 'JBNU')
         .map(d => ({
           id: d.id,
           name: d.name,
@@ -619,8 +619,8 @@ function generateGanttData(): GanttTask[] {
           endDate: d.targetDate,
           progress: d.progress,
           type: 'task' as const,
-          institution: 'JBN',
-          color: COLORS.JBN,
+          institution: 'JBNU',
+          color: COLORS.JBNU,
           dependencies: d.dependencies
         }))
     },

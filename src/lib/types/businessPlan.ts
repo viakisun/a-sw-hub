@@ -3,7 +3,7 @@
  * 1단계 3개년 + 2단계 2개년
  */
 
-export type InstitutionCode = 'KITECH' | 'TYMICT' | 'JBN' | 'VIA' | 'OntarioTech';
+export type InstitutionCode = 'KITECH' | 'TYMICT' | 'JBNU' | 'VIA' | 'OntarioTech';
 
 export type DeliverableType = 'SYS' | 'UI' | 'INT' | 'DATA' | 'OPS' | 'DOC';
 
