@@ -52,6 +52,15 @@
       </a>
 
       <a
+        href="/timeline"
+        class="nav-item"
+        class:nav-item--active={$page.url.pathname.startsWith('/timeline')}
+      >
+        <span class="nav-item__icon">━</span>
+        <span class="nav-item__text">TIMELINE</span>
+      </a>
+
+      <a
         href="/approvals"
         class="nav-item"
         class:nav-item--active={$page.url.pathname.startsWith('/approvals')}

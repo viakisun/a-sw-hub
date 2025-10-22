@@ -96,6 +96,12 @@ export interface GanttTask {
   dependencies?: string[];
   children?: GanttTask[];
   color?: string;
+  // Additional properties for compatibility
+  start?: Date;
+  end?: Date;
+  status?: DeliverableStatus;
+  milestones?: Milestone[];
+  deliverableId?: string;
 }
 
 export interface BusinessPlan {
