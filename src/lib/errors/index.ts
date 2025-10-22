@@ -230,7 +230,9 @@ export class NetworkErrorRecovery implements ErrorRecoveryStrategy {
     // Cleanup old entries
     if (this.retryCount.size > 100) {
       const oldestKey = this.retryCount.keys().next().value;
-      this.retryCount.delete(oldestKey);
+      if (oldestKey !== undefined) {
+        this.retryCount.delete(oldestKey);
+      }
     }
   }
 }

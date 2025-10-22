@@ -231,7 +231,8 @@
       <select
         class="project-select"
         on:change={(e) => {
-          selectedProject = projects.find(p => p.projectName === e.target.value) || null;
+          const target = e.target as HTMLSelectElement;
+          selectedProject = projects.find(p => p.projectName === target.value) || null;
         }}
       >
         {#each projects as project}

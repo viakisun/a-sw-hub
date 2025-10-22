@@ -114,7 +114,7 @@ function createBuildsStore() {
                 // Build complete
                 return {
                   ...build,
-                  status: 'success',
+                  status: 'success' as BuildStatus,
                   finishedAt: new Date(),
                   duration: Math.floor((new Date().getTime() - build.startedAt.getTime()) / 1000),
                   stages,
@@ -146,8 +146,7 @@ function createBuildsStore() {
         state.runningBuilds.forEach((build) => {
           if (Math.random() > 0.5) {
             // Update progress
-            const store = get({ subscribe });
-            store.updateBuildProgress(build.id);
+            buildsStore.updateBuildProgress(build.id);
 
             // Add fake log line
             if (Math.random() > 0.3) {
@@ -158,7 +157,7 @@ function createBuildsStore() {
                 '[WARNING] Cache miss, rebuilding...',
                 '[INFO] Running quality checks...',
               ];
-              store.appendLogLine(
+              buildsStore.appendLogLine(
                 build.id,
                 `[${new Date().toISOString()}] ${logLines[Math.floor(Math.random() * logLines.length)]}`
               );
