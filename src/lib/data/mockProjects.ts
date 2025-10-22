@@ -8,96 +8,312 @@ import type {
 } from '$lib/types';
 import { subDays, subHours, subMinutes } from 'date-fns';
 import { mockUsers, getRandomUser } from './mockUsers';
+import { institutions } from './institutions';
+import { deliverables } from './deliverables';
 
-// Agricultural project name prefixes and suffixes
-const projectPrefixes = [
-  'Smart',
-  'Agri',
-  'Farm',
-  'Crop',
-  'Soil',
-  'Green',
-  'Bio',
-  'Eco',
-  'Harvest',
-  'Field',
-  'Precision',
-  'Digital',
-  'Cloud',
-  'Auto',
-  'AI',
-  'ML',
-  'IoT',
-  'Drone',
-  'Satellite',
-  'Weather',
+// 실제 A-SW 사업 프로젝트 데이터
+const aswProjects: Partial<Project>[] = [
+  // 메인 프로젝트
+  {
+    id: 'PRJ-ASW-2024',
+    name: 'A-SW 통합 플랫폼',
+    slug: 'asw-integrated-platform',
+    category: 'farm-analytics',
+    status: 'active',
+    language: 'TypeScript',
+    description: '무인자율 농작업 소프트웨어 통합 플랫폼 - 1단계 3개년 + 2단계 2개년 국가 R&D 사업',
+    visibility: 'public',
+    stars: 342,
+    forks: 89,
+    contributors: 45,
+    issues: 12,
+    pullRequests: 5,
+    createdAt: new Date('2024-01-01'),
+    lastCommit: new Date(),
+    buildStatus: 'success',
+    tags: ['국가R&D', '스마트팜', 'ISOBUS', 'V2X', 'MIL/HIL'],
+    readme: '# A-SW 통합 플랫폼\n\n무인자율 농작업을 위한 개방형 소프트웨어 플랫폼',
+    repository: 'github.com/asw-hub/integrated-platform',
+    documentation: 'https://docs.asw-hub.kr',
+    homepage: 'https://asw-hub.kr',
+  },
+
+  // KITECH 프로젝트들
+  {
+    id: 'PRJ-KITECH-001',
+    name: '농작업 분석 모듈',
+    slug: 'agricultural-task-analysis',
+    category: 'crop-management',
+    status: 'active',
+    language: 'Python',
+    description: '무인자율 농작업 분석 및 A-SW 모듈화 파라미터 정립 시스템',
+    visibility: 'public',
+    stars: 156,
+    forks: 34,
+    contributors: 12,
+    owner: institutions.find(i => i.code === 'KITECH'),
+    createdAt: new Date('2024-01-15'),
+    lastCommit: subDays(new Date(), 2),
+    buildStatus: 'success',
+    tags: ['작업분석', '파라미터', '시퀀스', '모듈화'],
+  },
+  {
+    id: 'PRJ-KITECH-002',
+    name: '경로 제어 시스템',
+    slug: 'path-control-system',
+    category: 'farm-analytics',
+    status: 'active',
+    language: 'C++',
+    description: '경로 생성/추종/속도 제어 통합 시스템',
+    visibility: 'public',
+    stars: 203,
+    forks: 45,
+    contributors: 8,
+    owner: institutions.find(i => i.code === 'KITECH'),
+    createdAt: new Date('2025-01-01'),
+    lastCommit: subHours(new Date(), 5),
+    buildStatus: 'running',
+    tags: ['경로생성', '경로추종', '속도제어', 'ISOBUS'],
+  },
+  {
+    id: 'PRJ-KITECH-003',
+    name: 'V2X 협업 플랫폼',
+    slug: 'v2x-collaboration',
+    category: 'farm-analytics',
+    status: 'maintenance',
+    language: 'Go',
+    description: 'V2X 기반 다수 장비 협업 제어 플랫폼',
+    visibility: 'public',
+    stars: 89,
+    forks: 23,
+    contributors: 6,
+    owner: institutions.find(i => i.code === 'KITECH'),
+    createdAt: new Date('2027-01-01'),
+    lastCommit: subDays(new Date(), 10),
+    buildStatus: 'success',
+    tags: ['V2X', '군집제어', '협업', '통신표준'],
+  },
+
+  // TYMICT 프로젝트들
+  {
+    id: 'PRJ-TYMICT-001',
+    name: '통합제어기(ICU)',
+    slug: 'integrated-control-unit',
+    category: 'farm-analytics',
+    status: 'active',
+    language: 'C++',
+    description: '농업용 통합제어기 하드웨어 및 소프트웨어 플랫폼',
+    visibility: 'private',
+    stars: 67,
+    forks: 12,
+    contributors: 10,
+    owner: institutions.find(i => i.code === 'TYMICT'),
+    createdAt: new Date('2025-01-01'),
+    lastCommit: subDays(new Date(), 1),
+    buildStatus: 'success',
+    tags: ['ICU', 'RTOS', '하드웨어', '임베디드'],
+  },
+  {
+    id: 'PRJ-TYMICT-002',
+    name: 'HMI 시스템',
+    slug: 'hmi-system',
+    category: 'farm-analytics',
+    status: 'active',
+    language: 'TypeScript',
+    description: '농업용 특화 Human-Machine Interface 시스템',
+    visibility: 'public',
+    stars: 234,
+    forks: 56,
+    contributors: 15,
+    owner: institutions.find(i => i.code === 'TYMICT'),
+    createdAt: new Date('2025-04-01'),
+    lastCommit: new Date(),
+    buildStatus: 'success',
+    tags: ['HMI', 'UI/UX', '터치스크린', '대시보드'],
+  },
+  {
+    id: 'PRJ-TYMICT-003',
+    name: 'AI 미들웨어',
+    slug: 'ai-middleware',
+    category: 'farm-analytics',
+    status: 'active',
+    language: 'Python',
+    description: '멀티모달 AI 융합 미들웨어 플랫폼',
+    visibility: 'public',
+    stars: 178,
+    forks: 42,
+    contributors: 9,
+    owner: institutions.find(i => i.code === 'TYMICT'),
+    createdAt: new Date('2026-03-01'),
+    lastCommit: subHours(new Date(), 12),
+    buildStatus: 'failed',
+    tags: ['AI', '센서융합', '미들웨어', '실시간처리'],
+  },
+
+  // JBN 프로젝트들
+  {
+    id: 'PRJ-JBN-001',
+    name: '측위 알고리즘',
+    slug: 'positioning-algorithm',
+    category: 'weather-monitoring',
+    status: 'active',
+    language: 'Python',
+    description: '고정밀 측위 및 SLAM 알고리즘',
+    visibility: 'public',
+    stars: 298,
+    forks: 78,
+    contributors: 8,
+    owner: institutions.find(i => i.code === 'JBN'),
+    createdAt: new Date('2025-01-01'),
+    lastCommit: subDays(new Date(), 3),
+    buildStatus: 'success',
+    tags: ['SLAM', 'GPS', 'RTK', '측위'],
+  },
+  {
+    id: 'PRJ-JBN-002',
+    name: '환경인지 모듈',
+    slug: 'environment-perception',
+    category: 'farm-analytics',
+    status: 'active',
+    language: 'Python',
+    description: '딥러닝 기반 농업환경 인지 시스템',
+    visibility: 'public',
+    stars: 412,
+    forks: 123,
+    contributors: 12,
+    owner: institutions.find(i => i.code === 'JBN'),
+    createdAt: new Date('2025-02-01'),
+    lastCommit: new Date(),
+    buildStatus: 'running',
+    tags: ['컴퓨터비전', '딥러닝', '장애물검출', '작물인식'],
+  },
+  {
+    id: 'PRJ-JBN-003',
+    name: '학습 데이터베이스',
+    slug: 'training-database',
+    category: 'farm-analytics',
+    status: 'active',
+    language: 'Python',
+    description: '농업 AI 학습용 대규모 데이터셋 및 라벨링 플랫폼',
+    visibility: 'public',
+    stars: 189,
+    forks: 45,
+    contributors: 20,
+    owner: institutions.find(i => i.code === 'JBN'),
+    createdAt: new Date('2025-01-01'),
+    lastCommit: subDays(new Date(), 5),
+    buildStatus: 'success',
+    tags: ['데이터셋', '라벨링', '학습데이터', 'AI'],
+  },
+
+  // VIA 프로젝트들
+  {
+    id: 'PRJ-VIA-001',
+    name: 'A-SW Hub Platform',
+    slug: 'asw-hub-platform',
+    category: 'farm-analytics',
+    status: 'active',
+    language: 'TypeScript',
+    description: '개방형 A-SW 공유 및 협업 플랫폼',
+    visibility: 'public',
+    stars: 567,
+    forks: 156,
+    contributors: 25,
+    owner: institutions.find(i => i.code === 'VIA'),
+    createdAt: new Date('2024-02-01'),
+    lastCommit: new Date(),
+    buildStatus: 'success',
+    tags: ['플랫폼', 'MSA', 'DevOps', 'CI/CD'],
+  },
+  {
+    id: 'PRJ-VIA-002',
+    name: '인증/권한 시스템',
+    slug: 'auth-system',
+    category: 'farm-analytics',
+    status: 'active',
+    language: 'TypeScript',
+    description: 'OAuth2/OIDC 기반 통합 인증 시스템',
+    visibility: 'public',
+    stars: 234,
+    forks: 67,
+    contributors: 8,
+    owner: institutions.find(i => i.code === 'VIA'),
+    createdAt: new Date('2025-02-01'),
+    lastCommit: subHours(new Date(), 2),
+    buildStatus: 'success',
+    tags: ['OAuth2', 'OIDC', 'RBAC', '보안'],
+  },
+  {
+    id: 'PRJ-VIA-003',
+    name: 'Git 협업 시스템',
+    slug: 'git-collaboration',
+    category: 'farm-analytics',
+    status: 'active',
+    language: 'Go',
+    description: 'Git 기반 A-SW 저장소 및 협업 워크플로우',
+    visibility: 'public',
+    stars: 389,
+    forks: 98,
+    contributors: 18,
+    owner: institutions.find(i => i.code === 'VIA'),
+    createdAt: new Date('2025-04-01'),
+    lastCommit: subDays(new Date(), 1),
+    buildStatus: 'success',
+    tags: ['Git', 'Repository', 'Fork', 'PR'],
+  },
+
+  // OntarioTech 프로젝트들
+  {
+    id: 'PRJ-ONTARIO-001',
+    name: 'Path Optimizer',
+    slug: 'path-optimizer',
+    category: 'harvest-optimization',
+    status: 'active',
+    language: 'Python',
+    description: 'Multi-agent path optimization for agricultural machinery',
+    visibility: 'public',
+    stars: 145,
+    forks: 38,
+    contributors: 6,
+    owner: institutions.find(i => i.code === 'OntarioTech'),
+    createdAt: new Date('2025-02-01'),
+    lastCommit: subDays(new Date(), 7),
+    buildStatus: 'success',
+    tags: ['Optimization', 'Heuristics', 'PathPlanning', 'MultiAgent'],
+  },
+  {
+    id: 'PRJ-ONTARIO-002',
+    name: 'Task Scheduler',
+    slug: 'task-scheduler',
+    category: 'farm-analytics',
+    status: 'active',
+    language: 'Java',
+    description: 'Cooperative task allocation and scheduling system',
+    visibility: 'public',
+    stars: 98,
+    forks: 25,
+    contributors: 5,
+    owner: institutions.find(i => i.code === 'OntarioTech'),
+    createdAt: new Date('2025-04-01'),
+    lastCommit: subDays(new Date(), 4),
+    buildStatus: 'success',
+    tags: ['Scheduling', 'TaskAllocation', 'Cooperation', 'Algorithm'],
+  },
 ];
-
-const projectSuffixes = [
-  'Manager',
-  'Monitor',
-  'Tracker',
-  'Analyzer',
-  'Optimizer',
-  'Assistant',
-  'Platform',
-  'System',
-  'Hub',
-  'Suite',
-  'Pro',
-  'Plus',
-  'Connect',
-  'Link',
-  'Net',
-  'Grid',
-  'Watch',
-  'Guard',
-  'Sense',
-  'View',
-];
-
-const categories: ProjectCategory[] = [
-  'crop-management',
-  'soil-analysis',
-  'irrigation',
-  'pest-control',
-  'harvest-optimization',
-  'supply-chain',
-  'farm-analytics',
-  'weather-monitoring',
-  'livestock',
-  'market-analysis',
-];
-
-const languages: ProgrammingLanguage[] = [
-  'TypeScript',
-  'JavaScript',
-  'Python',
-  'Java',
-  'Go',
-  'Rust',
-  'C++',
-  'Ruby',
-  'PHP',
-  'Swift',
-];
-
-const statuses: ProjectStatus[] = ['active', 'maintenance', 'archived', 'deprecated'];
-const buildStatuses: BuildStatus[] = ['success', 'failed', 'running', 'pending'];
 
 // Generate project descriptions based on category
 function generateDescription(category: ProjectCategory, name: string): string {
   const descriptions: Record<ProjectCategory, string[]> = {
     'crop-management': [
-      'Advanced crop lifecycle management system',
-      'Intelligent crop monitoring and optimization platform',
-      'Real-time crop health tracking solution',
-      'Automated crop planning and scheduling system',
+      '작물 생육 전주기 관리 시스템',
+      '지능형 작물 모니터링 및 최적화 플랫폼',
+      '실시간 작물 건강 추적 솔루션',
+      '자동화된 작물 계획 및 일정 관리 시스템',
     ],
     'soil-analysis': [
-      'Comprehensive soil testing and analysis platform',
-      'AI-powered soil health monitoring system',
-      'Real-time soil nutrient tracking solution',
+      '종합 토양 검사 및 분석 플랫폼',
+      'AI 기반 토양 건강 모니터링 시스템',
+      '실시간 토양 영양소 추적 솔루션',
       'Predictive soil quality management tool',
     ],
     irrigation: [
@@ -154,55 +370,47 @@ function generateDescription(category: ProjectCategory, name: string): string {
   return `${categoryDescriptions[Math.floor(Math.random() * categoryDescriptions.length)]} - ${name}`;
 }
 
-// Generate a single project
-function generateProject(index: number): Project {
-  const prefix = projectPrefixes[Math.floor(Math.random() * projectPrefixes.length)];
-  const suffix = projectSuffixes[Math.floor(Math.random() * projectSuffixes.length)];
-  const name = `${prefix}${suffix}`;
-  const slug = name.toLowerCase().replace(/\s+/g, '-');
-  const category = categories[Math.floor(Math.random() * categories.length)];
-  const status = index < 80 ? 'active' : statuses[Math.floor(Math.random() * statuses.length)];
-  const language = languages[Math.floor(Math.random() * languages.length)];
-  const buildStatus = buildStatuses[Math.floor(Math.random() * buildStatuses.length)];
-  const owner = getRandomUser();
+// Complete project data with defaults
+function completeProject(partial: Partial<Project>): Project {
+  const owner = partial.owner || getRandomUser();
+  const slug = partial.slug || partial.name?.toLowerCase().replace(/\s+/g, '-') || 'project';
 
   return {
-    id: nanoid(),
-    slug: `${slug}-${index}`,
-    name: `${name} ${index}`,
-    description: generateDescription(category, name),
-    category,
-    status,
-    visibility: Math.random() > 0.3 ? 'public' : 'private',
+    id: partial.id || nanoid(),
+    slug: slug,
+    name: partial.name || 'Unnamed Project',
+    description: partial.description || '',
+    category: partial.category || 'farm-analytics',
+    status: partial.status || 'active',
+    visibility: partial.visibility || 'public',
     owner,
-    language,
-    icon: `https://api.dicebear.com/7.x/identicon/svg?seed=${slug}`,
-    stars: Math.floor(Math.random() * 1000),
-    forks: Math.floor(Math.random() * 200),
-    contributors: Math.floor(Math.random() * 50) + 1,
-    lastCommit:
-      index < 20
-        ? subMinutes(new Date(), Math.floor(Math.random() * 60))
-        : index < 50
-          ? subHours(new Date(), Math.floor(Math.random() * 24))
-          : subDays(new Date(), Math.floor(Math.random() * 30)),
-    createdAt: subDays(new Date(), Math.floor(Math.random() * 365) + 30),
-    updatedAt: subDays(new Date(), Math.floor(Math.random() * 30)),
-    repository: {
-      url: `https://github.com/a-sw-hub/${slug}`,
+    language: partial.language || 'TypeScript',
+    icon: partial.icon || `https://api.dicebear.com/7.x/identicon/svg?seed=${slug}`,
+    stars: partial.stars || 0,
+    forks: partial.forks || 0,
+    contributors: partial.contributors || 1,
+    issues: partial.issues || 0,
+    pullRequests: partial.pullRequests || 0,
+    lastCommit: partial.lastCommit || new Date(),
+    createdAt: partial.createdAt || new Date(),
+    updatedAt: partial.updatedAt || new Date(),
+    repository: partial.repository || {
+      url: `https://github.com/asw-hub/${slug}`,
       defaultBranch: 'main',
-      branches: ['main', 'develop', 'staging', 'feature/new-ui', 'feature/api-v2'],
+      branches: ['main', 'develop'],
     },
-    buildStatus,
-    coverage: Math.floor(Math.random() * 40) + 60,
-    license: Math.random() > 0.5 ? 'MIT' : Math.random() > 0.5 ? 'Apache-2.0' : 'GPL-3.0',
+    buildStatus: partial.buildStatus || 'success',
+    coverage: partial.coverage || 75,
+    license: partial.license || 'MIT',
+    tags: partial.tags || [],
+    readme: partial.readme || '',
+    documentation: partial.documentation || '',
+    homepage: partial.homepage || '',
   };
 }
 
-// Generate 142 mock projects
-export const mockProjects: Project[] = Array.from({ length: 142 }, (_, i) =>
-  generateProject(i + 1)
-);
+// Export A-SW projects as mockProjects
+export const mockProjects: Project[] = aswProjects.map(p => completeProject(p));
 
 // Helper functions
 export function getProjectById(id: string): Project | undefined {
