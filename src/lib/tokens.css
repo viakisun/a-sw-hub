@@ -1,0 +1,136 @@
+/**
+ * A-SW Hub Design Tokens
+ * Black & White Industrial Design Language
+ * No rounded corners, no colors, pure monochrome
+ */
+
+:root {
+  /* Core Colors - Absolute Black & White */
+  --bg: #ffffff;
+  --fg: #000000;
+
+  /* Gray Scale via Black Opacity */
+  --muted: rgba(0, 0, 0, 0.6);
+  --subtle: rgba(0, 0, 0, 0.4);
+  --hair: rgba(0, 0, 0, 0.12);
+  --divider: rgba(0, 0, 0, 0.08);
+  --faint: rgba(0, 0, 0, 0.04);
+
+  /* Surface Levels */
+  --surface-0: #ffffff;
+  --surface-1: rgba(0, 0, 0, 0.04);
+  --surface-2: rgba(0, 0, 0, 0.08);
+  --surface-3: rgba(0, 0, 0, 0.12);
+
+  /* Inverted (for dark sections) */
+  --bg-inv: #000000;
+  --fg-inv: #ffffff;
+  --surface-inv-1: rgba(255, 255, 255, 0.04);
+  --surface-inv-2: rgba(255, 255, 255, 0.08);
+
+  /* Focus States */
+  --focus-black: #000000;
+  --focus-white: #ffffff;
+  --focus-width: 2px;
+
+  /* Borders - All Square, No Radius */
+  --radius-0: 0;
+  --border-width: 1px;
+  --border-color: var(--hair);
+
+  /* Typography Scale (4px grid) */
+  --text-11: 11px;
+  --text-12: 12px;
+  --text-14: 14px;
+  --text-16: 16px;
+  --text-20: 20px;
+  --text-24: 24px;
+  --text-32: 32px;
+
+  /* Font Weights */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* Line Heights */
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+
+  /* Letter Spacing */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.02em;
+
+  /* Spacing Scale (4px grid) */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* Layout Dimensions */
+  --sidebar-width: 240px;
+  --header-height: 56px;
+  --row-height: 40px;
+  --input-height: 36px;
+  --button-height: 36px;
+
+  /* Z-Index Scale */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-tooltip: 700;
+  --z-toast: 800;
+
+  /* Transitions */
+  --transition-fast: 100ms ease;
+  --transition-base: 150ms ease;
+  --transition-slow: 200ms ease;
+
+  /* Shadows - None (using borders only) */
+  --shadow-none: none;
+
+  /* Chart Patterns */
+  --pattern-solid: solid;
+  --pattern-dashed: 5, 5;
+  --pattern-dotted: 2, 2;
+  --pattern-dash-dot: 8, 3, 2, 3;
+}
+
+/* Dark Mode Override (for black sections) */
+[data-theme='dark'],
+.theme-dark {
+  --bg: #000000;
+  --fg: #ffffff;
+  --hair: rgba(255, 255, 255, 0.12);
+  --divider: rgba(255, 255, 255, 0.08);
+  --surface-0: #000000;
+  --surface-1: rgba(255, 255, 255, 0.04);
+  --surface-2: rgba(255, 255, 255, 0.08);
+  --muted: rgba(255, 255, 255, 0.6);
+  --subtle: rgba(255, 255, 255, 0.4);
+}
+
+/* Focus Visible Override */
+:focus-visible {
+  outline: var(--focus-width) solid var(--focus-black);
+  outline-offset: 0;
+}
+
+.theme-dark :focus-visible,
+[data-theme='dark'] :focus-visible {
+  outline-color: var(--focus-white);
+}

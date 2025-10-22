@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>A-SW Hub - Build Monitor</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          'Monaco',
+          'Courier New',
+          -apple-system,
+          monospace;
+        background-color: #000000;
+        color: #ffffff;
+        line-height: 1.5;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* Header */
+      .header {
+        border-bottom: 1px solid #333333;
+        padding: 16px 24px;
+        background-color: #0a0a0a;
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .title h1 {
+        font-size: 18px;
+        font-weight: 400;
+        letter-spacing: 0.05em;
+      }
+
+      .status-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #22c55e;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .controls {
+        display: flex;
+        gap: 16px;
+      }
+
+      .control-btn {
+        padding: 6px 12px;
+        border: 1px solid #333333;
+        background-color: transparent;
+        color: #999999;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .control-btn:hover {
+        background-color: #1a1a1a;
+        color: #ffffff;
+        border-color: #666666;
+      }
+
+      /* Stats Bar */
+      .stats-bar {
+        display: flex;
+        padding: 12px 24px;
+        background-color: #0f0f0f;
+        border-bottom: 1px solid #333333;
+        gap: 48px;
+        font-size: 12px;
+      }
+
+      .stat {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .stat-label {
+        color: #666666;
+      }
+
+      .stat-value {
+        color: #ffffff;
+        font-weight: 600;
+      }
+
+      .stat-value.success {
+        color: #22c55e;
+      }
+
+      .stat-value.error {
+        color: #ef4444;
+      }
+
+      .stat-value.warning {
+        color: #facc15;
+      }
+
+      /* Main Content */
+      .main {
+        flex: 1;
+        display: flex;
+      }
+
+      /* Pipelines List */
+      .pipelines {
+        width: 400px;
+        border-right: 1px solid #333333;
+        background-color: #050505;
+        overflow-y: auto;
+      }
+
+      .pipeline-item {
+        padding: 16px;
+        border-bottom: 1px solid #1a1a1a;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      .pipeline-item:hover {
+        background-color: #0a0a0a;
+      }
+
+      .pipeline-item.active {
+        background-color: #0f0f0f;
+        border-left: 2px solid #ffffff;
+      }
+
+      .pipeline-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .pipeline-name {
+        font-size: 13px;
+        color: #ffffff;
+      }
+
+      .pipeline-status {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+      }
+
+      .pipeline-status.running {
+        background-color: #3b82f6;
+        animation: pulse 1s infinite;
+      }
+
+      .pipeline-status.success {
+        background-color: #22c55e;
+      }
+
+      .pipeline-status.failed {
+        background-color: #ef4444;
+      }
+
+      .pipeline-meta {
+        font-size: 11px;
+        color: #666666;
+      }
+
+      .pipeline-progress {
+        margin-top: 8px;
+        height: 2px;
+        background-color: #1a1a1a;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .pipeline-progress-bar {
+        height: 100%;
+        background-color: #3b82f6;
+        transition: width 0.3s;
+      }
+
+      /* Log Viewer */
+      .log-viewer {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background-color: #000000;
+      }
+
+      .log-header {
+        padding: 16px;
+        background-color: #0a0a0a;
+        border-bottom: 1px solid #333333;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .log-title {
+        font-size: 13px;
+        color: #ffffff;
+      }
+
+      .log-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .log-action {
+        padding: 4px 8px;
+        background-color: transparent;
+        border: 1px solid #333333;
+        color: #666666;
+        font-size: 11px;
+        cursor: pointer;
+      }
+
+      .log-action:hover {
+        background-color: #1a1a1a;
+        color: #ffffff;
+      }
+
+      .log-content {
+        flex: 1;
+        padding: 16px;
+        overflow-y: auto;
+        font-family: 'Monaco', 'Courier New', monospace;
+        font-size: 12px;
+        line-height: 1.6;
+      }
+
+      .log-line {
+        margin-bottom: 2px;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+
+      .log-time {
+        color: #666666;
+      }
+
+      .log-level {
+        padding: 1px 4px;
+        margin: 0 8px;
+        font-weight: 600;
+      }
+
+      .log-level.info {
+        color: #3b82f6;
+      }
+
+      .log-level.success {
+        color: #22c55e;
+      }
+
+      .log-level.warning {
+        color: #facc15;
+      }
+
+      .log-level.error {
+        color: #ef4444;
+      }
+
+      .log-message {
+        color: #cccccc;
+      }
+
+      .cursor {
+        display: inline-block;
+        width: 8px;
+        height: 16px;
+        background-color: #ffffff;
+        animation: blink 1s infinite;
+      }
+
+      @keyframes blink {
+        0%,
+        50% {
+          opacity: 1;
+        }
+        51%,
+        100% {
+          opacity: 0;
+        }
+      }
+
+      /* Queue Panel */
+      .queue-panel {
+        width: 300px;
+        border-left: 1px solid #333333;
+        background-color: #050505;
+        padding: 16px;
+      }
+
+      .queue-title {
+        font-size: 13px;
+        color: #ffffff;
+        margin-bottom: 16px;
+      }
+
+      .queue-item {
+        padding: 12px;
+        background-color: #0a0a0a;
+        border: 1px solid #1a1a1a;
+        margin-bottom: 8px;
+        font-size: 12px;
+      }
+
+      .queue-item-name {
+        color: #ffffff;
+        margin-bottom: 4px;
+      }
+
+      .queue-item-meta {
+        color: #666666;
+        font-size: 11px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-content">
+          <div class="title">
+            <h1>BUILD MONITOR</h1>
+            <span class="status-indicator"></span>
+          </div>
+
+          <div class="controls">
+            <button class="control-btn">⏸ PAUSE ALL</button>
+            <button class="control-btn">🔄 REFRESH</button>
+            <button class="control-btn">⚙️ SETTINGS</button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Stats Bar -->
+      <div class="stats-bar">
+        <div class="stat">
+          <span class="stat-label">TOTAL:</span>
+          <span class="stat-value">45</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">RUNNING:</span>
+          <span class="stat-value warning">8</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">SUCCESS:</span>
+          <span class="stat-value success">32</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">FAILED:</span>
+          <span class="stat-value error">5</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">SUCCESS RATE:</span>
+          <span class="stat-value">86.5%</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">AVG TIME:</span>
+          <span class="stat-value">4m 32s</span>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main">
+        <!-- Pipelines List -->
+        <aside class="pipelines">
+          <div class="pipeline-item active">
+            <div class="pipeline-header">
+              <span class="pipeline-name">smart-tractor-control #1234</span>
+              <span class="pipeline-status running"></span>
+            </div>
+            <div class="pipeline-meta">main • Building • 2m 45s</div>
+            <div class="pipeline-progress">
+              <div class="pipeline-progress-bar" style="width: 65%"></div>
+            </div>
+          </div>
+
+          <div class="pipeline-item">
+            <div class="pipeline-header">
+              <span class="pipeline-name">autonomous-harvester #892</span>
+              <span class="pipeline-status success"></span>
+            </div>
+            <div class="pipeline-meta">develop • Success • 3m 12s</div>
+          </div>
+
+          <div class="pipeline-item">
+            <div class="pipeline-header">
+              <span class="pipeline-name">drone-monitoring #445</span>
+              <span class="pipeline-status failed"></span>
+            </div>
+            <div class="pipeline-meta">main • Failed • 1m 28s</div>
+          </div>
+
+          <div class="pipeline-item">
+            <div class="pipeline-header">
+              <span class="pipeline-name">irrigation-controller #667</span>
+              <span class="pipeline-status running"></span>
+            </div>
+            <div class="pipeline-meta">feature/v2 • Testing • 4m 15s</div>
+            <div class="pipeline-progress">
+              <div class="pipeline-progress-bar" style="width: 85%"></div>
+            </div>
+          </div>
+
+          <div class="pipeline-item">
+            <div class="pipeline-header">
+              <span class="pipeline-name">sensor-integration #789</span>
+              <span class="pipeline-status success"></span>
+            </div>
+            <div class="pipeline-meta">main • Success • 5m 02s</div>
+          </div>
+        </aside>
+
+        <!-- Log Viewer -->
+        <div class="log-viewer">
+          <div class="log-header">
+            <span class="log-title">smart-tractor-control #1234 - Build Log</span>
+            <div class="log-actions">
+              <button class="log-action">📋 COPY</button>
+              <button class="log-action">📥 DOWNLOAD</button>
+              <button class="log-action">🔍 SEARCH</button>
+              <button class="log-action">↓ AUTOSCROLL</button>
+            </div>
+          </div>
+
+          <div class="log-content">
+            <div class="log-line">
+              <span class="log-time">[14:32:15.234]</span>
+              <span class="log-level info">INFO</span>
+              <span class="log-message">Starting build process for smart-tractor-control...</span>
+            </div>
+            <div class="log-line">
+              <span class="log-time">[14:32:15.456]</span>
+              <span class="log-level info">INFO</span>
+              <span class="log-message">Checking out branch: main</span>
+            </div>
+            <div class="log-line">
+              <span class="log-time">[14:32:16.123]</span>
+              <span class="log-level success">SUCCESS</span>
+              <span class="log-message">Repository cloned successfully</span>
+            </div>
+            <div class="log-line">
+              <span class="log-time">[14:32:16.789]</span>
+              <span class="log-level info">INFO</span>
+              <span class="log-message">Installing dependencies...</span>
+            </div>
+            <div class="log-line">
+              <span class="log-time">[14:32:18.234]</span>
+              <span class="log-level info">INFO</span>
+              <span class="log-message">Running: pip install -r requirements.txt</span>
+            </div>
+            <div class="log-line">
+              <span class="log-time">[14:32:25.567]</span>
+              <span class="log-level success">SUCCESS</span>
+              <span class="log-message">All dependencies installed</span>
+            </div>
+            <div class="log-line">
+              <span class="log-time">[14:32:25.890]</span>
+              <span class="log-level info">INFO</span>
+              <span class="log-message">Building ROS2 packages...</span>
+            </div>
+            <div class="log-line">
+              <span class="log-time">[14:32:26.123]</span>
+              <span class="log-level info">INFO</span>
+              <span class="log-message"
+                >Running: colcon build --packages-select smart_tractor_control</span
+              >
+            </div>
+            <div class="log-line">
+              <span class="log-time">[14:32:45.789]</span>
+              <span class="log-level warning">WARN</span>
+              <span class="log-message">Deprecation warning in navigation.py line 45</span>
+            </div>
+            <div class="log-line">
+              <span class="log-time">[14:33:12.456]</span>
+              <span class="log-level success">SUCCESS</span>
+              <span class="log-message">Build completed successfully</span>
+            </div>
+            <div class="log-line">
+              <span class="log-time">[14:33:12.789]</span>
+              <span class="log-level info">INFO</span>
+              <span class="log-message">Running unit tests...</span>
+            </div>
+            <div class="log-line">
+              <span class="log-time">[14:33:13.123]</span>
+              <span class="log-level info">INFO</span>
+              <span class="log-message">Test: test_navigation.py::test_path_planning</span>
+            </div>
+            <div class="log-line">
+              <span class="log-time">[14:33:15.456]</span>
+              <span class="log-level success">PASS</span>
+              <span class="log-message">test_path_planning completed in 2.33s</span>
+            </div>
+            <div class="log-line">
+              <span class="log-time">[14:33:15.789]</span>
+              <span class="log-level info">INFO</span>
+              <span class="log-message">Test: test_control.py::test_motor_control</span>
+            </div>
+            <div class="log-line">
+              <span class="log-time">[14:33:17.234]</span>
+              <span class="log-level success">PASS</span>
+              <span class="log-message">test_motor_control completed in 1.44s</span>
+            </div>
+            <div class="log-line">
+              <span class="log-time">[14:33:17.567]</span>
+              <span class="log-level info">INFO</span>
+              <span class="log-message">Running integration tests...</span>
+              <span class="cursor"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Queue Panel -->
+        <aside class="queue-panel">
+          <h3 class="queue-title">BUILD QUEUE (3)</h3>
+
+          <div class="queue-item">
+            <div class="queue-item-name">field-mapper</div>
+            <div class="queue-item-meta">Waiting • Priority: HIGH</div>
+          </div>
+
+          <div class="queue-item">
+            <div class="queue-item-name">weather-station</div>
+            <div class="queue-item-meta">Waiting • Priority: NORMAL</div>
+          </div>
+
+          <div class="queue-item">
+            <div class="queue-item-name">data-collector</div>
+            <div class="queue-item-meta">Waiting • Priority: LOW</div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </body>
+</html>
