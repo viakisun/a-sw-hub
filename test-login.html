@@ -1,51 +1,51 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Test Login</title>
-</head>
-<body>
-  <h1>Test Login</h1>
-  <button onclick="testLogin()">Test Login API</button>
-  <div id="result"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Login</title>
+  </head>
+  <body>
+    <h1>Test Login</h1>
+    <button onclick="testLogin()">Test Login API</button>
+    <div id="result"></div>
 
-  <script>
-    async function testLogin() {
-      console.log('Starting test login...');
+    <script>
+      async function testLogin() {
+        console.log('Starting test login...');
 
-      const credentials = {
-        email: 'test@test.com',
-        password: 'test123'
-      };
+        const credentials = {
+          email: 'test@test.com',
+          password: 'test123',
+        };
 
-      console.log('Sending credentials:', credentials);
+        console.log('Sending credentials:', credentials);
 
-      try {
-        // Import auth service
-        const module = await import('http://localhost:5173/src/domains/auth/auth.service.ts');
-        const authService = module.authService;
+        try {
+          // Import auth service
+          const module = await import('http://localhost:5173/src/domains/auth/auth.service.ts');
+          const authService = module.authService;
 
-        console.log('Auth service loaded:', authService);
+          console.log('Auth service loaded:', authService);
 
-        const response = await authService.login(credentials, false);
-        console.log('Login response:', response);
+          const response = await authService.login(credentials, false);
+          console.log('Login response:', response);
 
-        document.getElementById('result').innerHTML = `
+          document.getElementById('result').innerHTML = `
           <h2>Success!</h2>
           <pre>${JSON.stringify(response, null, 2)}</pre>
         `;
-      } catch (error) {
-        console.error('Login error:', error);
-        document.getElementById('result').innerHTML = `
+        } catch (error) {
+          console.error('Login error:', error);
+          document.getElementById('result').innerHTML = `
           <h2>Error!</h2>
           <pre>${error.message}</pre>
         `;
+        }
       }
-    }
 
-    // Auto-run test
-    testLogin();
-  </script>
-</body>
+      // Auto-run test
+      testLogin();
+    </script>
+  </body>
 </html>

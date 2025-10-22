@@ -163,7 +163,8 @@ export abstract class BaseService {
     // In mock mode with no baseUrl, just return the path
     if (this.mockMode && !this.baseUrl) {
       const queryString = params
-        ? '?' + Object.entries(params)
+        ? '?' +
+          Object.entries(params)
             .filter(([_, value]) => value !== undefined && value !== null)
             .map(([key, value]) => `${key}=${encodeURIComponent(String(value))}`)
             .join('&')
