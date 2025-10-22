@@ -86,6 +86,7 @@ export interface AppConfig {
  */
 function getEnvironment(): Environment {
   const env = import.meta.env.MODE;
+  console.log('[Config] Environment MODE:', env);
   switch (env) {
     case 'production':
       return 'production';
@@ -112,7 +113,13 @@ export const config: AppConfig = {
     timeout: parseInt(import.meta.env.VITE_API_TIMEOUT || '30000'),
     retryAttempts: parseInt(import.meta.env.VITE_API_RETRY_ATTEMPTS || '3'),
     retryDelay: parseInt(import.meta.env.VITE_API_RETRY_DELAY || '1000'),
-    mockMode: import.meta.env.VITE_MOCK_API === 'true' || getEnvironment() === 'development',
+    mockMode: (() => {
+      const viteEnv = import.meta.env.VITE_MOCK_API;
+      const isDev = getEnvironment() === 'development';
+      const result = viteEnv === 'true' || isDev;
+      console.log('[Config] Mock mode calculation:', { viteEnv, isDev, result });
+      return result;
+    })(),
   },
 
   auth: {

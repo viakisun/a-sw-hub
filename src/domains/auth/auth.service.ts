@@ -51,11 +51,23 @@ export class AuthService extends BaseService {
       // Validate credentials
       const validatedCredentials = authSchema.credentials.parse(credentials);
 
+      // Log mock mode status for debugging
+      console.log('[Auth Service] Mock mode:', this.mockMode);
+      console.log('[Auth Service] Login attempt:', validatedCredentials.email);
+
       // Make authentication request
       const response = await this.post<AuthResponse>('/login', {
         ...validatedCredentials,
         rememberMe,
       });
+
+      console.log('[Auth Service] Response received:', response);
+
+      // Check if response has the expected structure
+      if (!response.data || !response.data.user || !response.data.token) {
+        console.error('[Auth Service] Invalid response structure:', response);
+        throw new AuthenticationError('Invalid response from authentication service');
+      }
 
       // Create and persist session
       const session = this.createSession(response.data.user, response.data.token, rememberMe);
@@ -66,11 +78,19 @@ export class AuthService extends BaseService {
 
       return response.data;
     } catch (error) {
+      console.error('[Auth Service] Login error:', error);
+
       if (error instanceof ValidationError) {
         throw error;
       }
+
+      if (error instanceof AuthenticationError) {
+        throw error;
+      }
+
       throw new AuthenticationError('Invalid credentials', {
         attempted_email: credentials.email,
+        original_error: error instanceof Error ? error.message : String(error),
       });
     }
   }
@@ -211,7 +231,11 @@ export class AuthService extends BaseService {
     // Simulate network delay
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    if (path === '/login' || path === '/oauth/github') {
+    // Handle login requests - accept ANY credentials in mock mode
+    if (path === '/login' || path.includes('login')) {
+      // Log mock login for debugging
+      console.log('[Mock Auth] Login attempt with:', options.body);
+
       const user = getCurrentUser();
       const response: AuthResponse = {
         user,
@@ -227,7 +251,23 @@ export class AuthService extends BaseService {
       };
     }
 
-    if (path === '/logout') {
+    if (path === '/oauth/github' || path.includes('oauth')) {
+      const user = getCurrentUser();
+      const response: AuthResponse = {
+        user,
+        token: `mock-token-${Date.now()}`,
+        expiresIn: 3600,
+      };
+
+      return {
+        data: response as unknown as T,
+        status: 200,
+        headers: new Headers(),
+        timestamp: new Date(),
+      };
+    }
+
+    if (path === '/logout' || path.includes('logout')) {
       return {
         data: { success: true } as unknown as T,
         status: 200,
@@ -236,7 +276,7 @@ export class AuthService extends BaseService {
       };
     }
 
-    if (path === '/refresh') {
+    if (path === '/refresh' || path.includes('refresh')) {
       const user = getCurrentUser();
       const response: AuthResponse = {
         user,
@@ -252,7 +292,14 @@ export class AuthService extends BaseService {
       };
     }
 
-    throw new AuthenticationError('Mock endpoint not implemented');
+    // For any other endpoint in mock mode, return success
+    console.warn(`[Mock Auth] Unhandled endpoint: ${path}`);
+    return {
+      data: {} as unknown as T,
+      status: 200,
+      headers: new Headers(),
+      timestamp: new Date(),
+    };
   }
 
   /**

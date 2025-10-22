@@ -62,6 +62,14 @@ export abstract class BaseService {
     this.maxRetries = config.api.retryAttempts;
     this.retryDelay = config.api.retryDelay;
     this.mockMode = config.api.mockMode;
+
+    console.log(`[${serviceName}] Initialized with:`, {
+      baseUrl: this.baseUrl,
+      endpoint: this.endpoint,
+      mockMode: this.mockMode,
+      environment: config.environment,
+      configMockMode: config.api.mockMode,
+    });
   }
 
   /**
@@ -75,7 +83,10 @@ export abstract class BaseService {
 
     // Use mock mode if configured
     if (this.mockMode || options.mock) {
-      return this.handleMockRequest<T>(path, method, options);
+      console.log(`[BaseService] Using mock mode for ${method} ${path}`);
+      const mockResponse = await this.handleMockRequest<T>(path, method, options);
+      console.log(`[BaseService] Mock response:`, mockResponse);
+      return mockResponse;
     }
 
     // Prepare request
