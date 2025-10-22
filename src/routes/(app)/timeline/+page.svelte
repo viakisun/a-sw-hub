@@ -2,6 +2,13 @@
   /**
    * Project Timeline Page
    * 5-year A-SW business plan Gantt chart visualization
+   *
+   * 연차별 기간:
+   * - 1단계 1차년도: 2025년 9월 ~ 2025년 12월 (4개월)
+   * - 1단계 2차년도: 2026년 1월 ~ 2026년 12월 (12개월)
+   * - 1단계 3차년도: 2027년 1월 ~ 2027년 12월 (12개월)
+   * - 2단계 1차년도: 2028년 1월 ~ 2028년 12월 (12개월)
+   * - 2단계 2차년도: 2029년 1월 ~ 2029년 12월 (12개월)
    */
 
   import { onMount } from 'svelte';
@@ -17,28 +24,39 @@
   type GroupBy = 'INSTITUTION' | 'PHASE' | 'DELIVERABLE';
 
   let viewMode: ViewMode = 'QUARTER';
-  let groupBy: GroupBy = 'INSTITUTION';
+  let groupBy: GroupBy = 'PHASE';
   let selectedYear = 2025;
   let showMilestones = true;
   let showProgress = true;
   let expandedGroups = new Set<string>();
 
-  // Timeline configuration
+  // Timeline configuration (Project starts Sept 2025)
+  const projectStartDate = new Date(2025, 8, 1); // September 1, 2025
+  const projectEndDate = new Date(2029, 11, 31); // December 31, 2029
   const startYear = 2025;
   const endYear = 2029;
   const years = Array.from({ length: endYear - startYear + 1 }, (_, i) => startYear + i);
   const quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
   const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
-  // Calculate timeline positions
+  // Phase and year mapping
+  const phaseInfo = [
+    { phase: 1, year: 1, label: '1단계 1차년도', period: '2025.09-12', yearNum: 2025 },
+    { phase: 1, year: 2, label: '1단계 2차년도', period: '2026.01-12', yearNum: 2026 },
+    { phase: 1, year: 3, label: '1단계 3차년도', period: '2027.01-12', yearNum: 2027 },
+    { phase: 2, year: 4, label: '2단계 1차년도', period: '2028.01-12', yearNum: 2028 },
+    { phase: 2, year: 5, label: '2단계 2차년도', period: '2029.01-12', yearNum: 2029 },
+  ];
+
+  // Calculate timeline positions based on project timeline
   function getTimelinePosition(date: Date): number {
-    const totalDays = (endYear - startYear + 1) * 365;
-    const daysSinceStart = Math.floor((date.getTime() - new Date(startYear, 0, 1).getTime()) / (1000 * 60 * 60 * 24));
+    const totalDays = Math.floor((projectEndDate.getTime() - projectStartDate.getTime()) / (1000 * 60 * 60 * 24));
+    const daysSinceStart = Math.floor((date.getTime() - projectStartDate.getTime()) / (1000 * 60 * 60 * 24));
     return Math.max(0, Math.min(100, (daysSinceStart / totalDays) * 100));
   }
 
   function getTaskWidth(startDate: Date, endDate: Date): number {
-    const totalDays = (endYear - startYear + 1) * 365;
+    const totalDays = Math.floor((projectEndDate.getTime() - projectStartDate.getTime()) / (1000 * 60 * 60 * 24));
     const taskDays = Math.floor((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
     return Math.max(1, (taskDays / totalDays) * 100);
   }
@@ -94,10 +112,14 @@
   <div class="page-header">
     <div class="header-content">
       <Heading level={1}>PROJECT TIMELINE</Heading>
-      <Text muted>A-SW 5-YEAR BUSINESS PLAN (2025-2029)</Text>
+      <Text muted>A-SW 5-YEAR BUSINESS PLAN (2025.09 - 2029.12)</Text>
     </div>
 
     <div class="header-stats">
+      <div class="stat">
+        <span class="stat-value">2</span>
+        <span class="stat-label">PHASES</span>
+      </div>
       <div class="stat">
         <span class="stat-value">5</span>
         <span class="stat-label">YEARS</span>
@@ -109,10 +131,6 @@
       <div class="stat">
         <span class="stat-value">136</span>
         <span class="stat-label">DELIVERABLES</span>
-      </div>
-      <div class="stat">
-        <span class="stat-value">87%</span>
-        <span class="stat-label">PROGRESS</span>
       </div>
     </div>
   </div>
@@ -180,31 +198,65 @@
 
   <!-- Timeline Grid -->
   <div class="timeline-container">
+    <!-- Phase Indicator Bar -->
+    <div class="phase-indicator-bar">
+      <div class="task-column-header">PHASE / YEAR</div>
+      <div class="phase-scale">
+        <div class="phase-block phase-1" style="width: 60%">
+          【1단계】 핵심 기술 개발 (2025.09 - 2027.12)
+        </div>
+        <div class="phase-block phase-2" style="width: 40%">
+          【2단계】 통합 검증 (2028.01 - 2029.12)
+        </div>
+      </div>
+    </div>
+
     <!-- Timeline Header -->
     <div class="timeline-header">
       <div class="task-column-header">TASK / DELIVERABLE</div>
       <div class="timeline-scale">
         {#if viewMode === 'YEAR'}
-          {#each years as year}
-            <div class="time-unit year" class:current={year === new Date().getFullYear()}>
-              {year}
+          {#each phaseInfo as info}
+            <div class="time-unit year phase-{info.phase}" class:current={info.yearNum === new Date().getFullYear()}>
+              <div class="year-label">{info.label}</div>
+              <div class="year-period">{info.period}</div>
             </div>
           {/each}
         {:else if viewMode === 'QUARTER'}
-          {#each years as year}
-            {#each quarters as quarter}
-              <div class="time-unit quarter">
-                {year}-{quarter}
-              </div>
-            {/each}
+          {#each years as year, yearIndex}
+            {#if year === 2025}
+              <!-- 2025년은 Q3, Q4만 표시 (9월-12월) -->
+              {#each ['Q3', 'Q4'] as quarter}
+                <div class="time-unit quarter">
+                  {year}-{quarter}
+                </div>
+              {/each}
+            {:else}
+              <!-- 나머지 연도는 모든 분기 표시 -->
+              {#each quarters as quarter}
+                <div class="time-unit quarter">
+                  {year}-{quarter}
+                </div>
+              {/each}
+            {/if}
           {/each}
         {:else}
           {#each years as year}
-            {#each months.slice(0, 6) as month}
-              <div class="time-unit month">
-                {month}
-              </div>
-            {/each}
+            {#if year === 2025}
+              <!-- 2025년은 9월-12월만 표시 -->
+              {#each ['SEP', 'OCT', 'NOV', 'DEC'] as month}
+                <div class="time-unit month">
+                  {month}
+                </div>
+              {/each}
+            {:else}
+              <!-- 나머지 연도는 모든 월 표시 -->
+              {#each months as month}
+                <div class="time-unit month">
+                  {month.slice(0, 3)}
+                </div>
+              {/each}
+            {/if}
           {/each}
         {/if}
       </div>
@@ -512,6 +564,44 @@
     overflow-x: auto;
   }
 
+  /* Phase Indicator Bar */
+  .phase-indicator-bar {
+    display: flex;
+    background: var(--surface-2);
+    border-bottom: 2px solid var(--fg);
+    position: sticky;
+    top: 0;
+    z-index: 11;
+  }
+
+  .phase-scale {
+    flex: 1;
+    display: flex;
+    min-width: 800px;
+  }
+
+  .phase-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3);
+    font-size: var(--text-12);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-wide);
+    border-right: 2px solid var(--fg);
+    text-transform: uppercase;
+  }
+
+  .phase-block.phase-1 {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  .phase-block.phase-2 {
+    background: var(--surface-1);
+    color: var(--fg);
+  }
+
   /* Timeline Header */
   .timeline-header {
     display: flex;
@@ -519,8 +609,25 @@
     color: var(--bg);
     border-bottom: 2px solid var(--fg);
     position: sticky;
-    top: 0;
+    top: 40px;
     z-index: 10;
+  }
+
+  .timeline-header .time-unit.year {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-2);
+  }
+
+  .year-label {
+    font-size: var(--text-11);
+    font-weight: var(--weight-bold);
+  }
+
+  .year-period {
+    font-size: var(--text-10);
+    opacity: 0.8;
   }
 
   .task-column-header {
