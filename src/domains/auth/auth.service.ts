@@ -48,12 +48,14 @@ export class AuthService extends BaseService {
    */
   async login(credentials: AuthCredentials, rememberMe = false): Promise<AuthResponse> {
     try {
-      // Validate credentials
-      const validatedCredentials = authSchema.credentials.parse(credentials);
-
       // Log mock mode status for debugging
       console.log('[Auth Service] Mock mode:', this.mockMode);
-      console.log('[Auth Service] Login attempt:', validatedCredentials.email);
+      console.log('[Auth Service] Login attempt:', credentials.email);
+
+      // Skip validation in mock mode - accept any credentials
+      const validatedCredentials = this.mockMode
+        ? credentials
+        : authSchema.credentials.parse(credentials);
 
       // Make authentication request
       const response = await this.post<AuthResponse>('/login', {
