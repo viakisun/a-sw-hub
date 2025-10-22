@@ -23,17 +23,23 @@
   async function handleSubmit() {
     error = '';
     loading = true;
+    console.log('[LoginPage] Starting login:', { email, passwordLength: password.length, rememberMe });
     log.info('Login attempt', { email });
 
     try {
       const result = await authStore.login({ email, password }, rememberMe);
+      console.log('[LoginPage] Login result:', result);
+
       if (!result.success) {
         error = result.error || 'Authentication failed';
+        console.error('[LoginPage] Login failed:', { email, error });
         log.warn('Login failed', { email, error });
       } else {
+        console.log('[LoginPage] Login successful:', { email, user: result.user });
         log.info('Login successful', { email });
       }
     } catch (e) {
+      console.error('[LoginPage] Login exception:', e);
       error = e instanceof Error ? e.message : 'Authentication failed';
       log.error('Login error', e, { email });
     } finally {

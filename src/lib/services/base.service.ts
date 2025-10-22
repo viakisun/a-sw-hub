@@ -160,9 +160,22 @@ export abstract class BaseService {
    * Build full URL with query parameters
    */
   private buildUrl(path: string, params?: Record<string, string | number | boolean>): string {
+    // In mock mode with no baseUrl, just return the path
+    if (this.mockMode && !this.baseUrl) {
+      const queryString = params
+        ? '?' + Object.entries(params)
+            .filter(([_, value]) => value !== undefined && value !== null)
+            .map(([key, value]) => `${key}=${encodeURIComponent(String(value))}`)
+            .join('&')
+        : '';
+      return path + queryString;
+    }
+
     const baseUrl = this.endpoint ? `${this.baseUrl}${this.endpoint}` : this.baseUrl;
 
-    const url = new URL(path, baseUrl);
+    // If baseUrl is still empty, use a dummy URL for mock mode
+    const urlBase = baseUrl || 'http://mock.local';
+    const url = new URL(path, urlBase);
 
     if (params) {
       Object.entries(params).forEach(([key, value]) => {

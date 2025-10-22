@@ -58,6 +58,7 @@ export class AuthService extends BaseService {
         : authSchema.credentials.parse(credentials);
 
       // Make authentication request
+      console.log('[Auth Service] Calling POST /login with mock mode:', this.mockMode);
       const response = await this.post<AuthResponse>('/login', {
         ...validatedCredentials,
         rememberMe,

@@ -79,10 +79,13 @@ function createAuthStore() {
    * Login with credentials
    */
   async function login(credentials: AuthCredentials, rememberMe = false) {
+    console.log('[AuthStore] Login called with:', { email: credentials.email, rememberMe });
     update((state) => ({ ...state, isLoading: true, error: null }));
 
     try {
+      console.log('[AuthStore] Calling authService.login...');
       const response = await authService.login(credentials, rememberMe);
+      console.log('[AuthStore] Auth service response:', response);
 
       update((state) => ({
         ...state,
