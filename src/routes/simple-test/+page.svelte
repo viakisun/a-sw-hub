@@ -32,9 +32,11 @@
       }
 
     } catch (error) {
-      status = '❌ Error: ' + error.message;
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      status = '❌ Error: ' + errorMessage;
       console.error(error);
-      response = error.stack || error.toString();
+      response = errorStack || String(error);
     }
   }
 

@@ -73,7 +73,7 @@
                   font: {
                     size: 11,
                     family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto',
-                    weight: '500'
+                    weight: 500
                   },
                   color: '#000000'
                 }
@@ -82,8 +82,7 @@
             scales: {
               x: {
                 grid: {
-                  color: 'rgba(0, 0, 0, 0.08)',
-                  drawBorder: false
+                  color: 'rgba(0, 0, 0, 0.08)'
                 },
                 ticks: {
                   font: {
@@ -94,8 +93,7 @@
               },
               y: {
                 grid: {
-                  color: 'rgba(0, 0, 0, 0.08)',
-                  drawBorder: false
+                  color: 'rgba(0, 0, 0, 0.08)'
                 },
                 ticks: {
                   font: {
@@ -144,7 +142,7 @@
                   font: {
                     size: 11,
                     family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto',
-                    weight: '500'
+                    weight: 500
                   },
                   color: '#000000'
                 }

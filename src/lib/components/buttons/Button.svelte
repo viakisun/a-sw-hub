@@ -5,7 +5,7 @@
    * Zero radius, monochrome only
    */
 
-  export let variant: 'primary' | 'outline' | 'ghost' = 'primary';
+  export let variant: 'primary' | 'outline' | 'ghost' | 'text' = 'primary';
   export let size: 'small' | 'medium' | 'large' = 'medium';
   export let disabled = false;
   export let type: 'button' | 'submit' | 'reset' = 'button';
@@ -118,6 +118,25 @@
 
   .btn--ghost:active:not(.btn--disabled) {
     background: var(--surface-2);
+  }
+
+  /* Text Variant */
+  .btn--text {
+    background: transparent;
+    color: var(--fg);
+    border: none;
+    padding: 0 var(--space-2);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+
+  .btn--text:hover:not(.btn--disabled) {
+    text-decoration-thickness: 2px;
+  }
+
+  .btn--text:active:not(.btn--disabled) {
+    opacity: 0.8;
   }
 
   /* Full Width */

@@ -29,10 +29,12 @@
         result += `Error: ${response.error}\n`;
       }
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
       console.error('[TEST PAGE] Error:', error);
       result += `❌ EXCEPTION!\n`;
-      result += `Error: ${error.message}\n`;
-      result += `Stack: ${error.stack}\n`;
+      result += `Error: ${errorMessage}\n`;
+      result += `Stack: ${errorStack || 'N/A'}\n`;
     }
 
     loading = false;

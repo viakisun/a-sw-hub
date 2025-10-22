@@ -4,7 +4,7 @@
    * Styled text with various sizes and colors
    */
 
-  export let size: 'xs' | 'sm' | 'base' | 'lg' = 'base';
+  export let size: 'xs' | 'sm' | 'small' | 'base' | 'lg' | 'large' = 'base';
   export let muted = false;
   export let subtle = false;
   export let uppercase = false;
@@ -12,7 +12,7 @@
 </script>
 
 <span
-  class="text text--{size} text--{weight}"
+  class="text text--{size === 'small' ? 'sm' : size === 'large' ? 'lg' : size} text--{weight}"
   class:text--muted={muted}
   class:text--subtle={subtle}
   class:uppercase
