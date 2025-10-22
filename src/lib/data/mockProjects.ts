@@ -26,16 +26,20 @@ const aswProjects: Partial<Project>[] = [
     stars: 342,
     forks: 89,
     contributors: 45,
-    issues: 12,
-    pullRequests: 5,
+    // issues:12,
+    // pullRequests:5,
     createdAt: new Date('2024-01-01'),
     lastCommit: new Date(),
     buildStatus: 'success',
-    tags: ['국가R&D', '스마트팜', 'ISOBUS', 'V2X', 'MIL/HIL'],
-    readme: '# A-SW 통합 플랫폼\n\n무인자율 농작업을 위한 개방형 소프트웨어 플랫폼',
-    repository: 'github.com/asw-hub/integrated-platform',
-    documentation: 'https://docs.asw-hub.kr',
-    homepage: 'https://asw-hub.kr',
+    // tags:['국가R&D', '스마트팜', 'ISOBUS', 'V2X', 'MIL/HIL'],
+    // readme:'# A-SW 통합 플랫폼\n\n무인자율 농작업을 위한 개방형 소프트웨어 플랫폼',
+    repository: {
+      url: 'https://github.com/asw-hub/integrated-platform',
+      defaultBranch: 'main',
+      branches: ['main', 'develop', 'feature/v2.0', 'release/1.0']
+    },
+    // documentation:'https://docs.asw-hub.kr',
+    // homepage:'https://asw-hub.kr',
   },
 
   // KITECH 프로젝트들
@@ -51,11 +55,11 @@ const aswProjects: Partial<Project>[] = [
     stars: 156,
     forks: 34,
     contributors: 12,
-    owner: institutions.find(i => i.code === 'KITECH'),
+    owner: mockUsers[0], // KITECH lead user
     createdAt: new Date('2024-01-15'),
     lastCommit: subDays(new Date(), 2),
     buildStatus: 'success',
-    tags: ['작업분석', '파라미터', '시퀀스', '모듈화'],
+    // tags:['작업분석', '파라미터', '시퀀스', '모듈화'],
   },
   {
     id: 'PRJ-KITECH-002',
@@ -69,11 +73,11 @@ const aswProjects: Partial<Project>[] = [
     stars: 203,
     forks: 45,
     contributors: 8,
-    owner: institutions.find(i => i.code === 'KITECH'),
+    owner: mockUsers[0], // KITECH lead user
     createdAt: new Date('2025-01-01'),
     lastCommit: subHours(new Date(), 5),
     buildStatus: 'running',
-    tags: ['경로생성', '경로추종', '속도제어', 'ISOBUS'],
+    // tags:['경로생성', '경로추종', '속도제어', 'ISOBUS'],
   },
   {
     id: 'PRJ-KITECH-003',
@@ -87,11 +91,11 @@ const aswProjects: Partial<Project>[] = [
     stars: 89,
     forks: 23,
     contributors: 6,
-    owner: institutions.find(i => i.code === 'KITECH'),
+    owner: mockUsers[0], // KITECH lead user
     createdAt: new Date('2027-01-01'),
     lastCommit: subDays(new Date(), 10),
     buildStatus: 'success',
-    tags: ['V2X', '군집제어', '협업', '통신표준'],
+    // tags:['V2X', '군집제어', '협업', '통신표준'],
   },
 
   // TYMICT 프로젝트들
@@ -107,11 +111,11 @@ const aswProjects: Partial<Project>[] = [
     stars: 67,
     forks: 12,
     contributors: 10,
-    owner: institutions.find(i => i.code === 'TYMICT'),
+    owner: mockUsers[1], // TYMICT lead user
     createdAt: new Date('2025-01-01'),
     lastCommit: subDays(new Date(), 1),
     buildStatus: 'success',
-    tags: ['ICU', 'RTOS', '하드웨어', '임베디드'],
+    // tags:['ICU', 'RTOS', '하드웨어', '임베디드'],
   },
   {
     id: 'PRJ-TYMICT-002',
@@ -125,11 +129,11 @@ const aswProjects: Partial<Project>[] = [
     stars: 234,
     forks: 56,
     contributors: 15,
-    owner: institutions.find(i => i.code === 'TYMICT'),
+    owner: mockUsers[1], // TYMICT lead user
     createdAt: new Date('2025-04-01'),
     lastCommit: new Date(),
     buildStatus: 'success',
-    tags: ['HMI', 'UI/UX', '터치스크린', '대시보드'],
+    // tags:['HMI', 'UI/UX', '터치스크린', '대시보드'],
   },
   {
     id: 'PRJ-TYMICT-003',
@@ -143,11 +147,11 @@ const aswProjects: Partial<Project>[] = [
     stars: 178,
     forks: 42,
     contributors: 9,
-    owner: institutions.find(i => i.code === 'TYMICT'),
+    owner: mockUsers[1], // TYMICT lead user
     createdAt: new Date('2026-03-01'),
     lastCommit: subHours(new Date(), 12),
     buildStatus: 'failed',
-    tags: ['AI', '센서융합', '미들웨어', '실시간처리'],
+    // tags:['AI', '센서융합', '미들웨어', '실시간처리'],
   },
 
   // JBN 프로젝트들
@@ -163,11 +167,11 @@ const aswProjects: Partial<Project>[] = [
     stars: 298,
     forks: 78,
     contributors: 8,
-    owner: institutions.find(i => i.code === 'JBN'),
+    owner: mockUsers[2], // JBN lead user
     createdAt: new Date('2025-01-01'),
     lastCommit: subDays(new Date(), 3),
     buildStatus: 'success',
-    tags: ['SLAM', 'GPS', 'RTK', '측위'],
+    // tags:['SLAM', 'GPS', 'RTK', '측위'],
   },
   {
     id: 'PRJ-JBN-002',
@@ -181,11 +185,11 @@ const aswProjects: Partial<Project>[] = [
     stars: 412,
     forks: 123,
     contributors: 12,
-    owner: institutions.find(i => i.code === 'JBN'),
+    owner: mockUsers[2], // JBN lead user
     createdAt: new Date('2025-02-01'),
     lastCommit: new Date(),
     buildStatus: 'running',
-    tags: ['컴퓨터비전', '딥러닝', '장애물검출', '작물인식'],
+    // tags:['컴퓨터비전', '딥러닝', '장애물검출', '작물인식'],
   },
   {
     id: 'PRJ-JBN-003',
@@ -199,11 +203,11 @@ const aswProjects: Partial<Project>[] = [
     stars: 189,
     forks: 45,
     contributors: 20,
-    owner: institutions.find(i => i.code === 'JBN'),
+    owner: mockUsers[2], // JBN lead user
     createdAt: new Date('2025-01-01'),
     lastCommit: subDays(new Date(), 5),
     buildStatus: 'success',
-    tags: ['데이터셋', '라벨링', '학습데이터', 'AI'],
+    // tags:['데이터셋', '라벨링', '학습데이터', 'AI'],
   },
 
   // VIA 프로젝트들
@@ -219,11 +223,11 @@ const aswProjects: Partial<Project>[] = [
     stars: 567,
     forks: 156,
     contributors: 25,
-    owner: institutions.find(i => i.code === 'VIA'),
+    owner: mockUsers[3], // VIA lead user
     createdAt: new Date('2024-02-01'),
     lastCommit: new Date(),
     buildStatus: 'success',
-    tags: ['플랫폼', 'MSA', 'DevOps', 'CI/CD'],
+    // tags:['플랫폼', 'MSA', 'DevOps', 'CI/CD'],
   },
   {
     id: 'PRJ-VIA-002',
@@ -237,11 +241,11 @@ const aswProjects: Partial<Project>[] = [
     stars: 234,
     forks: 67,
     contributors: 8,
-    owner: institutions.find(i => i.code === 'VIA'),
+    owner: mockUsers[3], // VIA lead user
     createdAt: new Date('2025-02-01'),
     lastCommit: subHours(new Date(), 2),
     buildStatus: 'success',
-    tags: ['OAuth2', 'OIDC', 'RBAC', '보안'],
+    // tags:['OAuth2', 'OIDC', 'RBAC', '보안'],
   },
   {
     id: 'PRJ-VIA-003',
@@ -255,11 +259,11 @@ const aswProjects: Partial<Project>[] = [
     stars: 389,
     forks: 98,
     contributors: 18,
-    owner: institutions.find(i => i.code === 'VIA'),
+    owner: mockUsers[3], // VIA lead user
     createdAt: new Date('2025-04-01'),
     lastCommit: subDays(new Date(), 1),
     buildStatus: 'success',
-    tags: ['Git', 'Repository', 'Fork', 'PR'],
+    // tags:['Git', 'Repository', 'Fork', 'PR'],
   },
 
   // OntarioTech 프로젝트들
@@ -275,11 +279,11 @@ const aswProjects: Partial<Project>[] = [
     stars: 145,
     forks: 38,
     contributors: 6,
-    owner: institutions.find(i => i.code === 'OntarioTech'),
+    owner: mockUsers[4], // OntarioTech lead user
     createdAt: new Date('2025-02-01'),
     lastCommit: subDays(new Date(), 7),
     buildStatus: 'success',
-    tags: ['Optimization', 'Heuristics', 'PathPlanning', 'MultiAgent'],
+    // tags:['Optimization', 'Heuristics', 'PathPlanning', 'MultiAgent'],
   },
   {
     id: 'PRJ-ONTARIO-002',
@@ -293,11 +297,11 @@ const aswProjects: Partial<Project>[] = [
     stars: 98,
     forks: 25,
     contributors: 5,
-    owner: institutions.find(i => i.code === 'OntarioTech'),
+    owner: mockUsers[4], // OntarioTech lead user
     createdAt: new Date('2025-04-01'),
     lastCommit: subDays(new Date(), 4),
     buildStatus: 'success',
-    tags: ['Scheduling', 'TaskAllocation', 'Cooperation', 'Algorithm'],
+    // tags:['Scheduling', 'TaskAllocation', 'Cooperation', 'Algorithm'],
   },
 ];
 
@@ -389,8 +393,8 @@ function completeProject(partial: Partial<Project>): Project {
     stars: partial.stars || 0,
     forks: partial.forks || 0,
     contributors: partial.contributors || 1,
-    issues: partial.issues || 0,
-    pullRequests: partial.pullRequests || 0,
+    // issues:partial.issues || 0,
+    // pullRequests:partial.pullRequests || 0,
     lastCommit: partial.lastCommit || new Date(),
     createdAt: partial.createdAt || new Date(),
     updatedAt: partial.updatedAt || new Date(),
@@ -402,10 +406,10 @@ function completeProject(partial: Partial<Project>): Project {
     buildStatus: partial.buildStatus || 'success',
     coverage: partial.coverage || 75,
     license: partial.license || 'MIT',
-    tags: partial.tags || [],
-    readme: partial.readme || '',
-    documentation: partial.documentation || '',
-    homepage: partial.homepage || '',
+    // tags:partial.tags || [],
+    // readme:partial.readme || '',
+    // documentation:partial.documentation || '',
+    // homepage:partial.homepage || '',
   };
 }
 

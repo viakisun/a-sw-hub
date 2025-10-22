@@ -1,6 +1,6 @@
 import { writable, derived, get } from 'svelte/store';
 import type { Build, BuildStatus, DeploymentEnvironment } from '$lib/types';
-import { mockBuilds, generateBuildLog } from '$lib/data/mockBuilds';
+import { mockBuilds, generateBuildLog, type LogSection } from '$lib/data/mockBuilds';
 import { nanoid } from 'nanoid';
 
 interface BuildsState {
@@ -10,7 +10,7 @@ interface BuildsState {
   loading: boolean;
   error: string | null;
   selectedBuild: Build | null;
-  buildLogs: Map<string, string[]>;
+  buildLogs: Map<string, LogSection[]>;
   filters: {
     status: BuildStatus | 'all';
     environment: DeploymentEnvironment | 'all';
@@ -85,8 +85,14 @@ function createBuildsStore() {
     appendLogLine: (buildId: string, line: string) => {
       update((state) => {
         const newLogs = new Map(state.buildLogs);
-        const currentLogs = newLogs.get(buildId) || [];
-        newLogs.set(buildId, [...currentLogs, line]);
+        const currentSections = newLogs.get(buildId) || [];
+        // If sections exist, append to the last section's logs
+        if (currentSections.length > 0) {
+          const updatedSections = [...currentSections];
+          const lastSection = updatedSections[updatedSections.length - 1];
+          lastSection.logs = [...lastSection.logs, line];
+          newLogs.set(buildId, updatedSections);
+        }
         return { ...state, buildLogs: newLogs };
       });
     },

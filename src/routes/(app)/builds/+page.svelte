@@ -11,65 +11,50 @@
   import Heading from '$lib/components/typography/Heading.svelte';
   import Text from '$lib/components/typography/Text.svelte';
   import type { Build, BuildStatus } from '$lib/types';
+  import { generateBuildLog, type LogSection } from '$lib/data/mockBuilds';
 
   let activeBuilds: Build[] = [];
   let recentBuilds: Build[] = [];
   let selectedBuildId: string | null = null;
-  let logStream: string[] = [];
+  let logSections: LogSection[] = [];
   let autoScroll = true;
   let logContainer: HTMLDivElement;
 
   // Simulated real-time updates
   let updateInterval: ReturnType<typeof setInterval>;
 
-  const mockLogs = [
-    '[INFO] Starting build process...',
-    '[INFO] Cloning repository from github.com/aswtech/smart-tractor',
-    '[INFO] Installing dependencies...',
-    '[INFO] Running npm install...',
-    '[SUCCESS] Dependencies installed successfully',
-    '[INFO] Running build scripts...',
-    '[INFO] Compiling TypeScript...',
-    '[INFO] Building production bundle...',
-    '[WARNING] Bundle size is larger than recommended (512KB)',
-    '[INFO] Running unit tests...',
-    '[SUCCESS] 342 tests passed, 0 failed',
-    '[INFO] Running integration tests...',
-    '[SUCCESS] 28 integration tests passed',
-    '[INFO] Running security scan...',
-    '[SUCCESS] No vulnerabilities found',
-    '[INFO] Building Docker image...',
-    '[INFO] Pushing to registry...',
-    '[SUCCESS] Build completed successfully!'
-  ];
-
-  function getStatusColor(status: BuildStatus) {
+  function getStatusColor(status: BuildStatus | 'success' | 'warning' | 'error' | 'running' | 'pending') {
     switch (status) {
       case 'success':
         return 'success';
       case 'failed':
+      case 'error':
         return 'failed';
       case 'running':
         return 'running';
       case 'pending':
         return 'pending';
+      case 'warning':
+        return 'warning';
       default:
         return '';
     }
   }
 
-  function getStatusIcon(status: BuildStatus) {
+  function getStatusIcon(status: BuildStatus | 'success' | 'warning' | 'error' | 'running' | 'pending') {
     switch (status) {
       case 'success':
         return '■';
       case 'failed':
+      case 'error':
         return '□';
       case 'running':
         return '▣';
       case 'pending':
         return '○';
       case 'cancelled':
-        return '×';
+      case 'warning':
+        return '▲';
       default:
         return '·';
     }
@@ -90,6 +75,20 @@
     return `${seconds}s`;
   }
 
+  function formatDurationSeconds(seconds?: number) {
+    if (!seconds) return '-';
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+
+    if (hours > 0) {
+      return `${hours}h ${minutes % 60}m`;
+    }
+    if (minutes > 0) {
+      return `${minutes}m ${Math.floor(seconds % 60)}s`;
+    }
+    return `${seconds.toFixed(1)}s`;
+  }
+
   function calculateProgress(build: Build): number {
     if (!build.stages) return 0;
     const completedStages = build.stages.filter(s =>
@@ -100,26 +99,20 @@
 
   function selectBuild(buildId: string) {
     selectedBuildId = buildId;
-    logStream = [];
+    logSections = generateBuildLog(buildId);
+  }
 
-    // Simulate log streaming
-    let logIndex = 0;
-    const logInterval = setInterval(() => {
-      if (logIndex < mockLogs.length) {
-        logStream = [...logStream, `[${new Date().toISOString()}] ${mockLogs[logIndex]}`];
-        logIndex++;
+  function toggleSection(index: number) {
+    logSections[index].expanded = !logSections[index].expanded;
+    logSections = logSections; // Trigger reactivity
+  }
 
-        if (autoScroll && logContainer) {
-          setTimeout(() => {
-            logContainer.scrollTop = logContainer.scrollHeight;
-          }, 0);
-        }
-      } else {
-        clearInterval(logInterval);
-      }
-    }, 500);
+  function expandAll() {
+    logSections = logSections.map(s => ({ ...s, expanded: true }));
+  }
 
-    return () => clearInterval(logInterval);
+  function collapseAll() {
+    logSections = logSections.map(s => ({ ...s, expanded: false }));
   }
 
   function getLogLevelClass(log: string) {
@@ -324,22 +317,50 @@
         <h2>BUILD LOGS</h2>
         {#if selectedBuildId}
           <div class="log-controls">
-            <label class="auto-scroll">
-              <input type="checkbox" bind:checked={autoScroll} />
-              AUTO SCROLL
-            </label>
+            <Button variant="text" size="small" on:click={expandAll}>EXPAND ALL</Button>
+            <Button variant="text" size="small" on:click={collapseAll}>COLLAPSE ALL</Button>
             <Button variant="text" size="small">DOWNLOAD</Button>
           </div>
         {/if}
       </div>
 
       <div class="log-container" bind:this={logContainer}>
-        {#if selectedBuildId && logStream.length > 0}
-          {#each logStream as log}
-            <div class="log-line {getLogLevelClass(log)}">
-              <pre>{log}</pre>
-            </div>
-          {/each}
+        {#if selectedBuildId && logSections.length > 0}
+          <div class="log-sections">
+            {#each logSections as section, index}
+              <div class="log-section {getStatusColor(section.status)}" class:expanded={section.expanded}>
+                <button
+                  class="section-header-button"
+                  on:click={() => toggleSection(index)}
+                  type="button"
+                >
+                  <span class="section-toggle">
+                    {section.expanded ? '▼' : '▶'}
+                  </span>
+                  <span class="section-status-icon">
+                    {getStatusIcon(section.status)}
+                  </span>
+                  <span class="section-name">{section.name}</span>
+                  {#if section.duration}
+                    <span class="section-duration">({formatDurationSeconds(section.duration)})</span>
+                  {/if}
+                  {#if section.status === 'running'}
+                    <span class="section-spinner">⊙</span>
+                  {/if}
+                </button>
+
+                {#if section.expanded && section.logs.length > 0}
+                  <div class="section-logs">
+                    {#each section.logs as log}
+                      <div class="log-line {getLogLevelClass(log)}">
+                        <pre>{log}</pre>
+                      </div>
+                    {/each}
+                  </div>
+                {/if}
+              </div>
+            {/each}
+          </div>
         {:else if selectedBuildId}
           <div class="log-loading">
             <Text muted>Loading logs...</Text>
@@ -679,5 +700,160 @@
     padding: var(--space-8);
     text-align: center;
     border: var(--border-width) solid var(--border-color);
+  }
+
+  /* Collapsible Log Sections */
+  .log-sections {
+    width: 100%;
+  }
+
+  .log-section {
+    border: var(--border-width) solid #00ff00;
+    margin-bottom: var(--space-2);
+    transition: var(--transition-base);
+  }
+
+  .log-section.success {
+    border-color: #00ff00;
+  }
+
+  .log-section.failed,
+  .log-section.error {
+    border-color: #ff0000;
+  }
+
+  .log-section.warning {
+    border-color: #ffff00;
+  }
+
+  .log-section.running {
+    border-color: #00ffff;
+  }
+
+  .log-section.pending {
+    border-color: #666666;
+  }
+
+  .section-header-button {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    background: transparent;
+    color: #00ff00;
+    border: none;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: var(--text-13);
+    font-weight: var(--weight-medium);
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    transition: var(--transition-base);
+  }
+
+  .section-header-button:hover {
+    background: rgba(0, 255, 0, 0.1);
+  }
+
+  .log-section.failed .section-header-button,
+  .log-section.error .section-header-button {
+    color: #ff0000;
+  }
+
+  .log-section.failed .section-header-button:hover,
+  .log-section.error .section-header-button:hover {
+    background: rgba(255, 0, 0, 0.1);
+  }
+
+  .log-section.warning .section-header-button {
+    color: #ffff00;
+  }
+
+  .log-section.warning .section-header-button:hover {
+    background: rgba(255, 255, 0, 0.1);
+  }
+
+  .log-section.running .section-header-button {
+    color: #00ffff;
+  }
+
+  .log-section.running .section-header-button:hover {
+    background: rgba(0, 255, 255, 0.1);
+  }
+
+  .log-section.pending .section-header-button {
+    color: #666666;
+  }
+
+  .section-toggle {
+    font-size: var(--text-11);
+    width: 12px;
+    display: inline-block;
+    transition: transform 0.2s ease;
+  }
+
+  .log-section.expanded .section-toggle {
+    transform: rotate(90deg);
+  }
+
+  .section-status-icon {
+    font-size: var(--text-12);
+  }
+
+  .section-name {
+    flex: 1;
+    font-weight: var(--weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .section-duration {
+    font-size: var(--text-11);
+    color: #00ff00;
+    opacity: 0.7;
+  }
+
+  .section-spinner {
+    animation: pulse 1s ease-in-out infinite;
+    font-size: var(--text-14);
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  .section-logs {
+    padding: var(--space-3) var(--space-4);
+    border-top: var(--border-width) solid #00ff00;
+    background: rgba(0, 0, 0, 0.5);
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .log-section.failed .section-logs,
+  .log-section.error .section-logs {
+    border-top-color: #ff0000;
+  }
+
+  .log-section.warning .section-logs {
+    border-top-color: #ffff00;
+  }
+
+  .log-section.running .section-logs {
+    border-top-color: #00ffff;
+  }
+
+  .log-section.pending .section-logs {
+    border-top-color: #666666;
+  }
+
+  .section-logs .log-line {
+    padding: var(--space-1) 0;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.1);
+  }
+
+  .section-logs .log-line:last-child {
+    border-bottom: none;
   }
 </style>
