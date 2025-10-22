@@ -1,1505 +1,1514 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import {
-		User,
-		Shield,
-		Key,
-		Bell,
-		Globe,
-		Code,
-		Package,
-		Moon,
-		Monitor,
-		GitBranch,
-		Database,
-		Zap,
-		Mail,
-		Phone,
-		MapPin,
-		Calendar,
-		Clock,
-		Download,
-		Trash2,
-		Save,
-		RefreshCw,
-		AlertTriangle,
-		Check,
-		X,
-		ChevronRight,
-		ExternalLink,
-		Copy,
-		Eye,
-		EyeOff,
-		Plus,
-		Minus
-	} from 'lucide-svelte';
+  /**
+   * Settings Page
+   * System configuration and user preferences management
+   */
 
-	let activeTab = 'profile';
-	let isDirty = false;
-	let isSaving = false;
-	let showPassword = false;
-	let showNewPassword = false;
-	let showApiKey = false;
-	let selectedTheme = 'light';
-	let selectedLanguage = 'ko';
-	let selectedTimezone = 'Asia/Seoul';
+  import { onMount } from 'svelte';
+  import { settingsStore, hasPendingChanges } from '$lib/stores/settingsStore';
+  import Button from '$lib/components/buttons/Button.svelte';
+  import Heading from '$lib/components/typography/Heading.svelte';
+  import Text from '$lib/components/typography/Text.svelte';
+  import type {
+    UserProfile,
+    SecuritySettings,
+    NotificationSettings,
+    PreferencesSettings,
+    IntegrationSettings,
+    DataPrivacySettings,
+    ApiKey,
+    Session
+  } from '$lib/stores/settingsStore';
 
-	// Profile data
-	let profile = {
-		username: 'admin',
-		email: 'admin@asw-hub.local',
-		fullName: '관리자',
-		department: 'IT Operations',
-		role: 'System Administrator',
-		phone: '+82-10-1234-5678',
-		location: 'Seoul, South Korea',
-		bio: 'Agricultural software platform administrator',
-		avatar: '',
-		joinDate: '2024-01-15'
-	};
+  let activeTab: 'PROFILE' | 'SECURITY' | 'NOTIFICATIONS' | 'PREFERENCES' | 'INTEGRATIONS' | 'DATA' = 'PROFILE';
+  let isSaving = false;
+  let showPasswordForm = false;
+  let showApiKeyForm = false;
+  let showExportDialog = false;
+  let showDeleteAccountDialog = false;
 
-	// Password change
-	let passwordForm = {
-		current: '',
-		new: '',
-		confirm: ''
-	};
+  // Password change form
+  let passwordForm = {
+    current: '',
+    new: '',
+    confirm: ''
+  };
 
-	// Notifications
-	let notifications = {
-		email: {
-			builds: true,
-			approvals: true,
-			deployments: true,
-			security: true,
-			updates: false
-		},
-		push: {
-			builds: false,
-			approvals: true,
-			deployments: true,
-			security: true,
-			updates: false
-		},
-		slack: {
-			builds: true,
-			approvals: true,
-			deployments: true,
-			security: true,
-			updates: false
-		}
-	};
+  // API key form
+  let apiKeyForm = {
+    name: '',
+    permissions: [] as string[]
+  };
 
-	// Preferences
-	let preferences = {
-		theme: 'light',
-		language: 'ko',
-		timezone: 'Asia/Seoul',
-		dateFormat: 'YYYY-MM-DD',
-		timeFormat: '24h',
-		firstDayOfWeek: 'monday',
-		pageSize: 20,
-		compactMode: false,
-		showLineNumbers: true,
-		autoRefresh: true,
-		refreshInterval: 30
-	};
+  // Export form
+  let exportFormat: 'JSON' | 'CSV' | 'XML' = 'JSON';
 
-	// Security
-	let security = {
-		twoFactorEnabled: false,
-		sessionTimeout: 30,
-		ipWhitelist: ['192.168.1.0/24', '10.0.0.0/8'],
-		apiKeys: [
-			{
-				id: '1',
-				name: 'CI/CD Pipeline',
-				key: 'ask_1234567890abcdef',
-				created: '2024-02-01',
-				lastUsed: '2024-03-15',
-				permissions: ['read', 'build', 'deploy']
-			},
-			{
-				id: '2',
-				name: 'Monitoring System',
-				key: 'ask_fedcba0987654321',
-				created: '2024-02-15',
-				lastUsed: '2024-03-14',
-				permissions: ['read']
-			}
-		],
-		sessions: [
-			{
-				id: '1',
-				device: 'Chrome on Windows',
-				ip: '192.168.1.100',
-				location: 'Seoul, KR',
-				lastActive: '2 minutes ago',
-				current: true
-			},
-			{
-				id: '2',
-				device: 'Safari on iPhone',
-				ip: '192.168.1.150',
-				location: 'Seoul, KR',
-				lastActive: '1 hour ago',
-				current: false
-			}
-		]
-	};
+  // Reactive statements
+  $: profile = $settingsStore.profile;
+  $: security = $settingsStore.security;
+  $: notifications = $settingsStore.notifications;
+  $: preferences = $settingsStore.preferences;
+  $: integrations = $settingsStore.integrations;
+  $: dataPrivacy = $settingsStore.dataPrivacy;
+  $: isDirty = $hasPendingChanges;
 
-	// Integrations
-	let integrations = [
-		{
-			id: 'github',
-			name: 'GitHub',
-			icon: GitBranch,
-			connected: true,
-			username: 'admin-asw',
-			lastSync: '2024-03-15 10:30'
-		},
-		{
-			id: 'gitlab',
-			name: 'GitLab',
-			icon: GitBranch,
-			connected: false,
-			username: '',
-			lastSync: ''
-		},
-		{
-			id: 'jenkins',
-			name: 'Jenkins',
-			icon: Package,
-			connected: true,
-			username: 'admin',
-			lastSync: '2024-03-15 11:00'
-		},
-		{
-			id: 'slack',
-			name: 'Slack',
-			icon: Bell,
-			connected: true,
-			username: 'admin@asw.slack.com',
-			lastSync: '2024-03-15 12:00'
-		},
-		{
-			id: 'jira',
-			name: 'Jira',
-			icon: Database,
-			connected: false,
-			username: '',
-			lastSync: ''
-		}
-	];
+  onMount(async () => {
+    await settingsStore.loadSettings();
+  });
 
-	// Data & Privacy
-	let dataExportRequests = [
-		{
-			id: '1',
-			date: '2024-03-01',
-			status: 'completed',
-			size: '125 MB',
-			url: '/exports/data-2024-03-01.zip'
-		},
-		{
-			id: '2',
-			date: '2024-02-01',
-			status: 'completed',
-			size: '98 MB',
-			url: '/exports/data-2024-02-01.zip'
-		}
-	];
+  function getTabIcon(tab: string): string {
+    switch(tab) {
+      case 'PROFILE': return '▣';
+      case 'SECURITY': return '◈';
+      case 'NOTIFICATIONS': return '◉';
+      case 'PREFERENCES': return '◧';
+      case 'INTEGRATIONS': return '◊';
+      case 'DATA': return '◩';
+      default: return '▪';
+    }
+  }
 
-	function handleSaveProfile() {
-		isDirty = false;
-		isSaving = true;
-		setTimeout(() => {
-			isSaving = false;
-			alert('프로필이 저장되었습니다');
-		}, 1000);
-	}
+  async function handleSave() {
+    isSaving = true;
+    try {
+      await settingsStore.saveSettings();
+    } finally {
+      isSaving = false;
+    }
+  }
 
-	function handleChangePassword() {
-		if (passwordForm.new !== passwordForm.confirm) {
-			alert('새 비밀번호가 일치하지 않습니다');
-			return;
-		}
-		alert('비밀번호가 변경되었습니다');
-		passwordForm = { current: '', new: '', confirm: '' };
-	}
+  async function handlePasswordChange() {
+    if (passwordForm.new !== passwordForm.confirm) {
+      alert('PASSWORDS DO NOT MATCH');
+      return;
+    }
+    await settingsStore.changePassword(passwordForm.current, passwordForm.new);
+    passwordForm = { current: '', new: '', confirm: '' };
+    showPasswordForm = false;
+  }
 
-	function handleGenerateApiKey() {
-		const newKey = {
-			id: Date.now().toString(),
-			name: 'New API Key',
-			key: 'ask_' + Math.random().toString(36).substring(2, 18),
-			created: new Date().toISOString().split('T')[0],
-			lastUsed: 'Never',
-			permissions: ['read']
-		};
-		security.apiKeys = [...security.apiKeys, newKey];
-	}
+  async function handleGenerateApiKey() {
+    const key = await settingsStore.generateApiKey(apiKeyForm.name, apiKeyForm.permissions);
+    apiKeyForm = { name: '', permissions: [] };
+    showApiKeyForm = false;
+  }
 
-	function handleRevokeApiKey(id: string) {
-		if (confirm('이 API 키를 취소하시겠습니까?')) {
-			security.apiKeys = security.apiKeys.filter(k => k.id !== id);
-		}
-	}
+  async function handleRevokeApiKey(keyId: string) {
+    if (confirm('REVOKE THIS API KEY?')) {
+      await settingsStore.revokeApiKey(keyId);
+    }
+  }
 
-	function handleTerminateSession(id: string) {
-		if (confirm('이 세션을 종료하시겠습니까?')) {
-			security.sessions = security.sessions.filter(s => s.id !== id);
-		}
-	}
+  async function handleEndSession(sessionId: string) {
+    if (confirm('END THIS SESSION?')) {
+      await settingsStore.endSession(sessionId);
+    }
+  }
 
-	function handleToggleIntegration(id: string) {
-		integrations = integrations.map(i => {
-			if (i.id === id) {
-				return { ...i, connected: !i.connected };
-			}
-			return i;
-		});
-	}
+  async function handleDataExport() {
+    await settingsStore.requestDataExport(exportFormat);
+    showExportDialog = false;
+  }
 
-	function handleExportData() {
-		const newExport = {
-			id: Date.now().toString(),
-			date: new Date().toISOString().split('T')[0],
-			status: 'processing',
-			size: 'Calculating...',
-			url: ''
-		};
-		dataExportRequests = [newExport, ...dataExportRequests];
+  async function handleDeleteAccount() {
+    const confirmation = prompt('TYPE "DELETE MY ACCOUNT" TO CONFIRM');
+    if (confirmation === 'DELETE MY ACCOUNT') {
+      await settingsStore.deleteAccount();
+      window.location.href = '/';
+    }
+  }
 
-		setTimeout(() => {
-			dataExportRequests = dataExportRequests.map(r => {
-				if (r.id === newExport.id) {
-					return {
-						...r,
-						status: 'completed',
-						size: '150 MB',
-						url: `/exports/data-${r.date}.zip`
-					};
-				}
-				return r;
-			});
-		}, 3000);
-	}
+  function formatDate(date: Date | string | undefined): string {
+    if (!date) return 'N/A';
+    const d = typeof date === 'string' ? new Date(date) : date;
+    return d.toISOString().split('T')[0];
+  }
 
-	function handleDeleteAccount() {
-		if (confirm('정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
-			alert('계정 삭제가 요청되었습니다. 관리자가 검토 후 처리됩니다.');
-		}
-	}
-
-	function copyToClipboard(text: string) {
-		navigator.clipboard.writeText(text);
-		alert('클립보드에 복사되었습니다');
-	}
+  function maskApiKey(key: string): string {
+    return key.substring(0, 10) + '...' + key.substring(key.length - 4);
+  }
 </script>
 
-<div class="settings-container">
-	<div class="settings-header">
-		<h1>설정</h1>
-		<p>계정 설정 및 환경 설정을 관리합니다</p>
-	</div>
+<div class="settings-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <Heading level={1}>SETTINGS</Heading>
+      <Text muted>SYSTEM CONFIGURATION AND USER PREFERENCES</Text>
+    </div>
+    <div class="header-actions">
+      {#if isDirty}
+        <Text>● UNSAVED CHANGES</Text>
+      {/if}
+      <Button
+        variant="primary"
+        disabled={!isDirty || isSaving}
+        on:click={handleSave}
+      >
+        {isSaving ? '◎ SAVING...' : '▶ SAVE CHANGES'}
+      </Button>
+    </div>
+  </div>
 
-	<div class="settings-layout">
-		<aside class="settings-sidebar">
-			<nav class="settings-nav">
-				<button
-					class="nav-item"
-					class:active={activeTab === 'profile'}
-					on:click={() => activeTab = 'profile'}
-				>
-					<User size={20} />
-					<span>프로필</span>
-					<ChevronRight size={16} />
-				</button>
-				<button
-					class="nav-item"
-					class:active={activeTab === 'security'}
-					on:click={() => activeTab = 'security'}
-				>
-					<Shield size={20} />
-					<span>보안</span>
-					<ChevronRight size={16} />
-				</button>
-				<button
-					class="nav-item"
-					class:active={activeTab === 'notifications'}
-					on:click={() => activeTab = 'notifications'}
-				>
-					<Bell size={20} />
-					<span>알림</span>
-					<ChevronRight size={16} />
-				</button>
-				<button
-					class="nav-item"
-					class:active={activeTab === 'preferences'}
-					on:click={() => activeTab = 'preferences'}
-				>
-					<Monitor size={20} />
-					<span>환경설정</span>
-					<ChevronRight size={16} />
-				</button>
-				<button
-					class="nav-item"
-					class:active={activeTab === 'integrations'}
-					on:click={() => activeTab = 'integrations'}
-				>
-					<Zap size={20} />
-					<span>통합</span>
-					<ChevronRight size={16} />
-				</button>
-				<button
-					class="nav-item"
-					class:active={activeTab === 'data'}
-					on:click={() => activeTab = 'data'}
-				>
-					<Database size={20} />
-					<span>데이터 및 개인정보</span>
-					<ChevronRight size={16} />
-				</button>
-			</nav>
-		</aside>
+  <div class="settings-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="settings-sidebar">
+      <nav class="settings-nav">
+        {#each ['PROFILE', 'SECURITY', 'NOTIFICATIONS', 'PREFERENCES', 'INTEGRATIONS', 'DATA'] as tab}
+          <button
+            class="nav-item"
+            class:active={activeTab === tab}
+            on:click={() => activeTab = tab as any}
+            type="button"
+          >
+            <span class="nav-icon">{getTabIcon(tab)}</span>
+            <span class="nav-label">{tab}</span>
+            <span class="nav-arrow">{activeTab === tab ? '■' : '□'}</span>
+          </button>
+        {/each}
+      </nav>
+    </aside>
 
-		<main class="settings-content">
-			{#if activeTab === 'profile'}
-				<section class="settings-section">
-					<h2>프로필 정보</h2>
+    <!-- Content Area -->
+    <main class="settings-content">
+      {#if activeTab === 'PROFILE' && profile}
+        <section class="settings-section">
+          <div class="section-header">
+            <h2>USER PROFILE</h2>
+            <Text size="small" muted>MANAGE YOUR ACCOUNT INFORMATION</Text>
+          </div>
 
-					<div class="form-section">
-						<div class="avatar-section">
-							<div class="avatar-preview">
-								<User size={48} />
-							</div>
-							<div class="avatar-controls">
-								<button class="btn-secondary">사진 변경</button>
-								<button class="btn-text">삭제</button>
-							</div>
-						</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="username">USERNAME</label>
+              <input
+                id="username"
+                type="text"
+                value={profile.username}
+                on:input={e => settingsStore.updateProfile({ username: e.currentTarget.value as any })}
+              />
+            </div>
 
-						<div class="form-grid">
-							<div class="form-group">
-								<label for="username">사용자명</label>
-								<input
-									id="username"
-									type="text"
-									bind:value={profile.username}
-									on:input={() => isDirty = true}
-								/>
-							</div>
-							<div class="form-group">
-								<label for="email">이메일</label>
-								<input
-									id="email"
-									type="email"
-									bind:value={profile.email}
-									on:input={() => isDirty = true}
-								/>
-							</div>
-							<div class="form-group">
-								<label for="fullName">전체 이름</label>
-								<input
-									id="fullName"
-									type="text"
-									bind:value={profile.fullName}
-									on:input={() => isDirty = true}
-								/>
-							</div>
-							<div class="form-group">
-								<label for="department">부서</label>
-								<input
-									id="department"
-									type="text"
-									bind:value={profile.department}
-									on:input={() => isDirty = true}
-								/>
-							</div>
-							<div class="form-group">
-								<label for="role">역할</label>
-								<input
-									id="role"
-									type="text"
-									bind:value={profile.role}
-									readonly
-								/>
-							</div>
-							<div class="form-group">
-								<label for="phone">전화번호</label>
-								<input
-									id="phone"
-									type="tel"
-									bind:value={profile.phone}
-									on:input={() => isDirty = true}
-								/>
-							</div>
-							<div class="form-group">
-								<label for="location">위치</label>
-								<input
-									id="location"
-									type="text"
-									bind:value={profile.location}
-									on:input={() => isDirty = true}
-								/>
-							</div>
-							<div class="form-group">
-								<label for="joinDate">가입일</label>
-								<input
-									id="joinDate"
-									type="text"
-									value={profile.joinDate}
-									readonly
-								/>
-							</div>
-						</div>
+            <div class="form-group">
+              <label for="email">EMAIL ADDRESS</label>
+              <input
+                id="email"
+                type="email"
+                value={profile.email}
+                on:input={e => settingsStore.updateProfile({ email: e.currentTarget.value as any })}
+              />
+            </div>
 
-						<div class="form-group full-width">
-							<label for="bio">소개</label>
-							<textarea
-								id="bio"
-								bind:value={profile.bio}
-								on:input={() => isDirty = true}
-								rows="3"
-							></textarea>
-						</div>
+            <div class="form-group">
+              <label for="fullName">FULL NAME</label>
+              <input
+                id="fullName"
+                type="text"
+                value={profile.fullName}
+                on:input={e => settingsStore.updateProfile({ fullName: e.currentTarget.value as any })}
+              />
+            </div>
 
-						<div class="form-actions">
-							<button
-								class="btn-primary"
-								on:click={handleSaveProfile}
-								disabled={!isDirty || isSaving}
-							>
-								{#if isSaving}
-									<RefreshCw size={16} class="spin" />
-								{:else}
-									<Save size={16} />
-								{/if}
-								저장
-							</button>
-							<button class="btn-secondary" disabled={!isDirty}>
-								취소
-							</button>
-						</div>
-					</div>
-				</section>
-			{:else if activeTab === 'security'}
-				<section class="settings-section">
-					<h2>보안 설정</h2>
+            <div class="form-group">
+              <label for="department">DEPARTMENT</label>
+              <input
+                id="department"
+                type="text"
+                value={profile.department}
+                on:input={e => settingsStore.updateProfile({ department: e.currentTarget.value as any })}
+              />
+            </div>
 
-					<div class="security-sections">
-						<div class="subsection">
-							<h3>비밀번호 변경</h3>
-							<div class="form-grid">
-								<div class="form-group">
-									<label for="currentPassword">현재 비밀번호</label>
-									<div class="password-input">
-										<input
-											id="currentPassword"
-											type={showPassword ? 'text' : 'password'}
-											bind:value={passwordForm.current}
-										/>
-										<button
-											class="btn-icon"
-											on:click={() => showPassword = !showPassword}
-										>
-											{#if showPassword}
-												<EyeOff size={16} />
-											{:else}
-												<Eye size={16} />
-											{/if}
-										</button>
-									</div>
-								</div>
-								<div></div>
-								<div class="form-group">
-									<label for="newPassword">새 비밀번호</label>
-									<div class="password-input">
-										<input
-											id="newPassword"
-											type={showNewPassword ? 'text' : 'password'}
-											bind:value={passwordForm.new}
-										/>
-										<button
-											class="btn-icon"
-											on:click={() => showNewPassword = !showNewPassword}
-										>
-											{#if showNewPassword}
-												<EyeOff size={16} />
-											{:else}
-												<Eye size={16} />
-											{/if}
-										</button>
-									</div>
-								</div>
-								<div class="form-group">
-									<label for="confirmPassword">비밀번호 확인</label>
-									<input
-										id="confirmPassword"
-										type="password"
-										bind:value={passwordForm.confirm}
-									/>
-								</div>
-							</div>
-							<button class="btn-primary" on:click={handleChangePassword}>
-								비밀번호 변경
-							</button>
-						</div>
+            <div class="form-group">
+              <label for="role">ROLE</label>
+              <input
+                id="role"
+                type="text"
+                value={profile.role}
+                readonly
+              />
+            </div>
 
-						<div class="subsection">
-							<h3>2단계 인증</h3>
-							<div class="security-option">
-								<div class="option-info">
-									<p><strong>2단계 인증</strong></p>
-									<p class="text-secondary">추가 보안을 위해 2단계 인증을 활성화합니다</p>
-								</div>
-								<label class="toggle">
-									<input type="checkbox" bind:checked={security.twoFactorEnabled} />
-									<span class="toggle-slider"></span>
-								</label>
-							</div>
-						</div>
+            <div class="form-group">
+              <label for="phone">PHONE NUMBER</label>
+              <input
+                id="phone"
+                type="tel"
+                value={profile.phone}
+                on:input={e => settingsStore.updateProfile({ phone: e.currentTarget.value as any })}
+              />
+            </div>
 
-						<div class="subsection">
-							<h3>API 키</h3>
-							<div class="api-keys">
-								{#each security.apiKeys as key}
-									<div class="api-key-item">
-										<div class="key-info">
-											<p class="key-name">{key.name}</p>
-											<div class="key-meta">
-												<span>생성: {key.created}</span>
-												<span>마지막 사용: {key.lastUsed}</span>
-												<span>권한: {key.permissions.join(', ')}</span>
-											</div>
-										</div>
-										<div class="key-actions">
-											<button
-												class="btn-icon"
-												on:click={() => copyToClipboard(key.key)}
-											>
-												<Copy size={16} />
-											</button>
-											<button
-												class="btn-icon danger"
-												on:click={() => handleRevokeApiKey(key.id)}
-											>
-												<Trash2 size={16} />
-											</button>
-										</div>
-									</div>
-								{/each}
-							</div>
-							<button class="btn-secondary" on:click={handleGenerateApiKey}>
-								<Plus size={16} />
-								새 API 키 생성
-							</button>
-						</div>
+            <div class="form-group">
+              <label for="location">LOCATION</label>
+              <input
+                id="location"
+                type="text"
+                value={profile.location}
+                on:input={e => settingsStore.updateProfile({ location: e.currentTarget.value as any })}
+              />
+            </div>
 
-						<div class="subsection">
-							<h3>활성 세션</h3>
-							<div class="sessions">
-								{#each security.sessions as session}
-									<div class="session-item">
-										<div class="session-info">
-											<p class="session-device">
-												{session.device}
-												{#if session.current}
-													<span class="badge">현재 세션</span>
-												{/if}
-											</p>
-											<div class="session-meta">
-												<span>IP: {session.ip}</span>
-												<span>위치: {session.location}</span>
-												<span>활동: {session.lastActive}</span>
-											</div>
-										</div>
-										{#if !session.current}
-											<button
-												class="btn-text danger"
-												on:click={() => handleTerminateSession(session.id)}
-											>
-												종료
-											</button>
-										{/if}
-									</div>
-								{/each}
-							</div>
-						</div>
-					</div>
-				</section>
-			{:else if activeTab === 'notifications'}
-				<section class="settings-section">
-					<h2>알림 설정</h2>
+            <div class="form-group">
+              <label for="joinDate">JOIN DATE</label>
+              <input
+                id="joinDate"
+                type="text"
+                value={profile.joinDate}
+                readonly
+              />
+            </div>
 
-					<div class="notification-channels">
-						<div class="channel">
-							<h3>이메일 알림</h3>
-							<div class="notification-options">
-								<label class="checkbox-label">
-									<input type="checkbox" bind:checked={notifications.email.builds} />
-									<span>빌드 상태</span>
-								</label>
-								<label class="checkbox-label">
-									<input type="checkbox" bind:checked={notifications.email.approvals} />
-									<span>승인 요청</span>
-								</label>
-								<label class="checkbox-label">
-									<input type="checkbox" bind:checked={notifications.email.deployments} />
-									<span>배포 상태</span>
-								</label>
-								<label class="checkbox-label">
-									<input type="checkbox" bind:checked={notifications.email.security} />
-									<span>보안 알림</span>
-								</label>
-								<label class="checkbox-label">
-									<input type="checkbox" bind:checked={notifications.email.updates} />
-									<span>시스템 업데이트</span>
-								</label>
-							</div>
-						</div>
+            <div class="form-group full-width">
+              <label for="bio">BIO</label>
+              <textarea
+                id="bio"
+                value={profile.bio}
+                on:input={e => settingsStore.updateProfile({ bio: e.currentTarget.value as any })}
+                rows="3"
+              ></textarea>
+            </div>
+          </div>
+        </section>
 
-						<div class="channel">
-							<h3>푸시 알림</h3>
-							<div class="notification-options">
-								<label class="checkbox-label">
-									<input type="checkbox" bind:checked={notifications.push.builds} />
-									<span>빌드 상태</span>
-								</label>
-								<label class="checkbox-label">
-									<input type="checkbox" bind:checked={notifications.push.approvals} />
-									<span>승인 요청</span>
-								</label>
-								<label class="checkbox-label">
-									<input type="checkbox" bind:checked={notifications.push.deployments} />
-									<span>배포 상태</span>
-								</label>
-								<label class="checkbox-label">
-									<input type="checkbox" bind:checked={notifications.push.security} />
-									<span>보안 알림</span>
-								</label>
-								<label class="checkbox-label">
-									<input type="checkbox" bind:checked={notifications.push.updates} />
-									<span>시스템 업데이트</span>
-								</label>
-							</div>
-						</div>
+      {:else if activeTab === 'SECURITY' && security}
+        <section class="settings-section">
+          <div class="section-header">
+            <h2>SECURITY SETTINGS</h2>
+            <Text size="small" muted>MANAGE PASSWORDS AND ACCESS</Text>
+          </div>
 
-						<div class="channel">
-							<h3>Slack 알림</h3>
-							<div class="notification-options">
-								<label class="checkbox-label">
-									<input type="checkbox" bind:checked={notifications.slack.builds} />
-									<span>빌드 상태</span>
-								</label>
-								<label class="checkbox-label">
-									<input type="checkbox" bind:checked={notifications.slack.approvals} />
-									<span>승인 요청</span>
-								</label>
-								<label class="checkbox-label">
-									<input type="checkbox" bind:checked={notifications.slack.deployments} />
-									<span>배포 상태</span>
-								</label>
-								<label class="checkbox-label">
-									<input type="checkbox" bind:checked={notifications.slack.security} />
-									<span>보안 알림</span>
-								</label>
-								<label class="checkbox-label">
-									<input type="checkbox" bind:checked={notifications.slack.updates} />
-									<span>시스템 업데이트</span>
-								</label>
-							</div>
-						</div>
-					</div>
+          <!-- Password Section -->
+          <div class="subsection">
+            <h3>PASSWORD</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">LAST CHANGED</span>
+                <span class="info-value">{formatDate(security.password.lastChanged)}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">MINIMUM LENGTH</span>
+                <span class="info-value">{security.password.minLength} CHARACTERS</span>
+              </div>
+            </div>
 
-					<div class="form-actions">
-						<button class="btn-primary">
-							<Save size={16} />
-							알림 설정 저장
-						</button>
-					</div>
-				</section>
-			{:else if activeTab === 'preferences'}
-				<section class="settings-section">
-					<h2>환경 설정</h2>
+            {#if !showPasswordForm}
+              <Button variant="outline" on:click={() => showPasswordForm = true}>
+                ▶ CHANGE PASSWORD
+              </Button>
+            {:else}
+              <div class="password-form">
+                <div class="form-group">
+                  <label for="currentPassword">CURRENT PASSWORD</label>
+                  <input
+                    id="currentPassword"
+                    type="password"
+                    bind:value={passwordForm.current}
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="newPassword">NEW PASSWORD</label>
+                  <input
+                    id="newPassword"
+                    type="password"
+                    bind:value={passwordForm.new}
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="confirmPassword">CONFIRM NEW PASSWORD</label>
+                  <input
+                    id="confirmPassword"
+                    type="password"
+                    bind:value={passwordForm.confirm}
+                  />
+                </div>
+                <div class="form-actions">
+                  <Button variant="primary" on:click={handlePasswordChange}>
+                    ◈ UPDATE PASSWORD
+                  </Button>
+                  <Button variant="outline" on:click={() => showPasswordForm = false}>
+                    ✕ CANCEL
+                  </Button>
+                </div>
+              </div>
+            {/if}
+          </div>
 
-					<div class="preferences-grid">
-						<div class="form-group">
-							<label for="theme">테마</label>
-							<select id="theme" bind:value={preferences.theme}>
-								<option value="light">라이트</option>
-								<option value="dark">다크</option>
-								<option value="auto">시스템 설정 따르기</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label for="language">언어</label>
-							<select id="language" bind:value={preferences.language}>
-								<option value="ko">한국어</option>
-								<option value="en">English</option>
-								<option value="ja">日本語</option>
-								<option value="zh">中文</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label for="timezone">시간대</label>
-							<select id="timezone" bind:value={preferences.timezone}>
-								<option value="Asia/Seoul">Seoul (GMT+9)</option>
-								<option value="Asia/Tokyo">Tokyo (GMT+9)</option>
-								<option value="America/New_York">New York (GMT-5)</option>
-								<option value="Europe/London">London (GMT+0)</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label for="dateFormat">날짜 형식</label>
-							<select id="dateFormat" bind:value={preferences.dateFormat}>
-								<option value="YYYY-MM-DD">2024-03-15</option>
-								<option value="DD/MM/YYYY">15/03/2024</option>
-								<option value="MM/DD/YYYY">03/15/2024</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label for="timeFormat">시간 형식</label>
-							<select id="timeFormat" bind:value={preferences.timeFormat}>
-								<option value="24h">24시간 (14:30)</option>
-								<option value="12h">12시간 (2:30 PM)</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label for="firstDayOfWeek">주 시작일</label>
-							<select id="firstDayOfWeek" bind:value={preferences.firstDayOfWeek}>
-								<option value="sunday">일요일</option>
-								<option value="monday">월요일</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label for="pageSize">페이지 크기</label>
-							<select id="pageSize" bind:value={preferences.pageSize}>
-								<option value={10}>10</option>
-								<option value={20}>20</option>
-								<option value={50}>50</option>
-								<option value={100}>100</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label for="refreshInterval">자동 새로고침 간격 (초)</label>
-							<input
-								id="refreshInterval"
-								type="number"
-								bind:value={preferences.refreshInterval}
-								min="10"
-								max="300"
-							/>
-						</div>
-					</div>
+          <!-- Two-Factor Authentication -->
+          <div class="subsection">
+            <h3>TWO-FACTOR AUTHENTICATION</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">STATUS</span>
+                <span class="info-value">{security.twoFactor.enabled ? '● ENABLED' : '○ DISABLED'}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">METHOD</span>
+                <span class="info-value">{security.twoFactor.method.toUpperCase()}</span>
+              </div>
+            </div>
+            <Button variant="outline">
+              {security.twoFactor.enabled ? '○ DISABLE 2FA' : '● ENABLE 2FA'}
+            </Button>
+          </div>
 
-					<div class="preference-toggles">
-						<label class="checkbox-label">
-							<input type="checkbox" bind:checked={preferences.compactMode} />
-							<span>컴팩트 모드</span>
-						</label>
-						<label class="checkbox-label">
-							<input type="checkbox" bind:checked={preferences.showLineNumbers} />
-							<span>줄 번호 표시</span>
-						</label>
-						<label class="checkbox-label">
-							<input type="checkbox" bind:checked={preferences.autoRefresh} />
-							<span>자동 새로고침</span>
-						</label>
-					</div>
+          <!-- API Keys -->
+          <div class="subsection">
+            <div class="subsection-header">
+              <h3>API KEYS</h3>
+              <Button variant="outline" size="small" on:click={() => showApiKeyForm = true}>
+                + NEW KEY
+              </Button>
+            </div>
 
-					<div class="form-actions">
-						<button class="btn-primary">
-							<Save size={16} />
-							환경 설정 저장
-						</button>
-						<button class="btn-secondary">
-							기본값으로 재설정
-						</button>
-					</div>
-				</section>
-			{:else if activeTab === 'integrations'}
-				<section class="settings-section">
-					<h2>통합 연결</h2>
+            {#if showApiKeyForm}
+              <div class="api-key-form">
+                <div class="form-group">
+                  <label for="keyName">KEY NAME</label>
+                  <input
+                    id="keyName"
+                    type="text"
+                    bind:value={apiKeyForm.name}
+                    placeholder="e.g., CI/CD Pipeline"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>PERMISSIONS</label>
+                  <div class="checkbox-group">
+                    {#each ['read:projects', 'write:projects', 'read:builds', 'write:builds', 'read:deployments', 'write:deployments'] as permission}
+                      <label class="checkbox-label">
+                        <input
+                          type="checkbox"
+                          value={permission}
+                          on:change={e => {
+                            if (e.currentTarget.checked) {
+                              apiKeyForm.permissions = [...apiKeyForm.permissions, permission];
+                            } else {
+                              apiKeyForm.permissions = apiKeyForm.permissions.filter(p => p !== permission);
+                            }
+                          }}
+                        />
+                        {permission}
+                      </label>
+                    {/each}
+                  </div>
+                </div>
+                <div class="form-actions">
+                  <Button variant="primary" on:click={handleGenerateApiKey}>
+                    ◈ GENERATE KEY
+                  </Button>
+                  <Button variant="outline" on:click={() => showApiKeyForm = false}>
+                    ✕ CANCEL
+                  </Button>
+                </div>
+              </div>
+            {/if}
 
-					<div class="integrations-list">
-						{#each integrations as integration}
-							<div class="integration-card">
-								<div class="integration-header">
-									<svelte:component this={integration.icon} size={24} />
-									<h3>{integration.name}</h3>
-									{#if integration.connected}
-										<span class="status-badge success">연결됨</span>
-									{:else}
-										<span class="status-badge">미연결</span>
-									{/if}
-								</div>
-								<div class="integration-body">
-									{#if integration.connected}
-										<p class="integration-info">
-											<strong>계정:</strong> {integration.username}
-										</p>
-										<p class="integration-info">
-											<strong>마지막 동기화:</strong> {integration.lastSync}
-										</p>
-									{:else}
-										<p class="text-secondary">
-											{integration.name}과 연결하여 작업을 자동화하세요
-										</p>
-									{/if}
-								</div>
-								<div class="integration-actions">
-									{#if integration.connected}
-										<button class="btn-secondary">
-											<RefreshCw size={16} />
-											동기화
-										</button>
-										<button
-											class="btn-text danger"
-											on:click={() => handleToggleIntegration(integration.id)}
-										>
-											연결 해제
-										</button>
-									{:else}
-										<button
-											class="btn-primary"
-											on:click={() => handleToggleIntegration(integration.id)}
-										>
-											연결하기
-										</button>
-									{/if}
-								</div>
-							</div>
-						{/each}
-					</div>
-				</section>
-			{:else if activeTab === 'data'}
-				<section class="settings-section">
-					<h2>데이터 및 개인정보</h2>
+            <div class="api-keys-list">
+              {#each security.apiKeys as key}
+                <div class="api-key-item">
+                  <div class="api-key-info">
+                    <div class="api-key-name">{key.name}</div>
+                    <div class="api-key-value">{maskApiKey(key.key)}</div>
+                    <div class="api-key-meta">
+                      CREATED: {formatDate(key.createdAt)} |
+                      EXPIRES: {key.expiresAt ? formatDate(key.expiresAt) : 'NEVER'}
+                    </div>
+                  </div>
+                  <Button variant="text" size="small" on:click={() => handleRevokeApiKey(key.id)}>
+                    ✕ REVOKE
+                  </Button>
+                </div>
+              {/each}
+            </div>
+          </div>
 
-					<div class="data-sections">
-						<div class="subsection">
-							<h3>데이터 내보내기</h3>
-							<p class="text-secondary">
-								모든 개인 데이터의 사본을 요청할 수 있습니다. 준비되면 이메일로 알림을 받습니다.
-							</p>
-							<button class="btn-primary" on:click={handleExportData}>
-								<Download size={16} />
-								데이터 내보내기 요청
-							</button>
+          <!-- Active Sessions -->
+          <div class="subsection">
+            <h3>ACTIVE SESSIONS</h3>
+            <div class="sessions-list">
+              {#each security.sessions as session}
+                <div class="session-item" class:current={session.current}>
+                  <div class="session-info">
+                    <div class="session-device">
+                      {session.current ? '▶' : '▷'} {session.device}
+                    </div>
+                    <div class="session-details">
+                      {session.location} | {session.ip} | {session.browser}
+                    </div>
+                    <div class="session-time">
+                      LAST ACTIVE: {formatDate(session.lastActive)}
+                    </div>
+                  </div>
+                  {#if !session.current}
+                    <Button variant="text" size="small" on:click={() => handleEndSession(session.id)}>
+                      ✕ END
+                    </Button>
+                  {:else}
+                    <span class="current-badge">CURRENT</span>
+                  {/if}
+                </div>
+              {/each}
+            </div>
+          </div>
+        </section>
 
-							{#if dataExportRequests.length > 0}
-								<div class="export-requests">
-									<h4>내보내기 요청 내역</h4>
-									{#each dataExportRequests as request}
-										<div class="export-item">
-											<div class="export-info">
-												<span>{request.date}</span>
-												<span class="status-badge" class:success={request.status === 'completed'}>
-													{request.status === 'completed' ? '완료' : '처리 중'}
-												</span>
-												<span>{request.size}</span>
-											</div>
-											{#if request.status === 'completed'}
-												<a href={request.url} class="btn-text">
-													<Download size={16} />
-													다운로드
-												</a>
-											{/if}
-										</div>
-									{/each}
-								</div>
-							{/if}
-						</div>
+      {:else if activeTab === 'NOTIFICATIONS' && notifications}
+        <section class="settings-section">
+          <div class="section-header">
+            <h2>NOTIFICATION PREFERENCES</h2>
+            <Text size="small" muted>CONFIGURE HOW YOU RECEIVE ALERTS</Text>
+          </div>
 
-						<div class="subsection">
-							<h3>데이터 보존</h3>
-							<p class="text-secondary">
-								데이터는 다음 정책에 따라 보존됩니다:
-							</p>
-							<ul class="retention-policy">
-								<li>빌드 로그: 90일</li>
-								<li>배포 기록: 1년</li>
-								<li>감사 로그: 2년</li>
-								<li>프로젝트 데이터: 무제한</li>
-							</ul>
-						</div>
+          <div class="notification-channels">
+            {#each Object.entries(notifications.channels) as [channel, settings]}
+              <div class="channel-section">
+                <h3>{channel.toUpperCase()}</h3>
+                <div class="toggle-group">
+                  <label class="toggle-item">
+                    <input
+                      type="checkbox"
+                      checked={settings.enabled}
+                      on:change={e => {
+                        const updated = { ...notifications.channels };
+                        (updated as any)[channel].enabled = e.currentTarget.checked;
+                        settingsStore.updateNotifications({ channels: updated });
+                      }}
+                    />
+                    <span>{settings.enabled ? '●' : '○'} ENABLED</span>
+                  </label>
+                </div>
 
-						<div class="subsection danger-zone">
-							<h3>위험 구역</h3>
-							<div class="danger-item">
-								<div>
-									<p><strong>계정 비활성화</strong></p>
-									<p class="text-secondary">
-										계정을 일시적으로 비활성화합니다. 언제든지 다시 활성화할 수 있습니다.
-									</p>
-								</div>
-								<button class="btn-secondary danger">비활성화</button>
-							</div>
-							<div class="danger-item">
-								<div>
-									<p><strong>계정 삭제</strong></p>
-									<p class="text-secondary">
-										계정과 모든 관련 데이터를 영구적으로 삭제합니다. 이 작업은 되돌릴 수 없습니다.
-									</p>
-								</div>
-								<button class="btn-secondary danger" on:click={handleDeleteAccount}>
-									<Trash2 size={16} />
-									계정 삭제
-								</button>
-							</div>
-						</div>
-					</div>
-				</section>
-			{/if}
-		</main>
-	</div>
+                {#if settings.enabled}
+                  <div class="notification-types">
+                    {#each Object.entries(settings) as [type, value]}
+                      {#if type !== 'enabled'}
+                        <label class="checkbox-label">
+                          <input
+                            type="checkbox"
+                            checked={value}
+                            on:change={e => {
+                              const updated = { ...notifications.channels };
+                              (updated as any)[channel][type] = e.currentTarget.checked;
+                              settingsStore.updateNotifications({ channels: updated });
+                            }}
+                          />
+                          {type.toUpperCase()}
+                        </label>
+                      {/if}
+                    {/each}
+                  </div>
+                {/if}
+              </div>
+            {/each}
+          </div>
+
+          <!-- Do Not Disturb -->
+          <div class="subsection">
+            <h3>DO NOT DISTURB</h3>
+            <div class="dnd-settings">
+              <label class="toggle-item">
+                <input
+                  type="checkbox"
+                  checked={notifications.doNotDisturb.enabled}
+                  on:change={e => {
+                    const updated = { ...notifications.doNotDisturb, enabled: e.currentTarget.checked };
+                    settingsStore.updateNotifications({ doNotDisturb: updated });
+                  }}
+                />
+                <span>{notifications.doNotDisturb.enabled ? '●' : '○'} ENABLED</span>
+              </label>
+
+              {#if notifications.doNotDisturb.enabled}
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="dndStart">START TIME</label>
+                    <input
+                      id="dndStart"
+                      type="time"
+                      value={notifications.doNotDisturb.startTime}
+                      on:change={e => {
+                        const updated = { ...notifications.doNotDisturb, startTime: e.currentTarget.value };
+                        settingsStore.updateNotifications({ doNotDisturb: updated });
+                      }}
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="dndEnd">END TIME</label>
+                    <input
+                      id="dndEnd"
+                      type="time"
+                      value={notifications.doNotDisturb.endTime}
+                      on:change={e => {
+                        const updated = { ...notifications.doNotDisturb, endTime: e.currentTarget.value };
+                        settingsStore.updateNotifications({ doNotDisturb: updated });
+                      }}
+                    />
+                  </div>
+                </div>
+              {/if}
+            </div>
+          </div>
+        </section>
+
+      {:else if activeTab === 'PREFERENCES' && preferences}
+        <section class="settings-section">
+          <div class="section-header">
+            <h2>USER PREFERENCES</h2>
+            <Text size="small" muted>CUSTOMIZE YOUR EXPERIENCE</Text>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="theme">THEME</label>
+              <select
+                id="theme"
+                value={preferences.theme}
+                on:change={e => settingsStore.updatePreferences({ theme: e.currentTarget.value as any })}
+              >
+                <option value="DARK">DARK</option>
+                <option value="LIGHT">LIGHT</option>
+                <option value="SYSTEM">SYSTEM</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="language">LANGUAGE</label>
+              <select
+                id="language"
+                value={preferences.language}
+                on:change={e => settingsStore.updatePreferences({ language: e.currentTarget.value as any })}
+              >
+                <option value="EN">ENGLISH</option>
+                <option value="KO">KOREAN</option>
+                <option value="JA">JAPANESE</option>
+                <option value="ZH">CHINESE</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="timezone">TIMEZONE</label>
+              <select
+                id="timezone"
+                value={preferences.timezone}
+                on:change={e => settingsStore.updatePreferences({ timezone: e.currentTarget.value as any })}
+              >
+                <option value="UTC">UTC</option>
+                <option value="America/New_York">NEW YORK</option>
+                <option value="Europe/London">LONDON</option>
+                <option value="Asia/Seoul">SEOUL</option>
+                <option value="Asia/Tokyo">TOKYO</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="dateFormat">DATE FORMAT</label>
+              <select
+                id="dateFormat"
+                value={preferences.dateFormat}
+                on:change={e => settingsStore.updatePreferences({ dateFormat: e.currentTarget.value as any })}
+              >
+                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="timeFormat">TIME FORMAT</label>
+              <select
+                id="timeFormat"
+                value={preferences.timeFormat}
+                on:change={e => settingsStore.updatePreferences({ timeFormat: e.currentTarget.value as any })}
+              >
+                <option value="24H">24 HOUR</option>
+                <option value="12H">12 HOUR</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="firstDay">FIRST DAY OF WEEK</label>
+              <select
+                id="firstDay"
+                value={preferences.firstDayOfWeek}
+                on:change={e => settingsStore.updatePreferences({ firstDayOfWeek: e.currentTarget.value as any })}
+              >
+                <option value="MONDAY">MONDAY</option>
+                <option value="SUNDAY">SUNDAY</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="numberFormat">NUMBER FORMAT</label>
+              <select
+                id="numberFormat"
+                value={preferences.numberFormat}
+                on:change={e => settingsStore.updatePreferences({ numberFormat: e.currentTarget.value as any })}
+              >
+                <option value="COMMA">1,000.00</option>
+                <option value="PERIOD">1.000,00</option>
+                <option value="SPACE">1 000.00</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="defaultView">DEFAULT VIEW</label>
+              <select
+                id="defaultView"
+                value={preferences.defaultView}
+                on:change={e => settingsStore.updatePreferences({ defaultView: e.currentTarget.value as any })}
+              >
+                <option value="DASHBOARD">DASHBOARD</option>
+                <option value="PROJECTS">PROJECTS</option>
+                <option value="BUILDS">BUILDS</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+      {:else if activeTab === 'INTEGRATIONS' && integrations}
+        <section class="settings-section">
+          <div class="section-header">
+            <h2>INTEGRATIONS</h2>
+            <Text size="small" muted>CONNECT EXTERNAL SERVICES</Text>
+          </div>
+
+          <div class="integrations-grid">
+            {#each Object.entries(integrations) as [service, config]}
+              <div class="integration-card" class:enabled={config.enabled}>
+                <div class="integration-header">
+                  <h3>{service.toUpperCase()}</h3>
+                  <span class="integration-status">
+                    {config.enabled ? '● CONNECTED' : '○ DISCONNECTED'}
+                  </span>
+                </div>
+
+                {#if config.enabled}
+                  <div class="integration-info">
+                    {#each Object.entries(config) as [key, value]}
+                      {#if key !== 'enabled' && value}
+                        <div class="info-item">
+                          <span class="info-label">{key.toUpperCase()}</span>
+                          <span class="info-value">
+                            {Array.isArray(value) ? value.join(', ') : value}
+                          </span>
+                        </div>
+                      {/if}
+                    {/each}
+                  </div>
+                {/if}
+
+                <div class="integration-actions">
+                  {#if config.enabled}
+                    <Button variant="outline" size="small">◧ CONFIGURE</Button>
+                    <Button variant="text" size="small">✕ DISCONNECT</Button>
+                  {:else}
+                    <Button variant="primary" size="small">◊ CONNECT</Button>
+                  {/if}
+                </div>
+              </div>
+            {/each}
+          </div>
+        </section>
+
+      {:else if activeTab === 'DATA' && dataPrivacy}
+        <section class="settings-section">
+          <div class="section-header">
+            <h2>DATA & PRIVACY</h2>
+            <Text size="small" muted>MANAGE YOUR DATA AND PRIVACY SETTINGS</Text>
+          </div>
+
+          <!-- Data Retention -->
+          <div class="subsection">
+            <h3>DATA RETENTION</h3>
+            <div class="retention-grid">
+              {#each Object.entries(dataPrivacy.dataRetention) as [type, days]}
+                <div class="retention-item">
+                  <label for={`retention-${type}`}>
+                    {type.toUpperCase()} (DAYS)
+                  </label>
+                  <input
+                    id={`retention-${type}`}
+                    type="number"
+                    value={days}
+                    on:change={e => {
+                      const updated = { ...dataPrivacy.dataRetention };
+                      (updated as any)[type] = parseInt(e.currentTarget.value);
+                      settingsStore.updateDataPrivacy({ dataRetention: updated });
+                    }}
+                  />
+                </div>
+              {/each}
+            </div>
+          </div>
+
+          <!-- Data Export -->
+          <div class="subsection">
+            <h3>DATA EXPORT</h3>
+            <p class="subsection-description">
+              DOWNLOAD YOUR DATA IN VARIOUS FORMATS
+            </p>
+
+            <div class="export-controls">
+              <Button variant="outline" on:click={() => showExportDialog = true}>
+                ◩ REQUEST DATA EXPORT
+              </Button>
+            </div>
+
+            {#if showExportDialog}
+              <div class="dialog-backdrop">
+                <div class="dialog">
+                  <h3>EXPORT DATA</h3>
+                  <div class="form-group">
+                    <label for="exportFormat">SELECT FORMAT</label>
+                    <select id="exportFormat" bind:value={exportFormat}>
+                      <option value="JSON">JSON</option>
+                      <option value="CSV">CSV</option>
+                      <option value="XML">XML</option>
+                    </select>
+                  </div>
+                  <div class="dialog-actions">
+                    <Button variant="primary" on:click={handleDataExport}>
+                      ▶ EXPORT
+                    </Button>
+                    <Button variant="outline" on:click={() => showExportDialog = false}>
+                      ✕ CANCEL
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            {/if}
+
+            <!-- Export History -->
+            {#if dataPrivacy.exportHistory.length > 0}
+              <div class="export-history">
+                <h4>EXPORT HISTORY</h4>
+                {#each dataPrivacy.exportHistory as exp}
+                  <div class="export-item">
+                    <div class="export-info">
+                      <span class="export-format">{exp.format}</span>
+                      <span class="export-date">{formatDate(exp.requestedAt)}</span>
+                      <span class="export-status status-{exp.status.toLowerCase()}">
+                        {exp.status}
+                      </span>
+                    </div>
+                    {#if exp.downloadUrl}
+                      <Button variant="text" size="small">
+                        ↓ DOWNLOAD
+                      </Button>
+                    {/if}
+                  </div>
+                {/each}
+              </div>
+            {/if}
+          </div>
+
+          <!-- GDPR Settings -->
+          <div class="subsection">
+            <h3>PRIVACY SETTINGS</h3>
+            <div class="privacy-settings">
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={dataPrivacy.gdpr.dataProcessingAgreement}
+                  on:change={e => {
+                    const updated = { ...dataPrivacy.gdpr, dataProcessingAgreement: e.currentTarget.checked };
+                    settingsStore.updateDataPrivacy({ gdpr: updated });
+                  }}
+                />
+                DATA PROCESSING AGREEMENT
+              </label>
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={dataPrivacy.gdpr.marketingEmails}
+                  on:change={e => {
+                    const updated = { ...dataPrivacy.gdpr, marketingEmails: e.currentTarget.checked };
+                    settingsStore.updateDataPrivacy({ gdpr: updated });
+                  }}
+                />
+                MARKETING EMAILS
+              </label>
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={dataPrivacy.gdpr.analyticsTracking}
+                  on:change={e => {
+                    const updated = { ...dataPrivacy.gdpr, analyticsTracking: e.currentTarget.checked };
+                    settingsStore.updateDataPrivacy({ gdpr: updated });
+                  }}
+                />
+                ANALYTICS TRACKING
+              </label>
+            </div>
+          </div>
+
+          <!-- Danger Zone -->
+          <div class="subsection danger-zone">
+            <h3>DANGER ZONE</h3>
+            <p class="danger-description">
+              IRREVERSIBLE ACTIONS - PROCEED WITH CAUTION
+            </p>
+            <div class="danger-actions">
+              <Button variant="outline" on:click={() => showDeleteAccountDialog = true}>
+                ☠ DELETE ACCOUNT
+              </Button>
+            </div>
+
+            {#if showDeleteAccountDialog}
+              <div class="dialog-backdrop">
+                <div class="dialog danger">
+                  <h3>⚠ DELETE ACCOUNT</h3>
+                  <p>
+                    THIS ACTION CANNOT BE UNDONE. ALL YOUR DATA WILL BE PERMANENTLY DELETED.
+                  </p>
+                  <div class="dialog-actions">
+                    <Button variant="primary" on:click={handleDeleteAccount}>
+                      ☠ DELETE MY ACCOUNT
+                    </Button>
+                    <Button variant="outline" on:click={() => showDeleteAccountDialog = false}>
+                      ✕ CANCEL
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            {/if}
+          </div>
+        </section>
+      {/if}
+    </main>
+  </div>
 </div>
 
 <style>
-	.settings-container {
-		padding: var(--spacing-6);
-		max-width: 1400px;
-		margin: 0 auto;
-	}
-
-	.settings-header {
-		margin-bottom: var(--spacing-8);
-	}
-
-	.settings-header h1 {
-		font-size: var(--text-2xl);
-		font-weight: 700;
-		margin-bottom: var(--spacing-2);
-	}
-
-	.settings-header p {
-		color: var(--text-secondary);
-	}
-
-	.settings-layout {
-		display: grid;
-		grid-template-columns: 240px 1fr;
-		gap: var(--spacing-8);
-	}
-
-	.settings-sidebar {
-		position: sticky;
-		top: var(--spacing-6);
-		height: fit-content;
-	}
-
-	.settings-nav {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-1);
-	}
-
-	.nav-item {
-		display: flex;
-		align-items: center;
-		gap: var(--spacing-3);
-		padding: var(--spacing-3) var(--spacing-4);
-		background: transparent;
-		border: 1px solid transparent;
-		text-align: left;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.nav-item:hover {
-		background: var(--bg-secondary);
-	}
-
-	.nav-item.active {
-		background: var(--fg);
-		color: var(--bg);
-		border-color: var(--fg);
-	}
-
-	.nav-item span {
-		flex: 1;
-	}
-
-	.settings-content {
-		min-height: 600px;
-	}
-
-	.settings-section {
-		background: var(--bg);
-		border: 1px solid var(--border);
-		padding: var(--spacing-6);
-	}
-
-	.settings-section h2 {
-		font-size: var(--text-xl);
-		font-weight: 700;
-		margin-bottom: var(--spacing-6);
-	}
-
-	.form-section {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-6);
-	}
-
-	.avatar-section {
-		display: flex;
-		align-items: center;
-		gap: var(--spacing-4);
-		padding-bottom: var(--spacing-6);
-		border-bottom: 1px solid var(--border);
-	}
-
-	.avatar-preview {
-		width: 96px;
-		height: 96px;
-		border: 2px solid var(--fg);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: var(--bg-secondary);
-	}
-
-	.avatar-controls {
-		display: flex;
-		gap: var(--spacing-3);
-	}
-
-	.form-grid {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: var(--spacing-4);
-	}
-
-	.form-group {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-2);
-	}
-
-	.form-group.full-width {
-		grid-column: 1 / -1;
-	}
-
-	.form-group label {
-		font-size: var(--text-sm);
-		font-weight: 500;
-	}
-
-	.form-group input,
-	.form-group textarea,
-	.form-group select {
-		padding: var(--spacing-3);
-		border: 1px solid var(--border);
-		background: var(--bg);
-		font-family: var(--font-mono);
-		font-size: var(--text-sm);
-	}
-
-	.form-group input[readonly] {
-		background: var(--bg-secondary);
-		opacity: 0.7;
-	}
-
-	.form-group textarea {
-		resize: vertical;
-		min-height: 80px;
-	}
-
-	.form-actions {
-		display: flex;
-		gap: var(--spacing-3);
-		padding-top: var(--spacing-4);
-		border-top: 1px solid var(--border);
-	}
-
-	.btn-primary,
-	.btn-secondary,
-	.btn-text {
-		display: inline-flex;
-		align-items: center;
-		gap: var(--spacing-2);
-		padding: var(--spacing-3) var(--spacing-4);
-		border: 1px solid var(--fg);
-		background: var(--bg);
-		cursor: pointer;
-		font-size: var(--text-sm);
-		font-weight: 500;
-		transition: all 0.2s;
-	}
-
-	.btn-primary {
-		background: var(--fg);
-		color: var(--bg);
-	}
-
-	.btn-primary:hover:not(:disabled) {
-		opacity: 0.9;
-	}
-
-	.btn-secondary:hover:not(:disabled) {
-		background: var(--bg-secondary);
-	}
-
-	.btn-text {
-		border: none;
-		padding: var(--spacing-2);
-	}
-
-	.btn-text:hover:not(:disabled) {
-		background: var(--bg-secondary);
-	}
-
-	.btn-text.danger,
-	.btn-secondary.danger {
-		color: var(--error);
-		border-color: var(--error);
-	}
-
-	.btn-icon {
-		padding: var(--spacing-2);
-		border: 1px solid var(--border);
-		background: var(--bg);
-		cursor: pointer;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		transition: all 0.2s;
-	}
-
-	.btn-icon:hover {
-		background: var(--bg-secondary);
-	}
-
-	.btn-icon.danger {
-		color: var(--error);
-		border-color: var(--error);
-	}
-
-	button:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-
-	.security-sections,
-	.data-sections {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-8);
-	}
-
-	.subsection {
-		padding-bottom: var(--spacing-6);
-		border-bottom: 1px solid var(--border);
-	}
-
-	.subsection:last-child {
-		border-bottom: none;
-		padding-bottom: 0;
-	}
-
-	.subsection h3 {
-		font-size: var(--text-lg);
-		font-weight: 600;
-		margin-bottom: var(--spacing-4);
-	}
-
-	.password-input {
-		position: relative;
-		display: flex;
-		align-items: center;
-		gap: var(--spacing-2);
-	}
-
-	.password-input input {
-		flex: 1;
-	}
-
-	.security-option {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: var(--spacing-4);
-		border: 1px solid var(--border);
-	}
-
-	.option-info p {
-		margin: 0;
-	}
-
-	.text-secondary {
-		color: var(--text-secondary);
-		font-size: var(--text-sm);
-		margin-top: var(--spacing-1);
-	}
-
-	.toggle {
-		position: relative;
-		display: inline-block;
-		width: 48px;
-		height: 24px;
-	}
-
-	.toggle input {
-		opacity: 0;
-		width: 0;
-		height: 0;
-	}
-
-	.toggle-slider {
-		position: absolute;
-		cursor: pointer;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		background-color: var(--bg-secondary);
-		border: 1px solid var(--fg);
-		transition: 0.4s;
-	}
-
-	.toggle-slider:before {
-		position: absolute;
-		content: "";
-		height: 18px;
-		width: 18px;
-		left: 2px;
-		bottom: 2px;
-		background-color: var(--fg);
-		transition: 0.4s;
-	}
-
-	.toggle input:checked + .toggle-slider {
-		background-color: var(--fg);
-	}
-
-	.toggle input:checked + .toggle-slider:before {
-		transform: translateX(24px);
-		background-color: var(--bg);
-	}
-
-	.api-keys,
-	.sessions {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-3);
-		margin: var(--spacing-4) 0;
-	}
-
-	.api-key-item,
-	.session-item {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: var(--spacing-4);
-		border: 1px solid var(--border);
-		background: var(--bg-secondary);
-	}
-
-	.key-info,
-	.session-info {
-		flex: 1;
-	}
-
-	.key-name,
-	.session-device {
-		font-weight: 500;
-		margin-bottom: var(--spacing-2);
-	}
-
-	.key-meta,
-	.session-meta {
-		display: flex;
-		gap: var(--spacing-4);
-		font-size: var(--text-sm);
-		color: var(--text-secondary);
-	}
-
-	.key-actions {
-		display: flex;
-		gap: var(--spacing-2);
-	}
-
-	.badge {
-		display: inline-block;
-		padding: var(--spacing-1) var(--spacing-2);
-		background: var(--fg);
-		color: var(--bg);
-		font-size: var(--text-xs);
-		margin-left: var(--spacing-2);
-	}
-
-	.status-badge {
-		padding: var(--spacing-1) var(--spacing-3);
-		border: 1px solid var(--fg);
-		font-size: var(--text-sm);
-	}
-
-	.status-badge.success {
-		background: var(--fg);
-		color: var(--bg);
-	}
-
-	.notification-channels {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: var(--spacing-6);
-	}
-
-	.channel {
-		border: 1px solid var(--border);
-		padding: var(--spacing-4);
-	}
-
-	.channel h3 {
-		font-size: var(--text-lg);
-		font-weight: 600;
-		margin-bottom: var(--spacing-4);
-	}
-
-	.notification-options {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-3);
-	}
-
-	.checkbox-label {
-		display: flex;
-		align-items: center;
-		gap: var(--spacing-2);
-		cursor: pointer;
-	}
-
-	.checkbox-label input[type="checkbox"] {
-		width: 16px;
-		height: 16px;
-		cursor: pointer;
-	}
-
-	.preferences-grid {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: var(--spacing-4);
-		margin-bottom: var(--spacing-6);
-	}
-
-	.preference-toggles {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-3);
-		padding: var(--spacing-4) 0;
-		border-top: 1px solid var(--border);
-		border-bottom: 1px solid var(--border);
-		margin-bottom: var(--spacing-6);
-	}
-
-	.integrations-list {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: var(--spacing-4);
-	}
-
-	.integration-card {
-		border: 1px solid var(--border);
-		padding: var(--spacing-4);
-	}
-
-	.integration-header {
-		display: flex;
-		align-items: center;
-		gap: var(--spacing-3);
-		margin-bottom: var(--spacing-4);
-	}
-
-	.integration-header h3 {
-		flex: 1;
-		font-size: var(--text-lg);
-		font-weight: 600;
-	}
-
-	.integration-body {
-		margin-bottom: var(--spacing-4);
-	}
-
-	.integration-info {
-		font-size: var(--text-sm);
-		margin-bottom: var(--spacing-1);
-	}
-
-	.integration-actions {
-		display: flex;
-		gap: var(--spacing-2);
-	}
-
-	.export-requests {
-		margin-top: var(--spacing-6);
-	}
-
-	.export-requests h4 {
-		font-size: var(--text-md);
-		font-weight: 600;
-		margin-bottom: var(--spacing-3);
-	}
-
-	.export-item {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: var(--spacing-3);
-		border: 1px solid var(--border);
-		margin-bottom: var(--spacing-2);
-	}
-
-	.export-info {
-		display: flex;
-		align-items: center;
-		gap: var(--spacing-4);
-		font-size: var(--text-sm);
-	}
-
-	.retention-policy {
-		list-style: none;
-		padding: 0;
-		margin: var(--spacing-4) 0;
-	}
-
-	.retention-policy li {
-		padding: var(--spacing-2) 0;
-		border-bottom: 1px solid var(--border);
-		font-size: var(--text-sm);
-	}
-
-	.danger-zone {
-		background: var(--bg-secondary);
-		padding: var(--spacing-4);
-		border: 2px solid var(--error);
-	}
-
-	.danger-item {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: var(--spacing-4) 0;
-		border-bottom: 1px solid var(--border);
-	}
-
-	.danger-item:last-child {
-		border-bottom: none;
-		padding-bottom: 0;
-	}
-
-	.spin {
-		animation: spin 1s linear infinite;
-	}
-
-	@keyframes spin {
-		from {
-			transform: rotate(0deg);
-		}
-		to {
-			transform: rotate(360deg);
-		}
-	}
+  .settings-page {
+    min-height: 100vh;
+    background: var(--bg);
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6) var(--space-8);
+    border-bottom: var(--border-width) solid var(--border-color);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .settings-layout {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    min-height: calc(100vh - 120px);
+  }
+
+  /* Sidebar Navigation */
+  .settings-sidebar {
+    border-right: var(--border-width) solid var(--border-color);
+    background: var(--surface-1);
+  }
+
+  .settings-nav {
+    padding: var(--space-4) 0;
+  }
+
+  .nav-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: transparent;
+    border: none;
+    border-left: 4px solid transparent;
+    color: var(--fg);
+    font-family: var(--font-mono);
+    font-size: var(--text-12);
+    font-weight: var(--weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+    cursor: pointer;
+    transition: var(--transition-base);
+  }
+
+  .nav-item:hover {
+    background: var(--surface-2);
+  }
+
+  .nav-item.active {
+    background: var(--fg);
+    color: var(--bg);
+    border-left-color: var(--fg);
+  }
+
+  .nav-icon {
+    width: 20px;
+    text-align: center;
+    font-size: var(--text-16);
+  }
+
+  .nav-label {
+    flex: 1;
+  }
+
+  .nav-arrow {
+    font-size: var(--text-10);
+  }
+
+  /* Content Area */
+  .settings-content {
+    padding: var(--space-6);
+    overflow-y: auto;
+  }
+
+  .settings-section {
+    max-width: 1000px;
+  }
+
+  .section-header {
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    border-bottom: var(--border-width) solid var(--border-color);
+  }
+
+  .section-header h2 {
+    font-size: var(--text-20);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-tight);
+    margin: 0 0 var(--space-2) 0;
+  }
+
+  /* Form Styles */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .form-group.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .form-group label {
+    font-size: var(--text-11);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: var(--space-3);
+    background: var(--bg);
+    border: var(--border-width) solid var(--border-color);
+    color: var(--fg);
+    font-family: var(--font-mono);
+    font-size: var(--text-13);
+  }
+
+  .form-group input[readonly] {
+    background: var(--surface-1);
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .form-group select {
+    cursor: pointer;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+  }
+
+  /* Subsections */
+  .subsection {
+    padding: var(--space-6) 0;
+    border-bottom: var(--border-width) solid var(--border-color);
+  }
+
+  .subsection:last-child {
+    border-bottom: none;
+  }
+
+  .subsection h3 {
+    font-size: var(--text-16);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    margin: 0 0 var(--space-4) 0;
+  }
+
+  .subsection-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-4);
+  }
+
+  .subsection-description {
+    color: var(--muted);
+    font-size: var(--text-13);
+    margin-bottom: var(--space-4);
+  }
+
+  /* Info Grid */
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .info-label {
+    font-size: var(--text-11);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .info-value {
+    font-size: var(--text-14);
+    font-family: var(--font-mono);
+  }
+
+  /* Password Form */
+  .password-form {
+    background: var(--surface-1);
+    border: var(--border-width) solid var(--border-color);
+    padding: var(--space-4);
+    margin-top: var(--space-4);
+  }
+
+  /* API Keys */
+  .api-key-form {
+    background: var(--surface-1);
+    border: var(--border-width) solid var(--border-color);
+    padding: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+
+  .api-keys-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .api-key-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3);
+    background: var(--surface-1);
+    border: var(--border-width) solid var(--border-color);
+  }
+
+  .api-key-info {
+    flex: 1;
+  }
+
+  .api-key-name {
+    font-weight: var(--weight-semibold);
+    margin-bottom: var(--space-1);
+  }
+
+  .api-key-value {
+    font-family: var(--font-mono);
+    font-size: var(--text-12);
+    color: var(--muted);
+    margin-bottom: var(--space-1);
+  }
+
+  .api-key-meta {
+    font-size: var(--text-11);
+    color: var(--muted);
+  }
+
+  /* Sessions */
+  .sessions-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .session-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3);
+    background: var(--surface-1);
+    border: var(--border-width) solid var(--border-color);
+  }
+
+  .session-item.current {
+    border-color: var(--fg);
+  }
+
+  .session-info {
+    flex: 1;
+  }
+
+  .session-device {
+    font-weight: var(--weight-semibold);
+    margin-bottom: var(--space-1);
+  }
+
+  .session-details {
+    font-size: var(--text-12);
+    color: var(--muted);
+    margin-bottom: var(--space-1);
+  }
+
+  .session-time {
+    font-size: var(--text-11);
+    color: var(--muted);
+  }
+
+  .current-badge {
+    padding: var(--space-1) var(--space-2);
+    background: var(--fg);
+    color: var(--bg);
+    font-size: var(--text-10);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+  }
+
+  /* Checkbox Group */
+  .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-13);
+    cursor: pointer;
+  }
+
+  .checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+
+  /* Toggle Group */
+  .toggle-group {
+    margin-bottom: var(--space-4);
+  }
+
+  .toggle-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-13);
+    font-weight: var(--weight-semibold);
+    cursor: pointer;
+  }
+
+  /* Notification Channels */
+  .notification-channels {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .channel-section {
+    padding: var(--space-4);
+    background: var(--surface-1);
+    border: var(--border-width) solid var(--border-color);
+  }
+
+  .channel-section h3 {
+    font-size: var(--text-14);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    margin: 0 0 var(--space-3) 0;
+  }
+
+  .notification-types {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+  }
+
+  /* DND Settings */
+  .dnd-settings {
+    background: var(--surface-1);
+    border: var(--border-width) solid var(--border-color);
+    padding: var(--space-4);
+  }
+
+  /* Integrations */
+  .integrations-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+
+  .integration-card {
+    padding: var(--space-4);
+    background: var(--surface-1);
+    border: var(--border-width) solid var(--border-color);
+  }
+
+  .integration-card.enabled {
+    border-color: var(--fg);
+  }
+
+  .integration-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-4);
+  }
+
+  .integration-header h3 {
+    font-size: var(--text-14);
+    font-weight: var(--weight-semibold);
+    margin: 0;
+  }
+
+  .integration-status {
+    font-size: var(--text-11);
+    font-weight: var(--weight-medium);
+  }
+
+  .integration-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+    padding-top: var(--space-3);
+    border-top: var(--border-width) solid var(--border-color);
+  }
+
+  .integration-actions {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  /* Data Retention */
+  .retention-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+
+  .retention-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .retention-item label {
+    font-size: var(--text-11);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+  }
+
+  .retention-item input {
+    padding: var(--space-3);
+    background: var(--bg);
+    border: var(--border-width) solid var(--border-color);
+    color: var(--fg);
+    font-family: var(--font-mono);
+    font-size: var(--text-13);
+  }
+
+  /* Export Controls */
+  .export-controls {
+    margin-bottom: var(--space-4);
+  }
+
+  .export-history {
+    margin-top: var(--space-4);
+  }
+
+  .export-history h4 {
+    font-size: var(--text-13);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    margin: 0 0 var(--space-3) 0;
+  }
+
+  .export-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3);
+    background: var(--surface-1);
+    border: var(--border-width) solid var(--border-color);
+    margin-bottom: var(--space-2);
+  }
+
+  .export-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .export-format {
+    font-weight: var(--weight-semibold);
+  }
+
+  .export-date {
+    font-size: var(--text-12);
+    color: var(--muted);
+  }
+
+  .export-status {
+    font-size: var(--text-11);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+  }
+
+  .export-status.status-completed {
+    color: var(--fg);
+  }
+
+  .export-status.status-pending,
+  .export-status.status-processing {
+    color: var(--muted);
+  }
+
+  .export-status.status-failed {
+    text-decoration: line-through;
+  }
+
+  /* Privacy Settings */
+  .privacy-settings {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  /* Danger Zone */
+  .danger-zone {
+    background: var(--bg);
+    border: 2px solid var(--fg);
+    padding: var(--space-4);
+  }
+
+  .danger-description {
+    font-size: var(--text-13);
+    color: var(--muted);
+    margin-bottom: var(--space-4);
+  }
+
+  .danger-actions {
+    display: flex;
+    gap: var(--space-3);
+  }
+
+  /* Dialog */
+  .dialog-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .dialog {
+    background: var(--bg);
+    border: var(--border-width) solid var(--border-color);
+    padding: var(--space-6);
+    max-width: 500px;
+    width: 100%;
+  }
+
+  .dialog.danger {
+    border-color: var(--fg);
+    border-width: 2px;
+  }
+
+  .dialog h3 {
+    font-size: var(--text-18);
+    font-weight: var(--weight-semibold);
+    margin: 0 0 var(--space-4) 0;
+  }
+
+  .dialog p {
+    font-size: var(--text-13);
+    margin-bottom: var(--space-4);
+  }
+
+  .dialog-actions {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: var(--border-width) solid var(--border-color);
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .settings-layout {
+      grid-template-columns: 200px 1fr;
+    }
+
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .integrations-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .settings-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .settings-sidebar {
+      border-right: none;
+      border-bottom: var(--border-width) solid var(--border-color);
+    }
+
+    .settings-nav {
+      display: flex;
+      overflow-x: auto;
+      padding: 0;
+    }
+
+    .nav-item {
+      white-space: nowrap;
+    }
+  }
 </style>
