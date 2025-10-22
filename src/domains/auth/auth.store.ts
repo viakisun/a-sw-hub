@@ -12,7 +12,8 @@ import { goto } from '$app/navigation';
 import { authService } from './auth.service';
 import { errorHandler } from '../../lib/errors';
 import type { User } from '../../lib/types';
-import type { AuthState, AuthCredentials, AuthEvent } from './auth.types';
+import { AuthEvent } from './auth.types';
+import type { AuthState, AuthCredentials } from './auth.types';
 
 /**
  * Create the authentication store with proper initialization
