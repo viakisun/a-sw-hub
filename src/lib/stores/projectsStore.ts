@@ -130,6 +130,15 @@ function createProjectsStore() {
       }));
     },
 
+    // Set filters directly
+    setFilters: (filters: Partial<ProjectsState['filters']>) => {
+      update((state) => ({
+        ...state,
+        filters: { ...state.filters, ...filters },
+        page: 1,
+      }));
+    },
+
     // Clear all filters
     clearFilters: () => {
       update((state) => ({

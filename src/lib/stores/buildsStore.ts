@@ -43,17 +43,22 @@ function createBuildsStore() {
     subscribe,
 
     // Load builds
-    loadBuilds: async () => {
+    loadBuilds: async (projectId?: string) => {
       update((state) => ({ ...state, loading: true }));
 
       // Simulate API delay
       await new Promise((resolve) => setTimeout(resolve, 300));
 
+      // Filter by projectId if provided
+      const builds = projectId
+        ? mockBuilds.filter((b) => b.projectId === projectId)
+        : mockBuilds;
+
       update((state) => ({
         ...state,
-        builds: mockBuilds,
-        runningBuilds: mockBuilds.filter((b) => b.status === 'running'),
-        queuedBuilds: mockBuilds.filter((b) => b.status === 'pending').slice(0, 3),
+        builds,
+        runningBuilds: builds.filter((b) => b.status === 'running'),
+        queuedBuilds: builds.filter((b) => b.status === 'pending').slice(0, 3),
         loading: false,
       }));
     },

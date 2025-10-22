@@ -52,9 +52,9 @@
     searchQuery = input.value;
     projectsStore.setFilters({
       search: searchQuery,
-      category: selectedCategory === 'all' ? undefined : selectedCategory,
-      status: selectedStatus === 'all' ? undefined : selectedStatus,
-      language: selectedLanguage === 'all' ? undefined : selectedLanguage,
+      categories: selectedCategory === 'all' ? [] : [selectedCategory],
+      statuses: selectedStatus === 'all' ? [] : [selectedStatus],
+      languages: selectedLanguage === 'all' ? [] : [selectedLanguage],
     });
   }
 
@@ -62,9 +62,9 @@
     selectedCategory = category;
     projectsStore.setFilters({
       search: searchQuery,
-      category: category === 'all' ? undefined : category,
-      status: selectedStatus === 'all' ? undefined : selectedStatus,
-      language: selectedLanguage === 'all' ? undefined : selectedLanguage,
+      categories: category === 'all' ? [] : [category],
+      statuses: selectedStatus === 'all' ? [] : [selectedStatus],
+      languages: selectedLanguage === 'all' ? [] : [selectedLanguage],
     });
   }
 
@@ -72,9 +72,9 @@
     selectedStatus = status;
     projectsStore.setFilters({
       search: searchQuery,
-      category: selectedCategory === 'all' ? undefined : selectedCategory,
-      status: status === 'all' ? undefined : status,
-      language: selectedLanguage === 'all' ? undefined : selectedLanguage,
+      categories: selectedCategory === 'all' ? [] : [selectedCategory],
+      statuses: status === 'all' ? [] : [status],
+      languages: selectedLanguage === 'all' ? [] : [selectedLanguage],
     });
   }
 
@@ -82,9 +82,9 @@
     selectedLanguage = language;
     projectsStore.setFilters({
       search: searchQuery,
-      category: selectedCategory === 'all' ? undefined : selectedCategory,
-      status: selectedStatus === 'all' ? undefined : selectedStatus,
-      language: language === 'all' ? undefined : language,
+      categories: selectedCategory === 'all' ? [] : [selectedCategory],
+      statuses: selectedStatus === 'all' ? [] : [selectedStatus],
+      languages: language === 'all' ? [] : [language],
     });
   }
 

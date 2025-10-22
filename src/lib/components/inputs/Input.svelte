@@ -13,7 +13,7 @@
   export let required = false;
   export let id = `input-${Math.random().toString(36).substr(2, 9)}`;
   export let name = '';
-  export let autocomplete: string | null | undefined = '';
+  export let autocomplete: any = '';
 </script>
 
 <div class="input-wrapper">

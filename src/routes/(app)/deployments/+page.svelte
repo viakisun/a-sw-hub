@@ -35,7 +35,9 @@
 		BarChart,
 		TrendingUp,
 		TrendingDown,
-		Info
+		Info,
+		Code,
+		Plus
 	} from 'lucide-svelte';
 
 	interface Environment {
