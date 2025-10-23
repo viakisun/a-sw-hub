@@ -16,7 +16,7 @@
 
   let project: Project | null = null;
   let builds: Build[] = [];
-  let activeTab: 'overview' | 'builds' | 'statistics' | 'settings' = 'overview';
+  let activeTab: 'overview' | 'builds' | 'statistics' | 'settings' | 'deployments' | 'contributors' = 'overview';
 
   // Dialog states
   let showTriggerBuildDialog = false;
@@ -33,6 +33,13 @@
 
   // Project starred state
   let isStarred = false;
+
+  // Builds tab filters
+  let buildSearchQuery = '';
+  let buildFilterBranch = 'all';
+  let buildFilterStatus = 'all';
+  let buildFilterTriggeredBy = 'all';
+  let expandedBuildId: string | null = null;
 
   $: slug = $page.params.slug;
   $: if (project) {
@@ -107,6 +114,79 @@
     timestamp: build.commit.timestamp,
     branch: build.branch
   }));
+
+  // Filtered builds
+  $: filteredBuilds = builds.filter(build => {
+    // Search filter
+    if (buildSearchQuery) {
+      const query = buildSearchQuery.toLowerCase();
+      const matchesSearch =
+        build.buildNumber.toString().includes(query) ||
+        build.commit.sha.toLowerCase().includes(query) ||
+        build.commit.message.toLowerCase().includes(query) ||
+        build.triggeredBy.name.toLowerCase().includes(query);
+      if (!matchesSearch) return false;
+    }
+
+    // Branch filter
+    if (buildFilterBranch !== 'all' && build.branch !== buildFilterBranch) {
+      return false;
+    }
+
+    // Status filter
+    if (buildFilterStatus !== 'all' && build.status !== buildFilterStatus) {
+      return false;
+    }
+
+    // Triggered by filter
+    if (buildFilterTriggeredBy !== 'all' && build.triggeredBy.id !== buildFilterTriggeredBy) {
+      return false;
+    }
+
+    return true;
+  });
+
+  // Unique branches, users for filters
+  $: uniqueBranches = [...new Set(builds.map(b => b.branch))];
+  $: uniqueUsers = [...new Set(builds.map(b => ({ id: b.triggeredBy.id, name: b.triggeredBy.name })))];
+
+  // Contributors data
+  $: contributors = project ? calculateContributors(builds) : [];
+
+  function calculateContributors(builds: Build[]) {
+    const contributorMap = new Map<string, {
+      id: string;
+      name: string;
+      avatar: string;
+      commits: number;
+      builds: number;
+      lastActive: Date;
+    }>();
+
+    builds.forEach(build => {
+      const user = build.triggeredBy;
+      const existing = contributorMap.get(user.id);
+
+      if (existing) {
+        existing.commits += 1;
+        existing.builds += 1;
+        if (new Date(build.startedAt) > existing.lastActive) {
+          existing.lastActive = new Date(build.startedAt);
+        }
+      } else {
+        contributorMap.set(user.id, {
+          id: user.id,
+          name: user.name,
+          avatar: user.avatar,
+          commits: 1,
+          builds: 1,
+          lastActive: new Date(build.startedAt)
+        });
+      }
+    });
+
+    return Array.from(contributorMap.values()).sort((a, b) => b.commits - a.commits);
+  }
 
   // Calculate actual statistics from builds
   $: buildStats = calculateBuildStats(builds);
@@ -260,6 +340,39 @@
     alert('QUICK DEPLOY FUNCTIONALITY COMING SOON');
   }
 
+  // Build actions
+  function toggleBuildExpand(buildId: string) {
+    expandedBuildId = expandedBuildId === buildId ? null : buildId;
+  }
+
+  function rebuildBuild(build: Build) {
+    console.log('Rebuilding build:', build.id);
+    alert(`REBUILD STARTED\nBuild #${build.buildNumber}\nBranch: ${build.branch}`);
+  }
+
+  function cancelBuild(build: Build) {
+    if (build.status !== 'running' && build.status !== 'pending') {
+      alert('ONLY RUNNING OR PENDING BUILDS CAN BE CANCELLED');
+      return;
+    }
+    if (confirm(`CANCEL BUILD #${build.buildNumber}?`)) {
+      console.log('Cancelling build:', build.id);
+      alert(`BUILD #${build.buildNumber} CANCELLED`);
+    }
+  }
+
+  function downloadArtifacts(build: Build) {
+    console.log('Downloading artifacts for build:', build.id);
+    alert(`DOWNLOADING ARTIFACTS FOR BUILD #${build.buildNumber}`);
+  }
+
+  function clearBuildFilters() {
+    buildSearchQuery = '';
+    buildFilterBranch = 'all';
+    buildFilterStatus = 'all';
+    buildFilterTriggeredBy = 'all';
+  }
+
   onMount(async () => {
     await projectsStore.loadProjects();
     const projects = $projectsStore.projects;
@@ -314,6 +427,20 @@
         on:click={() => (activeTab = 'statistics')}
       >
         STATISTICS
+      </button>
+      <button
+        class="tab"
+        class:active={activeTab === 'deployments'}
+        on:click={() => (activeTab = 'deployments')}
+      >
+        DEPLOYMENTS
+      </button>
+      <button
+        class="tab"
+        class:active={activeTab === 'contributors'}
+        on:click={() => (activeTab = 'contributors')}
+      >
+        CONTRIBUTORS ({contributors.length})
       </button>
       <button
         class="tab"
@@ -450,6 +577,41 @@
             <Button variant="primary" on:click={openTriggerBuildDialog}>+ TRIGGER BUILD</Button>
           </div>
 
+          <!-- Filters -->
+          <div class="builds-filters">
+            <div class="filter-row">
+              <input
+                type="text"
+                class="search-input"
+                placeholder="🔍 SEARCH BUILDS..."
+                bind:value={buildSearchQuery}
+              />
+              <select class="filter-select" bind:value={buildFilterBranch}>
+                <option value="all">ALL BRANCHES</option>
+                {#each uniqueBranches as branch}
+                  <option value={branch}>{branch.toUpperCase()}</option>
+                {/each}
+              </select>
+              <select class="filter-select" bind:value={buildFilterStatus}>
+                <option value="all">ALL STATUS</option>
+                <option value="success">SUCCESS</option>
+                <option value="failed">FAILED</option>
+                <option value="running">RUNNING</option>
+                <option value="pending">PENDING</option>
+              </select>
+              <select class="filter-select" bind:value={buildFilterTriggeredBy}>
+                <option value="all">ALL USERS</option>
+                {#each uniqueUsers as user}
+                  <option value={user.id}>{user.name.toUpperCase()}</option>
+                {/each}
+              </select>
+              <button class="btn-secondary" on:click={clearBuildFilters}>✕ CLEAR</button>
+            </div>
+            <div class="filter-info">
+              SHOWING {filteredBuilds.length} OF {builds.length} BUILDS
+            </div>
+          </div>
+
           <div class="builds-table">
             <div class="table-header">
               <div class="table-cell">#</div>
@@ -459,29 +621,120 @@
               <div class="table-cell">TRIGGERED BY</div>
               <div class="table-cell">DURATION</div>
               <div class="table-cell">DATE</div>
+              <div class="table-cell">ACTIONS</div>
             </div>
 
-            {#each builds as build}
-              <div class="table-row" on:click={() => goto(`/builds/${build.id}`)}>
-                <div class="table-cell mono">#{build.buildNumber}</div>
-                <div class="table-cell">
-                  <span class="status-badge {build.status}">
-                    {getStatusIndicator(build.status)} {build.status.toUpperCase()}
-                  </span>
+            {#each filteredBuilds as build}
+              <div class="table-row-wrapper">
+                <div class="table-row" class:expanded={expandedBuildId === build.id}>
+                  <div class="table-cell mono">#{build.buildNumber}</div>
+                  <div class="table-cell">
+                    <span class="status-badge {build.status}">
+                      {getStatusIndicator(build.status)} {build.status.toUpperCase()}
+                    </span>
+                  </div>
+                  <div class="table-cell mono">{build.branch}</div>
+                  <div class="table-cell mono">{build.commit.sha.substring(0, 7)}</div>
+                  <div class="table-cell">{build.triggeredBy.name}</div>
+                  <div class="table-cell">
+                    {build.duration ? formatDuration(build.duration) : '-'}
+                  </div>
+                  <div class="table-cell">{formatDate(build.startedAt)}</div>
+                  <div class="table-cell actions-cell">
+                    <button class="action-icon" on:click={() => toggleBuildExpand(build.id)} title="Details">
+                      {expandedBuildId === build.id ? '▲' : '▼'}
+                    </button>
+                    <button class="action-icon" on:click={() => rebuildBuild(build)} title="Rebuild">
+                      ⟳
+                    </button>
+                    {#if build.status === 'running' || build.status === 'pending'}
+                      <button class="action-icon" on:click={() => cancelBuild(build)} title="Cancel">
+                        ✕
+                      </button>
+                    {/if}
+                    {#if build.status === 'success'}
+                      <button class="action-icon" on:click={() => downloadArtifacts(build)} title="Download">
+                        ⬇
+                      </button>
+                    {/if}
+                  </div>
                 </div>
-                <div class="table-cell mono">{build.branch}</div>
-                <div class="table-cell mono">{build.commit.sha.substring(0, 7)}</div>
-                <div class="table-cell">{build.triggeredBy.name}</div>
-                <div class="table-cell">
-                  {build.duration ? formatDuration(build.duration) : '-'}
-                </div>
-                <div class="table-cell">{formatDate(build.startedAt)}</div>
+
+                <!-- Expanded build details -->
+                {#if expandedBuildId === build.id}
+                  <div class="build-details">
+                    <div class="details-grid">
+                      <div class="detail-section">
+                        <h4>COMMIT INFO</h4>
+                        <div class="detail-item">
+                          <span class="label">MESSAGE:</span>
+                          <span class="value">{build.commit.message}</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="label">AUTHOR:</span>
+                          <span class="value">{build.commit.author}</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="label">SHA:</span>
+                          <span class="value mono">{build.commit.sha}</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="label">TIMESTAMP:</span>
+                          <span class="value">{formatDate(build.commit.timestamp)} {formatTime(build.commit.timestamp)}</span>
+                        </div>
+                      </div>
+
+                      <div class="detail-section">
+                        <h4>BUILD INFO</h4>
+                        <div class="detail-item">
+                          <span class="label">STARTED:</span>
+                          <span class="value">{formatDate(build.startedAt)} {formatTime(build.startedAt)}</span>
+                        </div>
+                        {#if build.finishedAt}
+                          <div class="detail-item">
+                            <span class="label">FINISHED:</span>
+                            <span class="value">{formatDate(build.finishedAt)} {formatTime(build.finishedAt)}</span>
+                          </div>
+                        {/if}
+                        <div class="detail-item">
+                          <span class="label">ENVIRONMENT:</span>
+                          <span class="value">{build.environment.toUpperCase()}</span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="label">PIPELINE:</span>
+                          <span class="value mono">{build.pipelineId}</span>
+                        </div>
+                      </div>
+
+                      <div class="detail-section stages">
+                        <h4>STAGES ({build.stages.length})</h4>
+                        <div class="stages-list">
+                          {#each build.stages as stage}
+                            <div class="stage-item {stage.status}">
+                              <span class="stage-icon">{getStatusIndicator(stage.status)}</span>
+                              <span class="stage-name">{stage.name}</span>
+                              <span class="stage-duration">
+                                {stage.duration ? formatDuration(stage.duration) : '-'}
+                              </span>
+                            </div>
+                          {/each}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="details-actions">
+                      <button class="btn-secondary" on:click={() => goto(`/builds/${build.id}`)}>
+                        VIEW FULL LOGS →
+                      </button>
+                    </div>
+                  </div>
+                {/if}
               </div>
             {/each}
 
-            {#if builds.length === 0}
+            {#if filteredBuilds.length === 0}
               <div class="no-builds">
-                <Text muted>NO BUILDS YET</Text>
+                <Text muted>{builds.length === 0 ? 'NO BUILDS YET' : 'NO BUILDS MATCH FILTERS'}</Text>
               </div>
             {/if}
           </div>
@@ -553,8 +806,210 @@
         </div>
       {/if}
 
+      {#if activeTab === 'deployments'}
+        <div class="deployments">
+          <div class="deployments-header">
+            <h3>DEPLOYMENT HISTORY</h3>
+            <button class="btn-primary" on:click={quickDeploy}>→ NEW DEPLOYMENT</button>
+          </div>
+
+          <div class="environments-status">
+            <h4>CURRENT ENVIRONMENT STATUS</h4>
+            <div class="env-grid">
+              <div class="env-card">
+                <div class="env-header">
+                  <span class="env-name">■ PRODUCTION</span>
+                  <span class="env-status success">HEALTHY</span>
+                </div>
+                <div class="env-info">
+                  <div class="env-row">
+                    <span>VERSION:</span>
+                    <span class="mono">v2.5.0</span>
+                  </div>
+                  <div class="env-row">
+                    <span>DEPLOYED:</span>
+                    <span>2 DAYS AGO</span>
+                  </div>
+                  <div class="env-row">
+                    <span>BY:</span>
+                    <span>DEPLOY BOT</span>
+                  </div>
+                </div>
+                <button class="btn-secondary">↶ ROLLBACK</button>
+              </div>
+
+              <div class="env-card">
+                <div class="env-header">
+                  <span class="env-name">□ STAGING</span>
+                  <span class="env-status warning">DEGRADED</span>
+                </div>
+                <div class="env-info">
+                  <div class="env-row">
+                    <span>VERSION:</span>
+                    <span class="mono">v2.6.0-rc1</span>
+                  </div>
+                  <div class="env-row">
+                    <span>DEPLOYED:</span>
+                    <span>3 HOURS AGO</span>
+                  </div>
+                  <div class="env-row">
+                    <span>BY:</span>
+                    <span>{project.owner.name}</span>
+                  </div>
+                </div>
+                <button class="btn-secondary">↶ ROLLBACK</button>
+              </div>
+
+              <div class="env-card">
+                <div class="env-header">
+                  <span class="env-name">▣ DEVELOPMENT</span>
+                  <span class="env-status success">HEALTHY</span>
+                </div>
+                <div class="env-info">
+                  <div class="env-row">
+                    <span>VERSION:</span>
+                    <span class="mono">v2.7.0-dev</span>
+                  </div>
+                  <div class="env-row">
+                    <span>DEPLOYED:</span>
+                    <span>1 HOUR AGO</span>
+                  </div>
+                  <div class="env-row">
+                    <span>BY:</span>
+                    <span>{project.owner.name}</span>
+                  </div>
+                </div>
+                <button class="btn-secondary">↶ ROLLBACK</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="deployment-history">
+            <h4>RECENT DEPLOYMENTS</h4>
+            <div class="deployment-list">
+              <div class="deployment-item">
+                <div class="deploy-icon success">✓</div>
+                <div class="deploy-info">
+                  <div class="deploy-title">v2.5.0 → PRODUCTION</div>
+                  <div class="deploy-meta">
+                    <span>2 DAYS AGO</span>
+                    <span>•</span>
+                    <span>BY DEPLOY BOT</span>
+                    <span>•</span>
+                    <span>DURATION: 3M 45S</span>
+                  </div>
+                </div>
+                <button class="btn-text">VIEW DETAILS →</button>
+              </div>
+
+              <div class="deployment-item">
+                <div class="deploy-icon warning">◯</div>
+                <div class="deploy-info">
+                  <div class="deploy-title">v2.6.0-rc1 → STAGING</div>
+                  <div class="deploy-meta">
+                    <span>3 HOURS AGO</span>
+                    <span>•</span>
+                    <span>BY {project.owner.name.toUpperCase()}</span>
+                    <span>•</span>
+                    <span>DURATION: 4M 12S</span>
+                  </div>
+                </div>
+                <button class="btn-text">VIEW DETAILS →</button>
+              </div>
+
+              <div class="deployment-item">
+                <div class="deploy-icon success">✓</div>
+                <div class="deploy-info">
+                  <div class="deploy-title">v2.7.0-dev → DEVELOPMENT</div>
+                  <div class="deploy-meta">
+                    <span>1 HOUR AGO</span>
+                    <span>•</span>
+                    <span>BY {project.owner.name.toUpperCase()}</span>
+                    <span>•</span>
+                    <span>DURATION: 2M 30S</span>
+                  </div>
+                </div>
+                <button class="btn-text">VIEW DETAILS →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      {/if}
+
+      {#if activeTab === 'contributors'}
+        <div class="contributors">
+          <div class="contributors-header">
+            <h3>PROJECT CONTRIBUTORS</h3>
+            <p>{contributors.length} CONTRIBUTORS • {builds.length} TOTAL BUILDS</p>
+          </div>
+
+          <div class="contributors-grid">
+            {#each contributors as contributor}
+              <div class="contributor-card">
+                <div class="contributor-avatar">
+                  {contributor.name.charAt(0).toUpperCase()}
+                </div>
+                <div class="contributor-info">
+                  <h4>{contributor.name}</h4>
+                  <div class="contributor-stats">
+                    <div class="stat">
+                      <span class="stat-value">{contributor.commits}</span>
+                      <span class="stat-label">COMMITS</span>
+                    </div>
+                    <div class="stat">
+                      <span class="stat-value">{contributor.builds}</span>
+                      <span class="stat-label">BUILDS</span>
+                    </div>
+                  </div>
+                  <div class="contributor-meta">
+                    <span>◆</span>
+                    <span>LAST ACTIVE: {getRelativeTime(contributor.lastActive)}</span>
+                  </div>
+                </div>
+              </div>
+            {/each}
+          </div>
+
+          {#if contributors.length === 0}
+            <div class="empty-state">
+              <p>NO CONTRIBUTORS YET</p>
+            </div>
+          {/if}
+        </div>
+      {/if}
+
       {#if activeTab === 'settings'}
         <div class="settings">
+          <div class="settings-section">
+            <h3>GENERAL SETTINGS</h3>
+            <div class="settings-group">
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label>PROJECT NAME</label>
+                  <p>The name of this project</p>
+                </div>
+                <input type="text" class="input" value={project.name} readonly />
+              </div>
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label>DESCRIPTION</label>
+                  <p>A short description of what this project does</p>
+                </div>
+                <textarea class="input" rows="3" readonly>{project.description}</textarea>
+              </div>
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label>VISIBILITY</label>
+                  <p>Control who can see this project</p>
+                </div>
+                <select class="input" disabled>
+                  <option value="public" selected={project.visibility === 'public'}>PUBLIC</option>
+                  <option value="private" selected={project.visibility === 'private'}>PRIVATE</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
           <div class="settings-section">
             <h3>DANGER ZONE</h3>
             <div class="danger-actions">
@@ -1498,8 +1953,451 @@
     letter-spacing: var(--tracking-wide);
   }
 
+  /* Builds Tab Filters */
+  .builds-filters {
+    margin-bottom: var(--space-6);
+    border: var(--border-width) solid var(--border-color);
+    background: var(--surface-1);
+  }
+
+  .filter-row {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border-bottom: var(--border-width) solid var(--border-color);
+  }
+
+  .search-input {
+    flex: 2;
+    padding: var(--space-2) var(--space-3);
+    border: var(--border-width) solid var(--fg);
+    background: var(--bg);
+    font-family: inherit;
+    font-size: var(--text-12);
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .filter-select {
+    flex: 1;
+    padding: var(--space-2) var(--space-3);
+    border: var(--border-width) solid var(--fg);
+    background: var(--bg);
+    font-family: inherit;
+    font-size: var(--text-12);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    cursor: pointer;
+  }
+
+  .filter-info {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-11);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    color: var(--muted);
+  }
+
+  /* Table row wrapper */
+  .table-row-wrapper {
+    border-bottom: var(--border-width) solid var(--border-color);
+  }
+
+  .table-row-wrapper:last-child {
+    border-bottom: none;
+  }
+
+  .table-row.expanded {
+    background: var(--surface-1);
+  }
+
+  /* Updated table header for actions column */
+  .table-header,
+  .table-row {
+    grid-template-columns: 80px 120px 120px 100px 150px 100px 150px 120px;
+  }
+
+  .actions-cell {
+    display: flex;
+    gap: var(--space-1);
+    align-items: center;
+  }
+
+  .action-icon {
+    padding: var(--space-1) var(--space-2);
+    border: var(--border-width) solid var(--fg);
+    background: var(--bg);
+    cursor: pointer;
+    font-size: var(--text-14);
+    transition: var(--transition-base);
+    font-family: inherit;
+  }
+
+  .action-icon:hover {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  /* Build details (expanded) */
+  .build-details {
+    padding: var(--space-6);
+    background: var(--bg);
+    border-top: var(--border-width) solid var(--border-color);
+  }
+
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+    margin-bottom: var(--space-6);
+  }
+
+  .detail-section h4 {
+    font-size: var(--text-12);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    margin: 0 0 var(--space-3) 0;
+    padding-bottom: var(--space-2);
+    border-bottom: var(--border-width) solid var(--border-color);
+  }
+
+  .detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-2) 0;
+    border-bottom: var(--border-width) solid var(--divider);
+    font-size: var(--text-12);
+  }
+
+  .detail-item:last-child {
+    border-bottom: none;
+  }
+
+  .detail-item .label {
+    color: var(--muted);
+    font-weight: var(--weight-medium);
+  }
+
+  .detail-item .value {
+    font-weight: var(--weight-medium);
+    text-align: right;
+  }
+
+  .stages-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .stage-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    border: var(--border-width) solid var(--border-color);
+    font-size: var(--text-12);
+  }
+
+  .stage-item.success {
+    background: var(--surface-1);
+  }
+
+  .stage-item.failed {
+    border-style: dashed;
+  }
+
+  .stage-icon {
+    font-size: var(--text-16);
+  }
+
+  .stage-name {
+    flex: 1;
+    font-weight: var(--weight-medium);
+  }
+
+  .stage-duration {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: var(--text-11);
+    color: var(--muted);
+  }
+
+  .details-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: var(--space-4);
+    border-top: var(--border-width) solid var(--border-color);
+  }
+
+  /* Deployments Tab */
+  .deployments-header,
+  .contributors-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-6);
+  }
+
+  .deployments-header h3,
+  .contributors-header h3 {
+    font-size: var(--text-16);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    margin: 0;
+  }
+
+  .contributors-header p {
+    font-size: var(--text-12);
+    color: var(--muted);
+    letter-spacing: var(--tracking-wide);
+    margin: 0;
+  }
+
+  .environments-status {
+    margin-bottom: var(--space-8);
+  }
+
+  .environments-status h4,
+  .deployment-history h4 {
+    font-size: var(--text-14);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    margin: 0 0 var(--space-4) 0;
+  }
+
+  .env-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+  }
+
+  .env-card {
+    border: var(--border-width) solid var(--fg);
+    padding: var(--space-4);
+  }
+
+  .env-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-3);
+    padding-bottom: var(--space-3);
+    border-bottom: var(--border-width) solid var(--border-color);
+  }
+
+  .env-name {
+    font-size: var(--text-14);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .env-status {
+    padding: var(--space-1) var(--space-2);
+    border: var(--border-width) solid var(--fg);
+    font-size: var(--text-11);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .env-status.success {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  .env-status.warning {
+    border-style: dashed;
+  }
+
+  .env-info {
+    margin-bottom: var(--space-3);
+  }
+
+  .env-row {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-1) 0;
+    font-size: var(--text-12);
+  }
+
+  .deployment-history {
+    border: var(--border-width) solid var(--border-color);
+    padding: var(--space-4);
+  }
+
+  .deployment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .deployment-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border-bottom: var(--border-width) solid var(--border-color);
+    transition: var(--transition-base);
+  }
+
+  .deployment-item:hover {
+    background: var(--surface-1);
+  }
+
+  .deployment-item:last-child {
+    border-bottom: none;
+  }
+
+  .deploy-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: var(--border-width) solid var(--fg);
+    font-size: var(--text-16);
+    font-weight: var(--weight-semibold);
+  }
+
+  .deploy-icon.success {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  .deploy-info {
+    flex: 1;
+  }
+
+  .deploy-title {
+    font-size: var(--text-14);
+    font-weight: var(--weight-semibold);
+    margin-bottom: var(--space-1);
+  }
+
+  .deploy-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-11);
+    color: var(--muted);
+    letter-spacing: var(--tracking-wide);
+  }
+
+  /* Contributors Tab */
+  .contributors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .contributor-card {
+    display: flex;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    border: var(--border-width) solid var(--fg);
+    transition: var(--transition-base);
+  }
+
+  .contributor-card:hover {
+    background: var(--surface-1);
+  }
+
+  .contributor-avatar {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: var(--border-width) solid var(--fg);
+    background: var(--fg);
+    color: var(--bg);
+    font-size: var(--text-24);
+    font-weight: var(--weight-semibold);
+    flex-shrink: 0;
+  }
+
+  .contributor-info {
+    flex: 1;
+  }
+
+  .contributor-info h4 {
+    font-size: var(--text-14);
+    font-weight: var(--weight-semibold);
+    margin: 0 0 var(--space-2) 0;
+  }
+
+  .contributor-stats {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-2);
+  }
+
+  .contributor-stats .stat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .contributor-stats .stat-value {
+    font-size: var(--text-20);
+    font-weight: var(--weight-semibold);
+  }
+
+  .contributor-stats .stat-label {
+    font-size: var(--text-11);
+    color: var(--muted);
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .contributor-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-11);
+    color: var(--muted);
+  }
+
+  /* Settings Tab */
+  .settings-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .setting-item {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: var(--space-4);
+    align-items: start;
+    padding: var(--space-4);
+    border: var(--border-width) solid var(--border-color);
+  }
+
+  .setting-info label {
+    display: block;
+    font-size: var(--text-12);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    margin-bottom: var(--space-1);
+  }
+
+  .setting-info p {
+    font-size: var(--text-12);
+    color: var(--muted);
+    margin: 0;
+  }
+
   /* Utilities */
   .mono {
     font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+
+  .empty-state {
+    padding: var(--space-8);
+    text-align: center;
+    border: var(--border-width) dashed var(--border-color);
+  }
+
+  .empty-state p {
+    color: var(--muted);
+    font-size: var(--text-14);
+    letter-spacing: var(--tracking-wide);
   }
 </style>
