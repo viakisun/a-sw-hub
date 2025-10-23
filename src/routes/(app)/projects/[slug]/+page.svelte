@@ -41,6 +41,63 @@
   let buildFilterTriggeredBy = 'all';
   let expandedBuildId: string | null = null;
 
+  // Settings tab - Environment Variables
+  let envVars = [
+    { key: 'API_URL', value: 'https://api.example.com', masked: false },
+    { key: 'DATABASE_URL', value: '***************************', masked: true },
+    { key: 'SECRET_KEY', value: '***************************', masked: true },
+  ];
+  let newEnvKey = '';
+  let newEnvValue = '';
+  let showEnvDialog = false;
+
+  // Settings tab - Webhooks
+  let webhooks = [
+    {
+      id: 'webhook-1',
+      url: 'https://hooks.example.com/build',
+      events: ['push', 'pull_request'],
+      active: true
+    },
+    {
+      id: 'webhook-2',
+      url: 'https://slack.example.com/webhook',
+      events: ['deployment'],
+      active: true
+    }
+  ];
+  let showWebhookDialog = false;
+  let newWebhookUrl = '';
+  let newWebhookEvents: string[] = [];
+
+  // Settings tab - Branch Protection
+  let protectedBranches = [
+    {
+      branch: 'main',
+      requirePR: true,
+      requireApprovals: 2,
+      requireStatusChecks: true,
+      enforceAdmins: true
+    },
+    {
+      branch: 'develop',
+      requirePR: true,
+      requireApprovals: 1,
+      requireStatusChecks: true,
+      enforceAdmins: false
+    }
+  ];
+
+  // Settings tab - Access Control
+  let teamMembers = [
+    { id: '1', name: 'John Developer', email: 'john@example.com', role: 'admin', avatar: 'J' },
+    { id: '2', name: 'Jane Reviewer', email: 'jane@example.com', role: 'write', avatar: 'J' },
+    { id: '3', name: 'Bob Viewer', email: 'bob@example.com', role: 'read', avatar: 'B' }
+  ];
+  let showInviteDialog = false;
+  let inviteEmail = '';
+  let inviteRole = 'read';
+
   $: slug = $page.params.slug;
   $: if (project) {
     selectedBranch = project.repository.defaultBranch;
@@ -371,6 +428,104 @@
     buildFilterBranch = 'all';
     buildFilterStatus = 'all';
     buildFilterTriggeredBy = 'all';
+  }
+
+  // Settings - Environment Variables
+  function addEnvVar() {
+    if (!newEnvKey || !newEnvValue) {
+      alert('KEY AND VALUE ARE REQUIRED');
+      return;
+    }
+    envVars = [...envVars, { key: newEnvKey, value: newEnvValue, masked: false }];
+    newEnvKey = '';
+    newEnvValue = '';
+    showEnvDialog = false;
+    alert('ENVIRONMENT VARIABLE ADDED');
+  }
+
+  function removeEnvVar(key: string) {
+    if (confirm(`DELETE ENVIRONMENT VARIABLE "${key}"?`)) {
+      envVars = envVars.filter(v => v.key !== key);
+      alert('ENVIRONMENT VARIABLE DELETED');
+    }
+  }
+
+  function toggleEnvMask(key: string) {
+    envVars = envVars.map(v =>
+      v.key === key ? { ...v, masked: !v.masked } : v
+    );
+  }
+
+  // Settings - Webhooks
+  function addWebhook() {
+    if (!newWebhookUrl) {
+      alert('WEBHOOK URL IS REQUIRED');
+      return;
+    }
+    if (newWebhookEvents.length === 0) {
+      alert('SELECT AT LEAST ONE EVENT');
+      return;
+    }
+    webhooks = [...webhooks, {
+      id: `webhook-${Date.now()}`,
+      url: newWebhookUrl,
+      events: newWebhookEvents,
+      active: true
+    }];
+    newWebhookUrl = '';
+    newWebhookEvents = [];
+    showWebhookDialog = false;
+    alert('WEBHOOK ADDED');
+  }
+
+  function removeWebhook(id: string) {
+    if (confirm('DELETE THIS WEBHOOK?')) {
+      webhooks = webhooks.filter(w => w.id !== id);
+      alert('WEBHOOK DELETED');
+    }
+  }
+
+  function toggleWebhook(id: string) {
+    webhooks = webhooks.map(w =>
+      w.id === id ? { ...w, active: !w.active } : w
+    );
+  }
+
+  function testWebhook(webhook: typeof webhooks[0]) {
+    alert(`TESTING WEBHOOK:\n${webhook.url}\n\nRESULT: SUCCESS (200 OK)`);
+  }
+
+  // Settings - Access Control
+  function inviteMember() {
+    if (!inviteEmail) {
+      alert('EMAIL IS REQUIRED');
+      return;
+    }
+    teamMembers = [...teamMembers, {
+      id: `member-${Date.now()}`,
+      name: inviteEmail.split('@')[0].toUpperCase(),
+      email: inviteEmail,
+      role: inviteRole,
+      avatar: inviteEmail.charAt(0).toUpperCase()
+    }];
+    inviteEmail = '';
+    inviteRole = 'read';
+    showInviteDialog = false;
+    alert('INVITATION SENT');
+  }
+
+  function removeMember(id: string) {
+    if (confirm('REMOVE THIS MEMBER FROM PROJECT?')) {
+      teamMembers = teamMembers.filter(m => m.id !== id);
+      alert('MEMBER REMOVED');
+    }
+  }
+
+  function changeMemberRole(id: string, newRole: string) {
+    teamMembers = teamMembers.map(m =>
+      m.id === id ? { ...m, role: newRole } : m
+    );
+    alert('ROLE UPDATED');
   }
 
   onMount(async () => {
@@ -1010,6 +1165,130 @@
             </div>
           </div>
 
+          <!-- Branch Protection -->
+          <div class="settings-section">
+            <h3>BRANCH PROTECTION</h3>
+            <p class="section-description">CONFIGURE PROTECTION RULES FOR IMPORTANT BRANCHES</p>
+            <div class="branch-protection-list">
+              {#each protectedBranches as branch}
+                <div class="protection-card">
+                  <div class="protection-header">
+                    <span class="branch-name mono">⊢ {branch.branch}</span>
+                    <button class="btn-text">EDIT</button>
+                  </div>
+                  <div class="protection-rules">
+                    <div class="rule-item" class:enabled={branch.requirePR}>
+                      <span class="rule-icon">{branch.requirePR ? '■' : '□'}</span>
+                      <span>REQUIRE PULL REQUEST</span>
+                    </div>
+                    <div class="rule-item" class:enabled={branch.requireApprovals > 0}>
+                      <span class="rule-icon">{branch.requireApprovals > 0 ? '■' : '□'}</span>
+                      <span>REQUIRE {branch.requireApprovals} APPROVAL(S)</span>
+                    </div>
+                    <div class="rule-item" class:enabled={branch.requireStatusChecks}>
+                      <span class="rule-icon">{branch.requireStatusChecks ? '■' : '□'}</span>
+                      <span>REQUIRE STATUS CHECKS</span>
+                    </div>
+                    <div class="rule-item" class:enabled={branch.enforceAdmins}>
+                      <span class="rule-icon">{branch.enforceAdmins ? '■' : '□'}</span>
+                      <span>ENFORCE FOR ADMINISTRATORS</span>
+                    </div>
+                  </div>
+                </div>
+              {/each}
+            </div>
+            <button class="btn-secondary">+ ADD PROTECTION RULE</button>
+          </div>
+
+          <!-- Environment Variables -->
+          <div class="settings-section">
+            <h3>ENVIRONMENT VARIABLES</h3>
+            <p class="section-description">MANAGE ENVIRONMENT VARIABLES FOR YOUR PROJECT</p>
+            <div class="env-vars-list">
+              {#each envVars as envVar}
+                <div class="env-var-item">
+                  <div class="env-var-key mono">{envVar.key}</div>
+                  <div class="env-var-value mono">
+                    {#if envVar.masked}
+                      {'*'.repeat(27)}
+                    {:else}
+                      {envVar.value}
+                    {/if}
+                  </div>
+                  <div class="env-var-actions">
+                    <button class="btn-icon" on:click={() => toggleEnvMask(envVar.key)} title={envVar.masked ? 'Show' : 'Hide'}>
+                      {envVar.masked ? '○' : '●'}
+                    </button>
+                    <button class="btn-icon" on:click={() => removeEnvVar(envVar.key)} title="Delete">
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              {/each}
+            </div>
+            <button class="btn-secondary" on:click={() => showEnvDialog = true}>+ ADD VARIABLE</button>
+          </div>
+
+          <!-- Webhooks -->
+          <div class="settings-section">
+            <h3>WEBHOOKS</h3>
+            <p class="section-description">CONFIGURE WEBHOOKS TO RECEIVE EVENT NOTIFICATIONS</p>
+            <div class="webhooks-list">
+              {#each webhooks as webhook}
+                <div class="webhook-item">
+                  <div class="webhook-header">
+                    <span class="webhook-url mono">{webhook.url}</span>
+                    <span class="webhook-status" class:active={webhook.active}>
+                      {webhook.active ? '● ACTIVE' : '○ INACTIVE'}
+                    </span>
+                  </div>
+                  <div class="webhook-events">
+                    {#each webhook.events as event}
+                      <span class="event-tag">{event.toUpperCase()}</span>
+                    {/each}
+                  </div>
+                  <div class="webhook-actions">
+                    <button class="btn-text" on:click={() => testWebhook(webhook)}>TEST</button>
+                    <button class="btn-text" on:click={() => toggleWebhook(webhook.id)}>
+                      {webhook.active ? 'DISABLE' : 'ENABLE'}
+                    </button>
+                    <button class="btn-text danger" on:click={() => removeWebhook(webhook.id)}>DELETE</button>
+                  </div>
+                </div>
+              {/each}
+            </div>
+            <button class="btn-secondary" on:click={() => showWebhookDialog = true}>+ ADD WEBHOOK</button>
+          </div>
+
+          <!-- Access Control -->
+          <div class="settings-section">
+            <h3>ACCESS CONTROL</h3>
+            <p class="section-description">MANAGE WHO HAS ACCESS TO THIS PROJECT</p>
+            <div class="members-list">
+              {#each teamMembers as member}
+                <div class="member-item">
+                  <div class="member-avatar">{member.avatar}</div>
+                  <div class="member-info">
+                    <div class="member-name">{member.name}</div>
+                    <div class="member-email">{member.email}</div>
+                  </div>
+                  <select
+                    class="role-select"
+                    value={member.role}
+                    on:change={(e) => changeMemberRole(member.id, (e.target as HTMLSelectElement).value)}
+                  >
+                    <option value="read">READ</option>
+                    <option value="write">WRITE</option>
+                    <option value="admin">ADMIN</option>
+                  </select>
+                  <button class="btn-icon" on:click={() => removeMember(member.id)}>✕</button>
+                </div>
+              {/each}
+            </div>
+            <button class="btn-secondary" on:click={() => showInviteDialog = true}>+ INVITE MEMBER</button>
+          </div>
+
+          <!-- Danger Zone -->
           <div class="settings-section">
             <h3>DANGER ZONE</h3>
             <div class="danger-actions">
@@ -1167,6 +1446,169 @@
               DELETE PROJECT
             </button>
           {/if}
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Add Environment Variable Dialog -->
+  {#if showEnvDialog}
+    <div class="dialog-overlay" on:click={() => showEnvDialog = false}>
+      <div class="dialog" on:click|stopPropagation>
+        <div class="dialog-header">
+          <h2>ADD ENVIRONMENT VARIABLE</h2>
+          <button class="close-btn" on:click={() => showEnvDialog = false}>✕</button>
+        </div>
+        <div class="dialog-body">
+          <div class="form-group">
+            <label>KEY</label>
+            <input
+              type="text"
+              class="input"
+              bind:value={newEnvKey}
+              placeholder="VARIABLE_NAME"
+            />
+          </div>
+          <div class="form-group">
+            <label>VALUE</label>
+            <input
+              type="text"
+              class="input"
+              bind:value={newEnvValue}
+              placeholder="variable value"
+            />
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <button class="btn-secondary" on:click={() => showEnvDialog = false}>CANCEL</button>
+          <button class="btn-primary" on:click={addEnvVar}>ADD VARIABLE</button>
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Add Webhook Dialog -->
+  {#if showWebhookDialog}
+    <div class="dialog-overlay" on:click={() => showWebhookDialog = false}>
+      <div class="dialog" on:click|stopPropagation>
+        <div class="dialog-header">
+          <h2>ADD WEBHOOK</h2>
+          <button class="close-btn" on:click={() => showWebhookDialog = false}>✕</button>
+        </div>
+        <div class="dialog-body">
+          <div class="form-group">
+            <label>WEBHOOK URL</label>
+            <input
+              type="text"
+              class="input"
+              bind:value={newWebhookUrl}
+              placeholder="https://example.com/webhook"
+            />
+          </div>
+          <div class="form-group">
+            <label>EVENTS</label>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  value="push"
+                  checked={newWebhookEvents.includes('push')}
+                  on:change={(e) => {
+                    if ((e.target as HTMLInputElement).checked) {
+                      newWebhookEvents = [...newWebhookEvents, 'push'];
+                    } else {
+                      newWebhookEvents = newWebhookEvents.filter(ev => ev !== 'push');
+                    }
+                  }}
+                />
+                <span>PUSH</span>
+              </label>
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  value="pull_request"
+                  checked={newWebhookEvents.includes('pull_request')}
+                  on:change={(e) => {
+                    if ((e.target as HTMLInputElement).checked) {
+                      newWebhookEvents = [...newWebhookEvents, 'pull_request'];
+                    } else {
+                      newWebhookEvents = newWebhookEvents.filter(ev => ev !== 'pull_request');
+                    }
+                  }}
+                />
+                <span>PULL REQUEST</span>
+              </label>
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  value="deployment"
+                  checked={newWebhookEvents.includes('deployment')}
+                  on:change={(e) => {
+                    if ((e.target as HTMLInputElement).checked) {
+                      newWebhookEvents = [...newWebhookEvents, 'deployment'];
+                    } else {
+                      newWebhookEvents = newWebhookEvents.filter(ev => ev !== 'deployment');
+                    }
+                  }}
+                />
+                <span>DEPLOYMENT</span>
+              </label>
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  value="release"
+                  checked={newWebhookEvents.includes('release')}
+                  on:change={(e) => {
+                    if ((e.target as HTMLInputElement).checked) {
+                      newWebhookEvents = [...newWebhookEvents, 'release'];
+                    } else {
+                      newWebhookEvents = newWebhookEvents.filter(ev => ev !== 'release');
+                    }
+                  }}
+                />
+                <span>RELEASE</span>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <button class="btn-secondary" on:click={() => showWebhookDialog = false}>CANCEL</button>
+          <button class="btn-primary" on:click={addWebhook}>ADD WEBHOOK</button>
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Invite Member Dialog -->
+  {#if showInviteDialog}
+    <div class="dialog-overlay" on:click={() => showInviteDialog = false}>
+      <div class="dialog" on:click|stopPropagation>
+        <div class="dialog-header">
+          <h2>INVITE MEMBER</h2>
+          <button class="close-btn" on:click={() => showInviteDialog = false}>✕</button>
+        </div>
+        <div class="dialog-body">
+          <div class="form-group">
+            <label>EMAIL ADDRESS</label>
+            <input
+              type="email"
+              class="input"
+              bind:value={inviteEmail}
+              placeholder="user@example.com"
+            />
+          </div>
+          <div class="form-group">
+            <label>ROLE</label>
+            <select bind:value={inviteRole} class="input">
+              <option value="read">READ - CAN VIEW PROJECT</option>
+              <option value="write">WRITE - CAN VIEW AND PUSH CODE</option>
+              <option value="admin">ADMIN - FULL ACCESS</option>
+            </select>
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <button class="btn-secondary" on:click={() => showInviteDialog = false}>CANCEL</button>
+          <button class="btn-primary" on:click={inviteMember}>SEND INVITATION</button>
         </div>
       </div>
     </div>
@@ -2399,5 +2841,276 @@
     color: var(--muted);
     font-size: var(--text-14);
     letter-spacing: var(--tracking-wide);
+  }
+
+  /* Settings Tab - Section Description */
+  .section-description {
+    font-size: var(--text-12);
+    color: var(--muted);
+    margin-bottom: var(--space-4);
+    letter-spacing: var(--tracking-wide);
+  }
+
+  /* Settings Tab - Branch Protection */
+  .branch-protection-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+
+  .protection-card {
+    border: var(--border-width) solid var(--border-color);
+    padding: var(--space-4);
+  }
+
+  .protection-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-3);
+    padding-bottom: var(--space-3);
+    border-bottom: var(--border-width) solid var(--border-color);
+  }
+
+  .branch-name {
+    font-size: var(--text-14);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .protection-rules {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2);
+  }
+
+  .rule-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    font-size: var(--text-12);
+    color: var(--muted);
+  }
+
+  .rule-item.enabled {
+    color: var(--fg);
+    font-weight: var(--weight-medium);
+  }
+
+  .rule-icon {
+    font-size: var(--text-14);
+  }
+
+  /* Settings Tab - Environment Variables */
+  .env-vars-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: var(--space-4);
+    border: var(--border-width) solid var(--border-color);
+  }
+
+  .env-var-item {
+    display: grid;
+    grid-template-columns: 200px 1fr auto;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: var(--border-width) solid var(--border-color);
+    align-items: center;
+  }
+
+  .env-var-item:last-child {
+    border-bottom: none;
+  }
+
+  .env-var-key {
+    font-size: var(--text-12);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .env-var-value {
+    font-size: var(--text-12);
+    color: var(--muted);
+  }
+
+  .env-var-actions {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  /* Settings Tab - Webhooks */
+  .webhooks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: var(--space-4);
+    border: var(--border-width) solid var(--border-color);
+  }
+
+  .webhook-item {
+    padding: var(--space-4);
+    border-bottom: var(--border-width) solid var(--border-color);
+  }
+
+  .webhook-item:last-child {
+    border-bottom: none;
+  }
+
+  .webhook-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-2);
+  }
+
+  .webhook-url {
+    font-size: var(--text-12);
+    font-weight: var(--weight-medium);
+  }
+
+  .webhook-status {
+    padding: var(--space-1) var(--space-2);
+    border: var(--border-width) solid var(--fg);
+    font-size: var(--text-11);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    color: var(--muted);
+  }
+
+  .webhook-status.active {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  .webhook-events {
+    display: flex;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+    flex-wrap: wrap;
+  }
+
+  .event-tag {
+    padding: var(--space-1) var(--space-2);
+    border: var(--border-width) solid var(--border-color);
+    font-size: var(--text-11);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    background: var(--surface-1);
+  }
+
+  .webhook-actions {
+    display: flex;
+    gap: var(--space-3);
+  }
+
+  /* Settings Tab - Access Control */
+  .members-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: var(--space-4);
+    border: var(--border-width) solid var(--border-color);
+  }
+
+  .member-item {
+    display: grid;
+    grid-template-columns: 48px 1fr 200px 40px;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: var(--border-width) solid var(--border-color);
+    align-items: center;
+  }
+
+  .member-item:last-child {
+    border-bottom: none;
+  }
+
+  .member-avatar {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: var(--border-width) solid var(--fg);
+    background: var(--surface-1);
+    font-size: var(--text-16);
+    font-weight: var(--weight-semibold);
+  }
+
+  .member-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .member-name {
+    font-size: var(--text-14);
+    font-weight: var(--weight-semibold);
+  }
+
+  .member-email {
+    font-size: var(--text-12);
+    color: var(--muted);
+  }
+
+  .role-select {
+    padding: var(--space-2) var(--space-3);
+    border: var(--border-width) solid var(--fg);
+    background: var(--bg);
+    font-family: inherit;
+    font-size: var(--text-12);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    cursor: pointer;
+  }
+
+  /* Button utilities */
+  .btn-icon {
+    padding: var(--space-1) var(--space-2);
+    border: var(--border-width) solid var(--fg);
+    background: var(--bg);
+    cursor: pointer;
+    font-size: var(--text-14);
+    transition: var(--transition-base);
+    font-family: inherit;
+  }
+
+  .btn-icon:hover {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  .btn-text {
+    padding: var(--space-1) var(--space-3);
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: var(--text-12);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    color: var(--fg);
+    cursor: pointer;
+    text-decoration: underline;
+    transition: var(--transition-base);
+  }
+
+  .btn-text:hover {
+    opacity: 0.7;
+  }
+
+  .btn-text.danger {
+    color: var(--fg);
+  }
+
+  /* Dialog checkbox group */
+  .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border: var(--border-width) solid var(--border-color);
   }
 </style>
