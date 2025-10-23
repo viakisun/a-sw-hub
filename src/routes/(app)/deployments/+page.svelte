@@ -1,44 +1,10 @@
 <script lang="ts">
+	/**
+	 * Deployments Page
+	 * Extreme B&W design with ASCII symbols only
+	 */
+
 	import { onMount } from 'svelte';
-	import {
-		Rocket,
-		Server,
-		GitBranch,
-		Clock,
-		CheckCircle,
-		XCircle,
-		AlertCircle,
-		RefreshCw,
-		Play,
-		Pause,
-		RotateCcw,
-		ChevronDown,
-		ChevronUp,
-		Calendar,
-		User,
-		Package,
-		Database,
-		Shield,
-		Zap,
-		AlertTriangle,
-		Settings,
-		MoreVertical,
-		Filter,
-		Download,
-		Eye,
-		Terminal,
-		Activity,
-		Globe,
-		Cloud,
-		HardDrive,
-		Cpu,
-		BarChart,
-		TrendingUp,
-		TrendingDown,
-		Info,
-		Code,
-		Plus
-	} from 'lucide-svelte';
 
 	interface Environment {
 		id: string;
@@ -214,15 +180,15 @@
 			version: 'v2.6.0',
 			environment: 'staging',
 			status: 'in_progress',
-			deployedBy: '김개발',
+			deployedBy: 'Kim Developer',
 			startTime: '2024-03-15 17:30:00',
 			duration: 320,
 			commit: 'abc123def',
 			branch: 'release/2.6.0',
 			changeLog: [
-				'센서 데이터 수집 개선',
-				'대시보드 UI 업데이트',
-				'버그 수정: 알림 중복 발송'
+				'Improved sensor data collection',
+				'Updated dashboard UI',
+				'Fixed: Duplicate notification sending'
 			],
 			rollbackAvailable: true,
 			artifacts: [
@@ -245,15 +211,15 @@
 			version: 'v1.8.2',
 			environment: 'production',
 			status: 'pending',
-			deployedBy: '박운영',
+			deployedBy: 'Park Operations',
 			startTime: '2024-03-16 02:00:00',
 			commit: 'def456ghi',
 			branch: 'main',
 			changeLog: [
-				'분석 알고리즘 성능 개선',
-				'리포트 생성 속도 향상'
+				'Improved analytics algorithm performance',
+				'Enhanced report generation speed'
 			],
-			approvedBy: '이승인',
+			approvedBy: 'Lee Approval',
 			rollbackAvailable: false,
 			artifacts: [
 				{ name: 'analytics.jar', size: '32.1 MB', type: 'application' }
@@ -275,17 +241,17 @@
 			version: 'v2.5.0',
 			environment: 'production',
 			status: 'completed',
-			deployedBy: '김개발',
+			deployedBy: 'Kim Developer',
 			startTime: '2024-03-15 10:00:00',
 			endTime: '2024-03-15 10:30:00',
 			duration: 1800,
 			commit: 'xyz789abc',
 			branch: 'main',
 			changeLog: [
-				'새로운 센서 지원 추가',
-				'알림 시스템 개선'
+				'Added new sensor support',
+				'Improved notification system'
 			],
-			approvedBy: '이승인',
+			approvedBy: 'Lee Approval',
 			rollbackAvailable: true,
 			artifacts: [
 				{ name: 'app.jar', size: '44.8 MB', type: 'application' }
@@ -306,14 +272,14 @@
 			version: 'v3.2.1',
 			environment: 'production',
 			status: 'rolled_back',
-			deployedBy: '박운영',
+			deployedBy: 'Park Operations',
 			startTime: '2024-03-15 08:00:00',
 			endTime: '2024-03-15 08:15:00',
 			duration: 900,
 			commit: 'fail123xyz',
 			branch: 'hotfix/memory-leak',
 			changeLog: [
-				'메모리 누수 수정 시도'
+				'Attempted memory leak fix'
 			],
 			rollbackAvailable: false,
 			artifacts: [
@@ -331,25 +297,25 @@
 	let deploymentWindows: DeploymentWindow[] = [
 		{
 			id: 'window-1',
-			name: '정기 배포 - 3월 3주차',
+			name: 'Regular Deployment - March Week 3',
 			startTime: '2024-03-16 02:00',
 			endTime: '2024-03-16 06:00',
 			environments: ['production'],
 			projects: ['proj-1', 'proj-2', 'proj-5'],
 			status: 'scheduled',
-			createdBy: '이승인',
-			description: '월간 정기 업데이트 배포'
+			createdBy: 'Lee Approval',
+			description: 'Monthly regular update deployment'
 		},
 		{
 			id: 'window-2',
-			name: '긴급 패치',
+			name: 'Emergency Patch',
 			startTime: '2024-03-15 23:00',
 			endTime: '2024-03-15 23:30',
 			environments: ['production', 'staging'],
 			projects: ['proj-3'],
 			status: 'scheduled',
-			createdBy: '김긴급',
-			description: '보안 패치 긴급 배포'
+			createdBy: 'Kim Emergency',
+			description: 'Emergency security patch deployment'
 		}
 	];
 
@@ -376,36 +342,36 @@
 	function getEnvironmentIcon(type: string) {
 		switch (type) {
 			case 'production':
-				return Rocket;
+				return '■';
 			case 'staging':
-				return Package;
+				return '□';
 			case 'development':
-				return Code;
+				return '▣';
 			default:
-				return Server;
+				return '▢';
 		}
 	}
 
 	function handleDeploy(envId: string) {
-		alert(`배포 시작: ${envId}`);
+		alert(`DEPLOY STARTED: ${envId}`);
 	}
 
 	function handleRollback(deployId: string) {
-		if (confirm('정말로 이전 버전으로 롤백하시겠습니까?')) {
-			alert(`롤백 시작: ${deployId}`);
+		if (confirm('ROLLBACK TO PREVIOUS VERSION?')) {
+			alert(`ROLLBACK STARTED: ${deployId}`);
 		}
 	}
 
 	function handlePauseDeployment(deployId: string) {
-		alert(`배포 일시 중지: ${deployId}`);
+		alert(`DEPLOYMENT PAUSED: ${deployId}`);
 	}
 
 	function handleResumeDeployment(deployId: string) {
-		alert(`배포 재개: ${deployId}`);
+		alert(`DEPLOYMENT RESUMED: ${deployId}`);
 	}
 
 	function handleViewLogs(deployId: string) {
-		alert(`로그 보기: ${deployId}`);
+		alert(`VIEW LOGS: ${deployId}`);
 	}
 
 	function toggleDeploymentDetails(deployId: string) {
@@ -415,13 +381,12 @@
 	function formatDuration(seconds: number): string {
 		const minutes = Math.floor(seconds / 60);
 		const remainingSeconds = seconds % 60;
-		return `${minutes}분 ${remainingSeconds}초`;
+		return `${minutes}m ${remainingSeconds}s`;
 	}
 
 	onMount(() => {
 		if (autoRefresh) {
 			refreshInterval = setInterval(() => {
-				// Refresh data
 				console.log('Refreshing deployment data...');
 			}, 30000);
 		}
@@ -437,17 +402,15 @@
 <div class="deployments-container">
 	<div class="deployments-header">
 		<div>
-			<h1>배포 관리</h1>
-			<p>환경별 배포 상태 및 배포 이력을 관리합니다</p>
+			<h1>DEPLOYMENT MANAGEMENT</h1>
+			<p>MANAGE DEPLOYMENT STATUS AND HISTORY BY ENVIRONMENT</p>
 		</div>
 		<div class="header-actions">
 			<button class="btn-secondary">
-				<Calendar size={16} />
-				배포 윈도우
+				▤ DEPLOYMENT WINDOW
 			</button>
 			<button class="btn-primary">
-				<Rocket size={16} />
-				새 배포
+				→ NEW DEPLOYMENT
 			</button>
 		</div>
 	</div>
@@ -458,16 +421,14 @@
 			class:active={activeTab === 'overview'}
 			on:click={() => activeTab = 'overview'}
 		>
-			<Globe size={16} />
-			환경 현황
+			◯ ENVIRONMENTS
 		</button>
 		<button
 			class="tab"
 			class:active={activeTab === 'active'}
 			on:click={() => activeTab = 'active'}
 		>
-			<Activity size={16} />
-			진행 중인 배포
+			~ ACTIVE DEPLOYMENTS
 			{#if activeDeployments.length > 0}
 				<span class="badge">{activeDeployments.length}</span>
 			{/if}
@@ -477,24 +438,21 @@
 			class:active={activeTab === 'history'}
 			on:click={() => activeTab = 'history'}
 		>
-			<Clock size={16} />
-			배포 이력
+			○ DEPLOYMENT HISTORY
 		</button>
 		<button
 			class="tab"
 			class:active={activeTab === 'windows'}
 			on:click={() => activeTab = 'windows'}
 		>
-			<Calendar size={16} />
-			배포 윈도우
+			▤ DEPLOYMENT WINDOWS
 		</button>
 		<button
 			class="tab"
 			class:active={activeTab === 'rollback'}
 			on:click={() => activeTab = 'rollback'}
 		>
-			<RotateCcw size={16} />
-			롤백 관리
+			↶ ROLLBACK MANAGEMENT
 		</button>
 	</div>
 
@@ -504,29 +462,29 @@
 				<div class="environment-card" class:maintenance={env.status === 'maintenance'}>
 					<div class="env-header">
 						<div class="env-title">
-							<svelte:component this={getEnvironmentIcon(env.type)} size={20} />
+							<span class="env-icon">{getEnvironmentIcon(env.type)}</span>
 							<h3>{env.name}</h3>
-							<span class="env-type {env.type}">{env.type}</span>
+							<span class="env-type {env.type}">{env.type.toUpperCase()}</span>
 						</div>
 						<span class="status-indicator {getStatusColor(env.status)}">
-							{env.status === 'healthy' ? '정상' :
-							 env.status === 'degraded' ? '저하' :
-							 env.status === 'down' ? '중단' : '점검중'}
+							{env.status === 'healthy' ? 'HEALTHY' :
+							 env.status === 'degraded' ? 'DEGRADED' :
+							 env.status === 'down' ? 'DOWN' : 'MAINTENANCE'}
 						</span>
 					</div>
 
 					<div class="env-info">
 						<div class="info-row">
-							<span class="label">현재 버전:</span>
+							<span class="label">CURRENT VERSION:</span>
 							<span class="value">{env.version}</span>
 						</div>
 						<div class="info-row">
-							<span class="label">마지막 배포:</span>
+							<span class="label">LAST DEPLOYMENT:</span>
 							<span class="value">{env.lastDeployment}</span>
 						</div>
 						{#if env.nextDeployment}
 							<div class="info-row">
-								<span class="label">예정 배포:</span>
+								<span class="label">SCHEDULED DEPLOYMENT:</span>
 								<span class="value highlight">{env.nextDeployment}</span>
 							</div>
 						{/if}
@@ -535,16 +493,16 @@
 							<a href={env.url} class="value link" target="_blank">{env.url}</a>
 						</div>
 						<div class="info-row">
-							<span class="label">리전:</span>
+							<span class="label">REGION:</span>
 							<span class="value">{env.region}</span>
 						</div>
 					</div>
 
 					<div class="env-resources">
-						<h4>리소스 사용량</h4>
+						<h4>RESOURCE USAGE</h4>
 						<div class="resources-grid">
 							<div class="resource">
-								<Cpu size={14} />
+								<span>▣</span>
 								<span>CPU</span>
 								<div class="progress-bar">
 									<div class="progress-fill" style="width: {env.resources.cpu}%"></div>
@@ -552,16 +510,16 @@
 								<span class="percentage">{env.resources.cpu}%</span>
 							</div>
 							<div class="resource">
-								<HardDrive size={14} />
-								<span>메모리</span>
+								<span>▪</span>
+								<span>MEMORY</span>
 								<div class="progress-bar">
 									<div class="progress-fill" style="width: {env.resources.memory}%"></div>
 								</div>
 								<span class="percentage">{env.resources.memory}%</span>
 							</div>
 							<div class="resource">
-								<Database size={14} />
-								<span>스토리지</span>
+								<span>▩</span>
+								<span>STORAGE</span>
 								<div class="progress-bar">
 									<div class="progress-fill" style="width: {env.resources.storage}%"></div>
 								</div>
@@ -569,41 +527,39 @@
 							</div>
 						</div>
 						<div class="instances">
-							<Server size={14} />
-							<span>인스턴스: {env.resources.instances}개 실행 중</span>
+							<span>▣</span>
+							<span>INSTANCES: {env.resources.instances} RUNNING</span>
 						</div>
 					</div>
 
 					<div class="env-metrics">
 						<div class="metric">
-							<span class="metric-label">가동률</span>
+							<span class="metric-label">UPTIME</span>
 							<span class="metric-value">{env.metrics.uptime}%</span>
 						</div>
 						<div class="metric">
-							<span class="metric-label">응답 시간</span>
+							<span class="metric-label">RESPONSE TIME</span>
 							<span class="metric-value">{env.metrics.responseTime}ms</span>
 						</div>
 						<div class="metric">
-							<span class="metric-label">오류율</span>
+							<span class="metric-label">ERROR RATE</span>
 							<span class="metric-value {env.metrics.errorRate > 1 ? 'warning' : ''}">{env.metrics.errorRate}%</span>
 						</div>
 						<div class="metric">
-							<span class="metric-label">처리량</span>
+							<span class="metric-label">THROUGHPUT</span>
 							<span class="metric-value">{env.metrics.throughput.toLocaleString()}/m</span>
 						</div>
 					</div>
 
 					<div class="env-actions">
 						<button class="btn-primary" on:click={() => handleDeploy(env.id)}>
-							<Rocket size={14} />
-							배포
+							→ DEPLOY
 						</button>
 						<button class="btn-secondary">
-							<Eye size={14} />
-							모니터링
+							○ MONITORING
 						</button>
 						<button class="btn-icon">
-							<Settings size={14} />
+							▣
 						</button>
 					</div>
 				</div>
@@ -613,9 +569,9 @@
 		<div class="active-deployments">
 			{#if activeDeployments.length === 0}
 				<div class="empty-state">
-					<Activity size={48} />
-					<h3>진행 중인 배포가 없습니다</h3>
-					<p>현재 모든 배포가 완료되었습니다</p>
+					<span class="empty-icon">~</span>
+					<h3>NO ACTIVE DEPLOYMENTS</h3>
+					<p>ALL DEPLOYMENTS COMPLETED</p>
 				</div>
 			{:else}
 				{#each activeDeployments as deployment}
@@ -625,23 +581,22 @@
 								<h3>{deployment.projectName}</h3>
 								<div class="deployment-meta">
 									<span class="version">{deployment.version}</span>
-									<span class="environment {deployment.environment}">{deployment.environment}</span>
+									<span class="environment {deployment.environment}">{deployment.environment.toUpperCase()}</span>
 									<span class="branch">
-										<GitBranch size={14} />
-										{deployment.branch}
+										⊢ {deployment.branch}
 									</span>
 									<span class="commit">{deployment.commit}</span>
 								</div>
 							</div>
 							<div class="deployment-status">
 								<span class="status-badge {getStatusColor(deployment.status)}">
-									{deployment.status === 'in_progress' ? '배포 중' :
-									 deployment.status === 'pending' ? '대기 중' :
-									 deployment.status === 'completed' ? '완료' :
-									 deployment.status === 'failed' ? '실패' : '롤백됨'}
+									{deployment.status === 'in_progress' ? 'DEPLOYING' :
+									 deployment.status === 'pending' ? 'PENDING' :
+									 deployment.status === 'completed' ? 'COMPLETED' :
+									 deployment.status === 'failed' ? 'FAILED' : 'ROLLED BACK'}
 								</span>
 								{#if deployment.status === 'in_progress'}
-									<RefreshCw size={16} class="spin" />
+									<span class="spin">⟳</span>
 								{/if}
 							</div>
 						</div>
@@ -652,13 +607,13 @@
 									<div class="check-item" class:active={check.status === 'running'}>
 										<div class="check-icon {getStatusColor(check.status)}">
 											{#if check.status === 'passed'}
-												<CheckCircle size={16} />
+												✓
 											{:else if check.status === 'failed'}
-												<XCircle size={16} />
+												✕
 											{:else if check.status === 'running'}
-												<RefreshCw size={16} class="spin" />
+												⟳
 											{:else}
-												<Clock size={16} />
+												○
 											{/if}
 										</div>
 										<span class="check-name">{check.name}</span>
@@ -672,19 +627,19 @@
 
 						<div class="deployment-details">
 							<div class="detail-row">
-								<User size={14} />
-								<span>배포자: {deployment.deployedBy}</span>
+								<span>◆</span>
+								<span>DEPLOYER: {deployment.deployedBy}</span>
 								{#if deployment.approvedBy}
 									<span class="separator">|</span>
-									<span>승인자: {deployment.approvedBy}</span>
+									<span>APPROVER: {deployment.approvedBy}</span>
 								{/if}
 							</div>
 							<div class="detail-row">
-								<Clock size={14} />
-								<span>시작: {deployment.startTime}</span>
+								<span>○</span>
+								<span>STARTED: {deployment.startTime}</span>
 								{#if deployment.duration}
 									<span class="separator">|</span>
-									<span>경과: {formatDuration(deployment.duration)}</span>
+									<span>ELAPSED: {formatDuration(deployment.duration)}</span>
 								{/if}
 							</div>
 							<button
@@ -692,11 +647,9 @@
 								on:click={() => toggleDeploymentDetails(deployment.id)}
 							>
 								{#if expandedDeployment === deployment.id}
-									<ChevronUp size={14} />
-									간략히
+									▲ COLLAPSE
 								{:else}
-									<ChevronDown size={14} />
-									자세히
+									▼ EXPAND
 								{/if}
 							</button>
 						</div>
@@ -704,7 +657,7 @@
 						{#if expandedDeployment === deployment.id}
 							<div class="deployment-expanded">
 								<div class="changelog">
-									<h4>변경 사항</h4>
+									<h4>CHANGES</h4>
 									<ul>
 										{#each deployment.changeLog as change}
 											<li>{change}</li>
@@ -712,11 +665,11 @@
 									</ul>
 								</div>
 								<div class="artifacts">
-									<h4>아티팩트</h4>
+									<h4>ARTIFACTS</h4>
 									<div class="artifact-list">
 										{#each deployment.artifacts as artifact}
 											<div class="artifact-item">
-												<Package size={14} />
+												<span>□</span>
 												<span>{artifact.name}</span>
 												<span class="size">{artifact.size}</span>
 											</div>
@@ -729,24 +682,20 @@
 						<div class="deployment-actions">
 							{#if deployment.status === 'in_progress'}
 								<button class="btn-secondary" on:click={() => handlePauseDeployment(deployment.id)}>
-									<Pause size={14} />
-									일시 중지
+									■ PAUSE
 								</button>
 							{:else if deployment.status === 'pending'}
 								<button class="btn-primary" on:click={() => handleResumeDeployment(deployment.id)}>
-									<Play size={14} />
-									시작
+									▶ START
 								</button>
 							{/if}
 							{#if deployment.rollbackAvailable}
 								<button class="btn-secondary danger" on:click={() => handleRollback(deployment.id)}>
-									<RotateCcw size={14} />
-									롤백
+									↶ ROLLBACK
 								</button>
 							{/if}
 							<button class="btn-text" on:click={() => handleViewLogs(deployment.id)}>
-								<Terminal size={14} />
-								로그
+								▣ LOGS
 							</button>
 						</div>
 					</div>
@@ -757,26 +706,25 @@
 		<div class="history-section">
 			<div class="history-filters">
 				<select bind:value={selectedEnvironment}>
-					<option value="all">모든 환경</option>
-					<option value="production">Production</option>
-					<option value="staging">Staging</option>
-					<option value="development">Development</option>
+					<option value="all">ALL ENVIRONMENTS</option>
+					<option value="production">PRODUCTION</option>
+					<option value="staging">STAGING</option>
+					<option value="development">DEVELOPMENT</option>
 				</select>
 				<select bind:value={selectedProject}>
-					<option value="all">모든 프로젝트</option>
-					<option value="proj-1">Smart Farm Monitor</option>
-					<option value="proj-2">Crop Analytics</option>
-					<option value="proj-3">Weather Service</option>
+					<option value="all">ALL PROJECTS</option>
+					<option value="proj-1">SMART FARM MONITOR</option>
+					<option value="proj-2">CROP ANALYTICS</option>
+					<option value="proj-3">WEATHER SERVICE</option>
 				</select>
 				<select bind:value={selectedStatus}>
-					<option value="all">모든 상태</option>
-					<option value="completed">완료</option>
-					<option value="failed">실패</option>
-					<option value="rolled_back">롤백됨</option>
+					<option value="all">ALL STATUS</option>
+					<option value="completed">COMPLETED</option>
+					<option value="failed">FAILED</option>
+					<option value="rolled_back">ROLLED BACK</option>
 				</select>
 				<button class="btn-secondary">
-					<Download size={16} />
-					내보내기
+					↓ EXPORT
 				</button>
 			</div>
 
@@ -784,14 +732,14 @@
 				<table>
 					<thead>
 						<tr>
-							<th>프로젝트</th>
-							<th>버전</th>
-							<th>환경</th>
-							<th>상태</th>
-							<th>배포자</th>
-							<th>시작 시간</th>
-							<th>소요 시간</th>
-							<th>작업</th>
+							<th>PROJECT</th>
+							<th>VERSION</th>
+							<th>ENVIRONMENT</th>
+							<th>STATUS</th>
+							<th>DEPLOYER</th>
+							<th>START TIME</th>
+							<th>DURATION</th>
+							<th>ACTIONS</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -801,13 +749,13 @@
 								<td class="monospace">{deployment.version}</td>
 								<td>
 									<span class="environment-badge {deployment.environment}">
-										{deployment.environment}
+										{deployment.environment.toUpperCase()}
 									</span>
 								</td>
 								<td>
 									<span class="status-badge {getStatusColor(deployment.status)}">
-										{deployment.status === 'completed' ? '완료' :
-										 deployment.status === 'failed' ? '실패' : '롤백됨'}
+										{deployment.status === 'completed' ? 'COMPLETED' :
+										 deployment.status === 'failed' ? 'FAILED' : 'ROLLED BACK'}
 									</span>
 								</td>
 								<td>{deployment.deployedBy}</td>
@@ -816,11 +764,11 @@
 								<td>
 									<div class="table-actions">
 										<button class="btn-icon" on:click={() => handleViewLogs(deployment.id)}>
-											<Eye size={14} />
+											○
 										</button>
 										{#if deployment.rollbackAvailable}
 											<button class="btn-icon" on:click={() => handleRollback(deployment.id)}>
-												<RotateCcw size={14} />
+												↶
 											</button>
 										{/if}
 									</div>
@@ -834,10 +782,9 @@
 	{:else if activeTab === 'windows'}
 		<div class="windows-section">
 			<div class="windows-header">
-				<h2>배포 윈도우 일정</h2>
+				<h2>DEPLOYMENT WINDOW SCHEDULE</h2>
 				<button class="btn-primary">
-					<Plus size={16} />
-					새 윈도우 생성
+					+ CREATE NEW WINDOW
 				</button>
 			</div>
 
@@ -847,34 +794,34 @@
 						<div class="window-header">
 							<h3>{window.name}</h3>
 							<span class="status-badge {window.status === 'active' ? 'success' : ''}">
-								{window.status === 'scheduled' ? '예정' :
-								 window.status === 'active' ? '진행 중' :
-								 window.status === 'completed' ? '완료' : '취소됨'}
+								{window.status === 'scheduled' ? 'SCHEDULED' :
+								 window.status === 'active' ? 'ACTIVE' :
+								 window.status === 'completed' ? 'COMPLETED' : 'CANCELLED'}
 							</span>
 						</div>
 						<div class="window-details">
 							<div class="detail-row">
-								<Calendar size={14} />
+								<span>▤</span>
 								<span>{window.startTime} ~ {window.endTime}</span>
 							</div>
 							<div class="detail-row">
-								<Server size={14} />
-								<span>환경: {window.environments.join(', ')}</span>
+								<span>▣</span>
+								<span>ENVIRONMENTS: {window.environments.join(', ').toUpperCase()}</span>
 							</div>
 							<div class="detail-row">
-								<Package size={14} />
-								<span>{window.projects.length}개 프로젝트</span>
+								<span>□</span>
+								<span>{window.projects.length} PROJECTS</span>
 							</div>
 							<div class="detail-row">
-								<User size={14} />
-								<span>생성자: {window.createdBy}</span>
+								<span>◆</span>
+								<span>CREATOR: {window.createdBy}</span>
 							</div>
 						</div>
 						<p class="window-description">{window.description}</p>
 						<div class="window-actions">
-							<button class="btn-secondary">편집</button>
+							<button class="btn-secondary">EDIT</button>
 							{#if window.status === 'scheduled'}
-								<button class="btn-text danger">취소</button>
+								<button class="btn-text danger">CANCEL</button>
 							{/if}
 						</div>
 					</div>
@@ -884,8 +831,8 @@
 	{:else if activeTab === 'rollback'}
 		<div class="rollback-section">
 			<div class="rollback-header">
-				<h2>롤백 가능한 배포</h2>
-				<p>최근 30일 이내의 배포를 이전 버전으로 롤백할 수 있습니다</p>
+				<h2>ROLLBACK MANAGEMENT</h2>
+				<p>DEPLOYMENTS WITHIN LAST 30 DAYS CAN BE ROLLED BACK TO PREVIOUS VERSION</p>
 			</div>
 
 			<div class="rollback-list">
@@ -894,24 +841,22 @@
 						<div class="rollback-info">
 							<h3>{deployment.projectName}</h3>
 							<div class="rollback-meta">
-								<span class="version">현재: {deployment.version}</span>
+								<span class="version">CURRENT: {deployment.version}</span>
 								<span class="separator">→</span>
-								<span class="version">이전: v2.4.0</span>
+								<span class="version">PREVIOUS: v2.4.0</span>
 							</div>
 							<div class="deployment-details">
-								<span>{deployment.environment}</span>
+								<span>{deployment.environment.toUpperCase()}</span>
 								<span>{deployment.startTime}</span>
-								<span>배포자: {deployment.deployedBy}</span>
+								<span>DEPLOYER: {deployment.deployedBy}</span>
 							</div>
 						</div>
 						<div class="rollback-actions">
 							<button class="btn-primary danger" on:click={() => handleRollback(deployment.id)}>
-								<RotateCcw size={16} />
-								롤백 실행
+								↶ EXECUTE ROLLBACK
 							</button>
 							<button class="btn-secondary">
-								<Info size={16} />
-								상세 정보
+								ⓘ DETAILS
 							</button>
 						</div>
 					</div>
@@ -919,13 +864,13 @@
 			</div>
 
 			<div class="rollback-warning">
-				<AlertTriangle size={20} />
+				<span class="warning-icon">▲</span>
 				<div>
-					<h4>롤백 시 주의사항</h4>
+					<h4>ROLLBACK PRECAUTIONS</h4>
 					<ul>
-						<li>데이터베이스 마이그레이션은 자동으로 롤백되지 않습니다</li>
-						<li>롤백 전 현재 버전의 백업이 자동으로 생성됩니다</li>
-						<li>롤백 후 시스템 안정성 확인이 필요합니다</li>
+						<li>DATABASE MIGRATIONS ARE NOT AUTOMATICALLY ROLLED BACK</li>
+						<li>BACKUP OF CURRENT VERSION AUTOMATICALLY CREATED BEFORE ROLLBACK</li>
+						<li>SYSTEM STABILITY VERIFICATION REQUIRED AFTER ROLLBACK</li>
 					</ul>
 				</div>
 			</div>
@@ -934,23 +879,8 @@
 </div>
 
 <style>
-	:global(:root) {
-		--spacing-1: 0.25rem;
-		--spacing-2: 0.5rem;
-		--spacing-3: 0.75rem;
-		--spacing-4: 1rem;
-		--spacing-6: 1.5rem;
-		--spacing-8: 2rem;
-		--text-xs: 0.75rem;
-		--text-sm: 0.875rem;
-		--text-md: 1rem;
-		--text-lg: 1.125rem;
-		--text-xl: 1.25rem;
-		--text-2xl: 1.5rem;
-	}
-
 	.deployments-container {
-		padding: var(--spacing-6);
+		padding: var(--space-6);
 		max-width: 1400px;
 		margin: 0 auto;
 	}
@@ -959,48 +889,52 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
-		margin-bottom: var(--spacing-6);
+		margin-bottom: var(--space-6);
 	}
 
 	.deployments-header h1 {
-		font-size: var(--text-2xl);
-		font-weight: 700;
-		margin-bottom: var(--spacing-2);
+		font-size: var(--text-24);
+		font-weight: var(--weight-semibold);
+		letter-spacing: var(--tracking-wide);
+		margin-bottom: var(--space-2);
 	}
 
 	.deployments-header p {
-		color: var(--text-secondary);
-		font-size: var(--text-sm);
+		color: var(--muted);
+		font-size: var(--text-12);
+		letter-spacing: var(--tracking-wide);
 	}
 
 	.header-actions {
 		display: flex;
-		gap: var(--spacing-3);
+		gap: var(--space-3);
 	}
 
 	.deployments-tabs {
 		display: flex;
-		gap: var(--spacing-1);
-		border-bottom: 2px solid var(--fg);
-		margin-bottom: var(--spacing-6);
+		gap: 0;
+		border-bottom: var(--border-width) solid var(--fg);
+		margin-bottom: var(--space-6);
 	}
 
 	.tab {
 		display: flex;
 		align-items: center;
-		gap: var(--spacing-2);
-		padding: var(--spacing-3) var(--spacing-4);
+		gap: var(--space-2);
+		padding: var(--space-3) var(--space-4);
 		background: transparent;
 		border: none;
 		cursor: pointer;
-		font-size: var(--text-sm);
-		font-weight: 500;
+		font-size: var(--text-12);
+		font-weight: var(--weight-medium);
+		letter-spacing: var(--tracking-wide);
 		position: relative;
 		transition: all 0.2s;
+		border-right: var(--border-width) solid var(--border-color);
 	}
 
 	.tab:hover {
-		background: var(--bg-secondary);
+		background: var(--surface-1);
 	}
 
 	.tab.active {
@@ -1009,13 +943,13 @@
 	}
 
 	.tab .badge {
-		padding: 0 var(--spacing-2);
+		padding: 0 var(--space-2);
 		background: var(--bg);
 		color: var(--fg);
-		font-size: var(--text-xs);
+		font-size: var(--text-11);
 		min-width: 20px;
 		text-align: center;
-		border: 1px solid var(--fg);
+		border: var(--border-width) solid var(--fg);
 	}
 
 	.tab.active .badge {
@@ -1028,12 +962,12 @@
 	.environments-grid {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		gap: var(--spacing-4);
+		gap: var(--space-4);
 	}
 
 	.environment-card {
-		border: 2px solid var(--fg);
-		padding: var(--spacing-4);
+		border: var(--border-width) solid var(--fg);
+		padding: var(--space-4);
 		background: var(--bg);
 	}
 
@@ -1043,8 +977,8 @@
 			-45deg,
 			var(--bg),
 			var(--bg) 10px,
-			var(--bg-secondary) 10px,
-			var(--bg-secondary) 20px
+			var(--surface-1) 10px,
+			var(--surface-1) 20px
 		);
 	}
 
@@ -1052,27 +986,32 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
-		margin-bottom: var(--spacing-4);
-		padding-bottom: var(--spacing-3);
-		border-bottom: 1px solid var(--border);
+		margin-bottom: var(--space-4);
+		padding-bottom: var(--space-3);
+		border-bottom: var(--border-width) solid var(--border-color);
 	}
 
 	.env-title {
 		display: flex;
 		align-items: center;
-		gap: var(--spacing-2);
+		gap: var(--space-2);
+	}
+
+	.env-icon {
+		font-size: var(--text-16);
 	}
 
 	.env-title h3 {
-		font-size: var(--text-lg);
-		font-weight: 600;
+		font-size: var(--text-16);
+		font-weight: var(--weight-semibold);
 	}
 
 	.env-type {
-		padding: var(--spacing-1) var(--spacing-2);
-		border: 1px solid var(--fg);
-		font-size: var(--text-xs);
+		padding: var(--space-1) var(--space-2);
+		border: var(--border-width) solid var(--fg);
+		font-size: var(--text-11);
 		text-transform: uppercase;
+		letter-spacing: var(--tracking-wide);
 	}
 
 	.env-type.production {
@@ -1082,18 +1021,19 @@
 
 	.env-type.staging {
 		background: var(--bg);
-		border: 1px dashed var(--fg);
+		border-style: dashed;
 	}
 
 	.env-type.development {
-		background: var(--bg-secondary);
+		background: var(--surface-1);
 	}
 
 	.status-indicator {
-		padding: var(--spacing-1) var(--spacing-3);
-		border: 1px solid var(--fg);
-		font-size: var(--text-sm);
-		font-weight: 500;
+		padding: var(--space-1) var(--space-3);
+		border: var(--border-width) solid var(--fg);
+		font-size: var(--text-12);
+		font-weight: var(--weight-medium);
+		letter-spacing: var(--tracking-wide);
 	}
 
 	.status-indicator.success {
@@ -1103,7 +1043,7 @@
 
 	.status-indicator.warning {
 		background: var(--bg);
-		border: 2px solid var(--fg);
+		border-width: 2px;
 	}
 
 	.status-indicator.error {
@@ -1113,15 +1053,15 @@
 	}
 
 	.env-info {
-		margin-bottom: var(--spacing-4);
+		margin-bottom: var(--space-4);
 	}
 
 	.info-row {
 		display: flex;
 		justify-content: space-between;
-		padding: var(--spacing-2) 0;
-		border-bottom: 1px solid var(--border);
-		font-size: var(--text-sm);
+		padding: var(--space-2) 0;
+		border-bottom: var(--border-width) solid var(--divider);
+		font-size: var(--text-12);
 	}
 
 	.info-row:last-child {
@@ -1129,18 +1069,19 @@
 	}
 
 	.info-row .label {
-		color: var(--text-secondary);
+		color: var(--muted);
+		letter-spacing: var(--tracking-wide);
 	}
 
 	.info-row .value {
-		font-family: var(--font-mono);
-		font-weight: 500;
+		font-family: 'JetBrains Mono', 'Fira Code', monospace;
+		font-weight: var(--weight-medium);
 	}
 
 	.info-row .value.highlight {
 		background: var(--fg);
 		color: var(--bg);
-		padding: 0 var(--spacing-2);
+		padding: 0 var(--space-2);
 	}
 
 	.info-row .value.link {
@@ -1150,37 +1091,38 @@
 	}
 
 	.env-resources {
-		margin-bottom: var(--spacing-4);
-		padding: var(--spacing-3);
-		background: var(--bg-secondary);
-		border: 1px solid var(--border);
+		margin-bottom: var(--space-4);
+		padding: var(--space-3);
+		background: var(--surface-1);
+		border: var(--border-width) solid var(--border-color);
 	}
 
 	.env-resources h4 {
-		font-size: var(--text-sm);
-		font-weight: 600;
-		margin-bottom: var(--spacing-3);
+		font-size: var(--text-12);
+		font-weight: var(--weight-semibold);
+		letter-spacing: var(--tracking-wide);
+		margin-bottom: var(--space-3);
 	}
 
 	.resources-grid {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-2);
-		margin-bottom: var(--spacing-3);
+		gap: var(--space-2);
+		margin-bottom: var(--space-3);
 	}
 
 	.resource {
 		display: grid;
 		grid-template-columns: 20px 80px 1fr 40px;
 		align-items: center;
-		gap: var(--spacing-2);
-		font-size: var(--text-sm);
+		gap: var(--space-2);
+		font-size: var(--text-12);
 	}
 
 	.progress-bar {
 		height: 8px;
 		background: var(--bg);
-		border: 1px solid var(--fg);
+		border: var(--border-width) solid var(--fg);
 		position: relative;
 	}
 
@@ -1192,65 +1134,66 @@
 
 	.percentage {
 		text-align: right;
-		font-family: var(--font-mono);
-		font-size: var(--text-xs);
-		font-weight: 600;
+		font-family: 'JetBrains Mono', 'Fira Code', monospace;
+		font-size: var(--text-11);
+		font-weight: var(--weight-semibold);
 	}
 
 	.instances {
 		display: flex;
 		align-items: center;
-		gap: var(--spacing-2);
-		padding-top: var(--spacing-2);
-		border-top: 1px solid var(--border);
-		font-size: var(--text-sm);
+		gap: var(--space-2);
+		padding-top: var(--space-2);
+		border-top: var(--border-width) solid var(--border-color);
+		font-size: var(--text-12);
 	}
 
 	.env-metrics {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		gap: var(--spacing-2);
-		margin-bottom: var(--spacing-4);
+		gap: var(--space-2);
+		margin-bottom: var(--space-4);
 	}
 
 	.metric {
 		display: flex;
 		justify-content: space-between;
-		padding: var(--spacing-2);
-		border: 1px solid var(--border);
-		font-size: var(--text-sm);
+		padding: var(--space-2);
+		border: var(--border-width) solid var(--border-color);
+		font-size: var(--text-12);
 	}
 
 	.metric-label {
-		color: var(--text-secondary);
+		color: var(--muted);
+		letter-spacing: var(--tracking-wide);
 	}
 
 	.metric-value {
-		font-family: var(--font-mono);
-		font-weight: 600;
+		font-family: 'JetBrains Mono', 'Fira Code', monospace;
+		font-weight: var(--weight-semibold);
 	}
 
 	.metric-value.warning {
 		background: var(--fg);
 		color: var(--bg);
-		padding: 0 var(--spacing-2);
+		padding: 0 var(--space-2);
 	}
 
 	.env-actions {
 		display: flex;
-		gap: var(--spacing-2);
+		gap: var(--space-2);
 	}
 
 	/* Active Deployments */
 	.active-deployments {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-4);
+		gap: var(--space-4);
 	}
 
 	.deployment-card {
-		border: 2px solid var(--fg);
-		padding: var(--spacing-4);
+		border: var(--border-width) solid var(--fg);
+		padding: var(--space-4);
 		background: var(--bg);
 	}
 
@@ -1268,58 +1211,60 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
-		margin-bottom: var(--spacing-4);
-		padding-bottom: var(--spacing-3);
-		border-bottom: 1px solid var(--border);
+		margin-bottom: var(--space-4);
+		padding-bottom: var(--space-3);
+		border-bottom: var(--border-width) solid var(--border-color);
 	}
 
 	.deployment-info h3 {
-		font-size: var(--text-lg);
-		font-weight: 600;
-		margin-bottom: var(--spacing-2);
+		font-size: var(--text-16);
+		font-weight: var(--weight-semibold);
+		margin-bottom: var(--space-2);
 	}
 
 	.deployment-meta {
 		display: flex;
 		align-items: center;
-		gap: var(--spacing-3);
-		font-size: var(--text-sm);
-		color: var(--text-secondary);
+		gap: var(--space-3);
+		font-size: var(--text-12);
+		color: var(--muted);
 	}
 
 	.deployment-meta .version {
-		font-family: var(--font-mono);
-		font-weight: 600;
+		font-family: 'JetBrains Mono', 'Fira Code', monospace;
+		font-weight: var(--weight-semibold);
 		color: var(--fg);
 	}
 
 	.deployment-meta .environment {
-		padding: var(--spacing-1) var(--spacing-2);
-		border: 1px solid var(--fg);
+		padding: var(--space-1) var(--space-2);
+		border: var(--border-width) solid var(--fg);
 		text-transform: uppercase;
-		font-size: var(--text-xs);
+		font-size: var(--text-11);
+		letter-spacing: var(--tracking-wide);
 	}
 
 	.deployment-meta .branch,
 	.deployment-meta .commit {
 		display: flex;
 		align-items: center;
-		gap: var(--spacing-1);
-		font-family: var(--font-mono);
+		gap: var(--space-1);
+		font-family: 'JetBrains Mono', 'Fira Code', monospace;
 	}
 
 	.deployment-status {
 		display: flex;
 		align-items: center;
-		gap: var(--spacing-2);
+		gap: var(--space-2);
 	}
 
 	.status-badge {
-		padding: var(--spacing-2) var(--spacing-3);
-		border: 1px solid var(--fg);
-		font-size: var(--text-sm);
-		font-weight: 500;
+		padding: var(--space-2) var(--space-3);
+		border: var(--border-width) solid var(--fg);
+		font-size: var(--text-12);
+		font-weight: var(--weight-medium);
 		text-transform: uppercase;
+		letter-spacing: var(--tracking-wide);
 	}
 
 	.status-badge.success {
@@ -1329,7 +1274,7 @@
 
 	.status-badge.warning {
 		background: var(--bg);
-		border: 2px solid var(--fg);
+		border-width: 2px;
 	}
 
 	.status-badge.error {
@@ -1339,27 +1284,27 @@
 	}
 
 	.deployment-progress {
-		margin-bottom: var(--spacing-4);
+		margin-bottom: var(--space-4);
 	}
 
 	.checks {
 		display: flex;
-		gap: var(--spacing-2);
+		gap: var(--space-2);
 		flex-wrap: wrap;
 	}
 
 	.check-item {
 		display: flex;
 		align-items: center;
-		gap: var(--spacing-2);
-		padding: var(--spacing-2) var(--spacing-3);
-		border: 1px solid var(--border);
-		font-size: var(--text-sm);
+		gap: var(--space-2);
+		padding: var(--space-2) var(--space-3);
+		border: var(--border-width) solid var(--border-color);
+		font-size: var(--text-12);
 	}
 
 	.check-item.active {
 		border-color: var(--fg);
-		background: var(--bg-secondary);
+		background: var(--surface-1);
 	}
 
 	.check-icon {
@@ -1368,57 +1313,58 @@
 	}
 
 	.check-icon.success {
-		color: var(--success);
+		color: var(--fg);
 	}
 
 	.check-icon.error {
-		color: var(--error);
+		color: var(--muted);
 	}
 
 	.check-name {
-		font-weight: 500;
+		font-weight: var(--weight-medium);
 	}
 
 	.check-duration {
-		font-family: var(--font-mono);
-		font-size: var(--text-xs);
-		color: var(--text-secondary);
+		font-family: 'JetBrains Mono', 'Fira Code', monospace;
+		font-size: var(--text-11);
+		color: var(--muted);
 	}
 
 	.deployment-details {
 		display: flex;
 		align-items: center;
-		gap: var(--spacing-3);
-		padding: var(--spacing-3) 0;
-		border-top: 1px solid var(--border);
-		border-bottom: 1px solid var(--border);
-		font-size: var(--text-sm);
-		color: var(--text-secondary);
+		gap: var(--space-3);
+		padding: var(--space-3) 0;
+		border-top: var(--border-width) solid var(--border-color);
+		border-bottom: var(--border-width) solid var(--border-color);
+		font-size: var(--text-12);
+		color: var(--muted);
 	}
 
 	.detail-row {
 		display: flex;
 		align-items: center;
-		gap: var(--spacing-2);
+		gap: var(--space-2);
 	}
 
 	.separator {
-		color: var(--border);
+		color: var(--border-color);
 	}
 
 	.deployment-expanded {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: var(--spacing-4);
-		padding: var(--spacing-4) 0;
-		border-bottom: 1px solid var(--border);
+		gap: var(--space-4);
+		padding: var(--space-4) 0;
+		border-bottom: var(--border-width) solid var(--border-color);
 	}
 
 	.changelog h4,
 	.artifacts h4 {
-		font-size: var(--text-sm);
-		font-weight: 600;
-		margin-bottom: var(--spacing-2);
+		font-size: var(--text-12);
+		font-weight: var(--weight-semibold);
+		letter-spacing: var(--tracking-wide);
+		margin-bottom: var(--space-2);
 	}
 
 	.changelog ul {
@@ -1427,11 +1373,11 @@
 	}
 
 	.changelog li {
-		padding: var(--spacing-2) 0;
-		padding-left: var(--spacing-4);
+		padding: var(--space-2) 0;
+		padding-left: var(--space-4);
 		position: relative;
-		font-size: var(--text-sm);
-		border-bottom: 1px solid var(--border);
+		font-size: var(--text-12);
+		border-bottom: var(--border-width) solid var(--border-color);
 	}
 
 	.changelog li:before {
@@ -1443,52 +1389,53 @@
 	.artifact-list {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-2);
+		gap: var(--space-2);
 	}
 
 	.artifact-item {
 		display: flex;
 		align-items: center;
-		gap: var(--spacing-2);
-		padding: var(--spacing-2);
-		border: 1px solid var(--border);
-		font-size: var(--text-sm);
+		gap: var(--space-2);
+		padding: var(--space-2);
+		border: var(--border-width) solid var(--border-color);
+		font-size: var(--text-12);
 	}
 
 	.artifact-item .size {
 		margin-left: auto;
-		font-family: var(--font-mono);
-		font-size: var(--text-xs);
-		color: var(--text-secondary);
+		font-family: 'JetBrains Mono', 'Fira Code', monospace;
+		font-size: var(--text-11);
+		color: var(--muted);
 	}
 
 	.deployment-actions {
 		display: flex;
-		gap: var(--spacing-2);
-		margin-top: var(--spacing-4);
+		gap: var(--space-2);
+		margin-top: var(--space-4);
 	}
 
 	/* History Section */
 	.history-section {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-4);
+		gap: var(--space-4);
 	}
 
 	.history-filters {
 		display: flex;
-		gap: var(--spacing-3);
-		padding: var(--spacing-4);
-		background: var(--bg-secondary);
-		border: 1px solid var(--border);
+		gap: var(--space-3);
+		padding: var(--space-4);
+		background: var(--surface-1);
+		border: var(--border-width) solid var(--border-color);
 	}
 
 	.history-filters select {
-		padding: var(--spacing-2) var(--spacing-3);
-		border: 1px solid var(--fg);
+		padding: var(--space-2) var(--space-3);
+		border: var(--border-width) solid var(--fg);
 		background: var(--bg);
-		font-size: var(--text-sm);
+		font-size: var(--text-12);
 		cursor: pointer;
+		font-family: inherit;
 	}
 
 	.history-table {
@@ -1498,37 +1445,39 @@
 	.history-table table {
 		width: 100%;
 		border-collapse: collapse;
-		border: 2px solid var(--fg);
+		border: var(--border-width) solid var(--fg);
 	}
 
 	.history-table th,
 	.history-table td {
-		padding: var(--spacing-3);
+		padding: var(--space-3);
 		text-align: left;
-		border: 1px solid var(--fg);
-		font-size: var(--text-sm);
+		border: var(--border-width) solid var(--fg);
+		font-size: var(--text-12);
 	}
 
 	.history-table th {
 		background: var(--fg);
 		color: var(--bg);
-		font-weight: 600;
+		font-weight: var(--weight-semibold);
 		text-transform: uppercase;
+		letter-spacing: var(--tracking-wide);
 	}
 
 	.history-table tr:hover {
-		background: var(--bg-secondary);
+		background: var(--surface-1);
 	}
 
 	.history-table .monospace {
-		font-family: var(--font-mono);
+		font-family: 'JetBrains Mono', 'Fira Code', monospace;
 	}
 
 	.environment-badge {
-		padding: var(--spacing-1) var(--spacing-2);
-		border: 1px solid var(--fg);
-		font-size: var(--text-xs);
+		padding: var(--space-1) var(--space-2);
+		border: var(--border-width) solid var(--fg);
+		font-size: var(--text-11);
 		text-transform: uppercase;
+		letter-spacing: var(--tracking-wide);
 	}
 
 	.environment-badge.production {
@@ -1542,14 +1491,14 @@
 
 	.table-actions {
 		display: flex;
-		gap: var(--spacing-2);
+		gap: var(--space-2);
 	}
 
 	/* Windows Section */
 	.windows-section {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-4);
+		gap: var(--space-4);
 	}
 
 	.windows-header {
@@ -1559,126 +1508,134 @@
 	}
 
 	.windows-header h2 {
-		font-size: var(--text-xl);
-		font-weight: 700;
+		font-size: var(--text-16);
+		font-weight: var(--weight-semibold);
+		letter-spacing: var(--tracking-wide);
 	}
 
 	.windows-list {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		gap: var(--spacing-4);
+		gap: var(--space-4);
 	}
 
 	.window-card {
-		border: 2px solid var(--fg);
-		padding: var(--spacing-4);
+		border: var(--border-width) solid var(--fg);
+		padding: var(--space-4);
 	}
 
 	.window-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
-		margin-bottom: var(--spacing-3);
+		margin-bottom: var(--space-3);
 	}
 
 	.window-header h3 {
-		font-size: var(--text-lg);
-		font-weight: 600;
+		font-size: var(--text-14);
+		font-weight: var(--weight-semibold);
 	}
 
 	.window-details {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-2);
-		margin-bottom: var(--spacing-3);
-		padding-bottom: var(--spacing-3);
-		border-bottom: 1px solid var(--border);
+		gap: var(--space-2);
+		margin-bottom: var(--space-3);
+		padding-bottom: var(--space-3);
+		border-bottom: var(--border-width) solid var(--border-color);
 	}
 
 	.window-description {
-		font-size: var(--text-sm);
-		color: var(--text-secondary);
-		margin-bottom: var(--spacing-3);
+		font-size: var(--text-12);
+		color: var(--muted);
+		margin-bottom: var(--space-3);
 	}
 
 	.window-actions {
 		display: flex;
-		gap: var(--spacing-2);
+		gap: var(--space-2);
 	}
 
 	/* Rollback Section */
 	.rollback-section {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-4);
+		gap: var(--space-4);
 	}
 
 	.rollback-header h2 {
-		font-size: var(--text-xl);
-		font-weight: 700;
-		margin-bottom: var(--spacing-2);
+		font-size: var(--text-16);
+		font-weight: var(--weight-semibold);
+		letter-spacing: var(--tracking-wide);
+		margin-bottom: var(--space-2);
 	}
 
 	.rollback-header p {
-		color: var(--text-secondary);
-		font-size: var(--text-sm);
+		color: var(--muted);
+		font-size: var(--text-12);
+		letter-spacing: var(--tracking-wide);
 	}
 
 	.rollback-list {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-3);
+		gap: var(--space-3);
 	}
 
 	.rollback-card {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: var(--spacing-4);
-		border: 2px solid var(--fg);
+		padding: var(--space-4);
+		border: var(--border-width) solid var(--fg);
 	}
 
 	.rollback-info h3 {
-		font-size: var(--text-lg);
-		font-weight: 600;
-		margin-bottom: var(--spacing-2);
+		font-size: var(--text-14);
+		font-weight: var(--weight-semibold);
+		margin-bottom: var(--space-2);
 	}
 
 	.rollback-meta {
 		display: flex;
 		align-items: center;
-		gap: var(--spacing-2);
-		margin-bottom: var(--spacing-2);
-		font-size: var(--text-sm);
+		gap: var(--space-2);
+		margin-bottom: var(--space-2);
+		font-size: var(--text-12);
 	}
 
 	.rollback-meta .version {
-		font-family: var(--font-mono);
-		font-weight: 600;
+		font-family: 'JetBrains Mono', 'Fira Code', monospace;
+		font-weight: var(--weight-semibold);
 	}
 
 	.rollback-meta .separator {
-		color: var(--text-secondary);
+		color: var(--muted);
 	}
 
 	.rollback-actions {
 		display: flex;
-		gap: var(--spacing-2);
+		gap: var(--space-2);
 	}
 
 	.rollback-warning {
 		display: flex;
-		gap: var(--spacing-3);
-		padding: var(--spacing-4);
-		background: var(--bg-secondary);
-		border: 2px solid var(--fg);
+		gap: var(--space-3);
+		padding: var(--space-4);
+		background: var(--surface-1);
+		border: var(--border-width) solid var(--fg);
 		border-style: dashed;
 	}
 
+	.warning-icon {
+		font-size: var(--text-20);
+	}
+
 	.rollback-warning h4 {
-		font-size: var(--text-md);
-		font-weight: 600;
-		margin-bottom: var(--spacing-2);
+		font-size: var(--text-12);
+		font-weight: var(--weight-semibold);
+		letter-spacing: var(--tracking-wide);
+		margin-bottom: var(--space-2);
 	}
 
 	.rollback-warning ul {
@@ -1687,9 +1644,9 @@
 	}
 
 	.rollback-warning li {
-		padding: var(--spacing-1) 0;
-		font-size: var(--text-sm);
-		padding-left: var(--spacing-4);
+		padding: var(--space-1) 0;
+		font-size: var(--text-12);
+		padding-left: var(--space-4);
 		position: relative;
 	}
 
@@ -1705,20 +1662,27 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		padding: var(--spacing-8);
+		padding: var(--space-8);
 		text-align: center;
-		border: 2px dashed var(--border);
+		border: var(--border-width) dashed var(--border-color);
+	}
+
+	.empty-icon {
+		font-size: var(--text-32);
+		margin-bottom: var(--space-3);
 	}
 
 	.empty-state h3 {
-		font-size: var(--text-lg);
-		font-weight: 600;
-		margin: var(--spacing-3) 0 var(--spacing-2);
+		font-size: var(--text-16);
+		font-weight: var(--weight-semibold);
+		letter-spacing: var(--tracking-wide);
+		margin: var(--space-3) 0 var(--space-2);
 	}
 
 	.empty-state p {
-		color: var(--text-secondary);
-		font-size: var(--text-sm);
+		color: var(--muted);
+		font-size: var(--text-12);
+		letter-spacing: var(--tracking-wide);
 	}
 
 	/* Buttons */
@@ -1728,14 +1692,16 @@
 	.btn-icon {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--spacing-2);
-		padding: var(--spacing-2) var(--spacing-3);
-		border: 1px solid var(--fg);
+		gap: var(--space-2);
+		padding: var(--space-2) var(--space-3);
+		border: var(--border-width) solid var(--fg);
 		background: var(--bg);
 		cursor: pointer;
-		font-size: var(--text-sm);
-		font-weight: 500;
+		font-size: var(--text-12);
+		font-weight: var(--weight-medium);
+		letter-spacing: var(--tracking-wide);
 		transition: all 0.2s;
+		font-family: inherit;
 	}
 
 	.btn-primary {
@@ -1748,33 +1714,31 @@
 	}
 
 	.btn-secondary:hover {
-		background: var(--bg-secondary);
+		background: var(--surface-1);
 	}
 
 	.btn-text {
 		border: none;
-		padding: var(--spacing-1) var(--spacing-2);
+		padding: var(--space-1) var(--space-2);
 	}
 
 	.btn-text:hover {
-		background: var(--bg-secondary);
+		background: var(--surface-1);
 	}
 
 	.btn-text.danger,
 	.btn-primary.danger,
 	.btn-secondary.danger {
-		color: var(--error);
-		border-color: var(--error);
+		border-color: var(--fg);
 	}
 
 	.btn-primary.danger {
-		background: var(--error);
+		background: var(--fg);
 		color: var(--bg);
-		border-color: var(--error);
 	}
 
 	.btn-icon {
-		padding: var(--spacing-2);
+		padding: var(--space-2);
 	}
 
 	/* Animations */
@@ -1789,11 +1753,6 @@
 
 	/* Utilities */
 	.monospace {
-		font-family: var(--font-mono);
+		font-family: 'JetBrains Mono', 'Fira Code', monospace;
 	}
-
-	.success { color: var(--success); }
-	.warning { color: var(--warning); }
-	.error { color: var(--error); }
-	.danger { color: var(--error); }
 </style>
