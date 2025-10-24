@@ -30,20 +30,14 @@
 import { chromium } from 'playwright';
 import path from 'path';
 import fs from 'fs';
-import { fileURLToPath } from 'url';
 import { PDFDocument } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// ============================================================
-// 기본 경로 설정
-// ============================================================
-const BASE_URL = 'http://localhost:5174';              // 개발 서버 URL
-const OUTPUT_DIR = path.join(__dirname, '../pdfs');    // PDF 출력 폴더
-const FONTS_DIR = path.join(__dirname, '../fonts');    // 폰트 파일 폴더
-const TRANSLATIONS_DIR = path.join(__dirname, '../translations'); // 번역 파일 폴더
+import {
+  BASE_URL,
+  OUTPUT_DIR,
+  FONTS_DIR,
+  TRANSLATIONS_DIR
+} from './constants.js';
 
 // ============================================================
 // PDF 출력 포맷 프리셋
