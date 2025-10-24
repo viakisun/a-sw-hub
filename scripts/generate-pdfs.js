@@ -44,6 +44,17 @@ const FORMAT_PRESETS = {
     content: {
       maxFeatures: 9,
       maxComponents: 17
+    },
+    spacing: {
+      containerPadding: '100px 120px 75px 120px',
+      headerMarginBottom: '85px',
+      platformLabelMarginBottom: '35px',
+      titleMarginBottom: '45px',
+      mainContentPaddingBottom: '45px',
+      bottomSectionPaddingTop: '35px',
+      infoListGap: '32px',
+      infoListMarginBottom: '45px',
+      footerPaddingTop: '30px'
     }
   },
 
@@ -74,6 +85,17 @@ const FORMAT_PRESETS = {
     content: {
       maxFeatures: 12,
       maxComponents: 20
+    },
+    spacing: {
+      containerPadding: '140px 160px 100px 160px',
+      headerMarginBottom: '120px',
+      platformLabelMarginBottom: '50px',
+      titleMarginBottom: '60px',
+      mainContentPaddingBottom: '60px',
+      bottomSectionPaddingTop: '50px',
+      infoListGap: '45px',
+      infoListMarginBottom: '60px',
+      footerPaddingTop: '40px'
     }
   }
 };
@@ -531,7 +553,7 @@ function getTitlePageLayoutModern(lang, common, roleName, today, role) {
           height: 100%;
           position: relative;
           background: #ffffff;
-          padding: ${preset.padding.page};
+          padding: ${preset.spacing.containerPadding};
           display: flex;
           flex-direction: column;
         }
@@ -540,7 +562,7 @@ function getTitlePageLayoutModern(lang, common, roleName, today, role) {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
-          margin-bottom: calc(${preset.fontSize.coverTitle} * 0.7);
+          margin-bottom: ${preset.spacing.headerMarginBottom};
         }
 
         .left-header {
@@ -593,7 +615,7 @@ function getTitlePageLayoutModern(lang, common, roleName, today, role) {
           display: flex;
           flex-direction: column;
           justify-content: center;
-          padding-bottom: 60px;
+          padding-bottom: ${preset.spacing.mainContentPaddingBottom};
         }
 
         .platform-label {
@@ -602,7 +624,7 @@ function getTitlePageLayoutModern(lang, common, roleName, today, role) {
           letter-spacing: 3px;
           text-transform: uppercase;
           color: #999999;
-          margin-bottom: calc(${preset.fontSize.coverTitle} * 0.3);
+          margin-bottom: ${preset.spacing.platformLabelMarginBottom};
         }
 
         .title {
@@ -611,7 +633,7 @@ function getTitlePageLayoutModern(lang, common, roleName, today, role) {
           line-height: 1.0;
           letter-spacing: -6px;
           color: #000000;
-          margin-bottom: calc(${preset.fontSize.coverTitle} * 1.8);
+          margin-bottom: ${preset.spacing.titleMarginBottom};
         }
 
         .subtitle {
@@ -623,15 +645,15 @@ function getTitlePageLayoutModern(lang, common, roleName, today, role) {
         }
 
         .bottom-section {
-          padding-top: 50px;
+          padding-top: ${preset.spacing.bottomSectionPaddingTop};
           border-top: 1px solid #e0e0e0;
         }
 
         .info-list {
           display: flex;
           flex-direction: column;
-          gap: 45px;
-          margin-bottom: 60px;
+          gap: ${preset.spacing.infoListGap};
+          margin-bottom: ${preset.spacing.infoListMarginBottom};
         }
 
         .info-item {
@@ -672,7 +694,7 @@ function getTitlePageLayoutModern(lang, common, roleName, today, role) {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding-top: 40px;
+          padding-top: ${preset.spacing.footerPaddingTop};
           border-top: 1px solid #f0f0f0;
         }
 
