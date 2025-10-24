@@ -1074,8 +1074,8 @@ async function createTableOfContentsHTML(page, pages, lang, translations, totalP
         .page-footer {
           position: absolute;
           bottom: 0;
-          left: 30mm;
-          right: 30mm;
+          left: 20mm;
+          right: 20mm;
           height: 14mm;
           display: flex;
           justify-content: space-between;
@@ -1446,7 +1446,21 @@ async function createLayoutPageHTML(page, screenshotBuffer, pageName, pageDescri
         .section-content ul { margin-left: 0; padding-left: 12px; list-style: none; }
         .section-content li { margin-bottom: 2mm; }
         .section-content li:before { content: "▪ "; margin-right: 4px; font-weight: bold; color: #666; font-size: 9px; }
-        .footer-section { position: absolute; bottom: 0; left: 20mm; right: 20mm; height: 14mm; display: flex; justify-content: space-between; align-items: center; font-size: 9px; color: #666; border-top: 1px solid #e0e0e0; padding-top: 3mm; margin: 0; }
+        .footer-section {
+          position: absolute;
+          bottom: 0;
+          left: 20mm;
+          right: 20mm;
+          height: 14mm;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 9px;
+          color: #666;
+          border-top: 1px solid #e0e0e0;
+          padding-top: 3mm;
+          margin: 0;
+        }
         .footer-left { flex: 1; text-align: left; }
         .footer-right { flex: 1; text-align: right; }
       </style>
