@@ -38,6 +38,7 @@ import {
   FONTS_DIR,
   TRANSLATIONS_DIR
 } from './constants.js';
+import { loadTranslations } from './utils/translations.js';
 
 // ============================================================
 // PDF 출력 포맷 프리셋
@@ -324,24 +325,6 @@ const ACCOUNTS = {
     ],
   }
 };
-
-// ============================================================
-// 유틸리티 함수들
-// ============================================================
-
-/**
- * 번역 파일 로드
- * @param {string} lang - 언어 코드 ('en' 또는 'ko')
- * @returns {Object} 페이지 및 공통 번역 객체
- */
-function loadTranslations(lang) {
-  const pagesPath = path.join(TRANSLATIONS_DIR, `pages-${lang}.json`);
-  const commonPath = path.join(TRANSLATIONS_DIR, `common-${lang}.json`);
-  return {
-    pages: JSON.parse(fs.readFileSync(pagesPath, 'utf-8')),
-    common: JSON.parse(fs.readFileSync(commonPath, 'utf-8')),
-  };
-}
 
 // ============================================================
 // 표지 페이지 레이아웃 템플릿들
