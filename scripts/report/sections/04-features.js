@@ -3,6 +3,7 @@
  */
 
 import { getDiagramHTML } from '../diagrams/generator.js';
+import { getScreenshotHTML } from '../screenshots/helper.js';
 
 export const remainingSections = {
   ko: [
@@ -427,11 +428,40 @@ GET    /api/builds/:id/logs
 export function generateSectionHTML(sectionData, lang) {
   let htmlContent = sectionData.content;
 
-  // Insert CI/CD diagram in Section 4 after "4.3 CI/CD 파이프라인"
+  // Insert screenshots and diagrams in Section 4
   if (sectionData.id === 4) {
+    // Insert projects list screenshot after "4.2 프로젝트 관리"
+    htmlContent = htmlContent.replace(
+      '</ul>\n\n        <h3>4.3 CI/CD 파이프라인</h3>',
+      '</ul>\n\n' + getScreenshotHTML('03-projects-list', lang) + '\n\n' +
+      getScreenshotHTML('04-project-detail', lang) + '\n\n' +
+      getScreenshotHTML('05-project-new', lang) + '\n\n        <h3>4.3 CI/CD 파이프라인</h3>'
+    );
+
+    // Insert builds screenshots and CI/CD diagram after "4.3 CI/CD 파이프라인"
     htmlContent = htmlContent.replace(
       '</ul>\n\n        <h3>4.4 대시보드 및 모니터링</h3>',
-      '</ul>\n\n' + getDiagramHTML('cicd', lang) + '\n\n        <h3>4.4 대시보드 및 모니터링</h3>'
+      '</ul>\n\n' + getScreenshotHTML('06-builds-list', lang) + '\n\n' +
+      getScreenshotHTML('07-build-logs', lang) + '\n\n' +
+      getDiagramHTML('cicd', lang) + '\n\n        <h3>4.4 대시보드 및 모니터링</h3>'
+    );
+
+    // Insert deployments screenshot after "4.4 대시보드 및 모니터링"
+    htmlContent = htmlContent.replace(
+      '</ul>\n\n        <h3>4.5 품질 관리</h3>',
+      '</ul>\n\n' + getScreenshotHTML('08-deployments', lang) + '\n\n        <h3>4.5 품질 관리</h3>'
+    );
+
+    // Insert approvals screenshot after "4.5 품질 관리"
+    htmlContent = htmlContent.replace(
+      '</ul>\n\n        <h3>4.6 타임라인 관리</h3>',
+      '</ul>\n\n' + getScreenshotHTML('09-approvals', lang) + '\n\n        <h3>4.6 타임라인 관리</h3>'
+    );
+
+    // Insert timeline screenshot after "4.6 타임라인 관리"
+    htmlContent = htmlContent.replace(
+      '</ul>\n      `',
+      '</ul>\n\n' + getScreenshotHTML('10-timeline', lang) + '\n      `'
     );
   }
 

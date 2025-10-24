@@ -3,6 +3,7 @@
  */
 
 import { getDiagramHTML } from '../diagrams/generator.js';
+import { getScreenshotHTML } from '../screenshots/helper.js';
 
 export const designContent = {
   ko: {
@@ -330,11 +331,25 @@ Error: ▒▒▒▒▒ (Diagonal lines)
 export function generateDesignHTML(lang) {
   const content = designContent[lang];
 
-  // Insert designSystem diagram after "3.2 컴포넌트 시스템"
+  // Insert screenshots and diagrams
   let htmlContent = content.content;
+
+  // Insert login screenshot after "3.1.3 타이포그래피"
+  htmlContent = htmlContent.replace(
+    '</table>\n\n      <h3>3.2 컴포넌트 시스템</h3>',
+    '</table>\n\n' + getScreenshotHTML('01-login', lang) + '\n\n      <h3>3.2 컴포넌트 시스템</h3>'
+  );
+
+  // Insert designSystem diagram after "3.2 컴포넌트 시스템"
   htmlContent = htmlContent.replace(
     '<h3>3.2 컴포넌트 시스템</h3>',
     '<h3>3.2 컴포넌트 시스템</h3>\n\n' + getDiagramHTML('designSystem', lang)
+  );
+
+  // Insert dashboard screenshot after "3.2 컴포넌트 시스템"
+  htmlContent = htmlContent.replace(
+    '</div>\n\n      <h3>3.3 레이아웃 전략</h3>',
+    '</div>\n\n' + getScreenshotHTML('02-dashboard', lang) + '\n\n      <h3>3.3 레이아웃 전략</h3>'
   );
 
   return `
