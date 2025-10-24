@@ -87,9 +87,9 @@ const FORMAT_PRESETS = {
       detailSmall: '14px'
     },
     screenshot: {
-      scale: 1.15,
-      flexRatio: 8,
-      descriptionFlexRatio: 2
+      scale: 1.00,
+      flexRatio: 7.5,
+      descriptionFlexRatio: 2.5
     },
     content: {
       maxFeatures: 12,
