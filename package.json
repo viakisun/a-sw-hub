@@ -11,9 +11,11 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "generate-pdfs": "node scripts/generate-pdfs.js"
   },
   "devDependencies": {
+    "@fontsource/noto-sans-kr": "^5.2.8",
     "@sveltejs/adapter-auto": "^6.1.0",
     "@sveltejs/kit": "^2.43.2",
     "@sveltejs/vite-plugin-svelte": "^6.2.0",
@@ -26,10 +28,13 @@
     "vite": "^7.1.7"
   },
   "dependencies": {
+    "@pdf-lib/fontkit": "^1.1.1",
     "chart.js": "^4.4.0",
     "date-fns": "^3.0.0",
     "lucide-svelte": "^0.546.0",
     "nanoid": "^5.0.0",
+    "pdf-lib": "^1.17.1",
+    "playwright": "^1.49.1",
     "zod": "^4.1.12"
   }
 }
