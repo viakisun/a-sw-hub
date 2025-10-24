@@ -722,20 +722,9 @@ function getTitlePageLayoutModern(lang, common, roleName, today, role) {
         }
 
         .role-badge {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 10px 20px;
-          background: ${badgeStyle.bg};
-          ${badgeStyle.border ? `border: ${badgeStyle.border};` : ''}
-          border-radius: 4px;
-        }
-
-        .role-dot {
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: ${badgeStyle.dotColor};
+          border: 1.5px solid #000;
+          padding: 6px 14px;
+          background: #fff;
         }
 
         .role-text {
@@ -743,7 +732,7 @@ function getTitlePageLayoutModern(lang, common, roleName, today, role) {
           font-weight: 600;
           letter-spacing: 2px;
           text-transform: uppercase;
-          color: ${badgeStyle.color};
+          color: #000;
         }
 
         .main-content {
@@ -857,7 +846,6 @@ function getTitlePageLayoutModern(lang, common, roleName, today, role) {
           </div>
 
           <div class="role-badge">
-            <div class="role-dot"></div>
             <div class="role-text">${roleName}</div>
           </div>
         </div>
