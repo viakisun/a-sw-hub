@@ -2,7 +2,7 @@
   "AUTH-001": {
     "name": "Login",
     "purpose": "Secure user authentication gateway for accessing the A-SW Hub platform with role-based credentials and session management.",
-    "description": "The login page provides a secure authentication interface for all A-SW Hub users with a distinctive split-screen industrial design. The left side features a clean white form area with email/password authentication, while the right side displays a black pitch area showcasing the platform's key features. The page supports email-based login, password authentication, GitHub OAuth integration, and includes session persistence through the 'Remember me' option. Real-time platform statistics (142 projects, 47 active builds, 12 users online) are displayed at the bottom. The design follows the extreme Black & White industrial aesthetic with ASCII iconography and zero border-radius throughout.",
+    "description": "Split-screen authentication interface with white form area (email/password, GitHub OAuth) on left and black pitch area showcasing platform features on right. Includes session persistence and real-time statistics display.",
     "components": [
       "Email input field with HTML5 validation and autocomplete",
       "Password input field with visibility toggle and autocomplete",
@@ -33,7 +33,7 @@
   "DASH-001": {
     "name": "Dashboard",
     "purpose": "Centralized overview of all projects, builds, issues, and team activities across the A-SW Hub platform with real-time statistics and interactive visualizations.",
-    "description": "The dashboard serves as the main landing page after successful authentication, providing a comprehensive overview of platform activities. It displays four key statistics cards at the top (Total Projects: 142, Builds Today with dynamic counts, Success Rate percentage, Active Users: 47), followed by two Chart.js visualizations arranged in a 2-column grid. The first chart shows build trends over the last 7 days with both successful and failed builds tracked, while the second displays a doughnut chart of programming language distribution (TypeScript: 35%, Python: 25%, Java: 20%, Go: 15%, Other: 5%). Below the charts, a real-time activity feed shows the 5 most recent platform activities including build starts, deployment completions, approval requests, build failures, and project updates, each with status-specific indicators.",
+    "description": "Main landing page displaying four statistics cards (projects, builds, success rate, users), two Chart.js visualizations (7-day build trends, language distribution), and real-time activity feed with recent platform events.",
     "components": [
       "Four statistics cards with trend indicators (up/down/neutral arrows)",
       "Line chart displaying build trends (successful vs failed) over 7 days using Chart.js",
@@ -62,7 +62,7 @@
   "PROJ-001": {
     "name": "Projects List",
     "purpose": "Comprehensive directory of all agricultural software projects with advanced filtering, search capabilities, and grid-based visualization for easy project discovery and navigation.",
-    "description": "The projects list page displays all autonomous software projects in a structured grid layout with industrial design aesthetics. The page header includes the title 'AGRICULTURAL SOFTWARE PROJECTS' and a prominent 'NEW PROJECT' button. A comprehensive filters bar provides search functionality with autocomplete, category dropdown (11 categories including crop-management, soil-analysis, irrigation, etc.), status filter (active, maintenance, archived, deprecated), and programming language filter. The main content area uses a responsive grid (auto-fill, 400px minimum) to display project cards, each showing project status with ASCII indicators (■ for active, ▣ for maintenance, □ for archived, ▢ for deprecated), programming language in monospace font, project name, description (truncated to 2 lines), category badge, and footer statistics (stars, forks, contributors). Each card is clickable and navigates to the project detail page.",
+    "description": "Grid layout displaying all projects with comprehensive filters (search, category, status, language). Each card shows status with ASCII indicators, language, name, description, category badge, and statistics (stars, forks, contributors).",
     "components": [
       "Page header with title and 'NEW PROJECT' button",
       "Filters bar with search input (300px width with auto-complete)",
@@ -103,7 +103,7 @@
   "PROJ-002": {
     "name": "Project Detail",
     "purpose": "Comprehensive project management hub with tabbed interface providing complete visibility into project overview, builds, deployments, team members, and configuration settings.",
-    "description": "The project detail page serves as the central hub for all project-related activities with a sophisticated tabbed interface. The page includes a project header displaying name, status badge, and key metrics, followed by a six-tab navigation system (Overview, Builds, Statistics, Deployments, Contributors, Settings). Each tab provides specialized functionality with detailed information and interactive controls. The page uses reactive Svelte stores for real-time data synchronization and implements role-based access control to show/hide tabs based on user permissions.",
+    "description": "Central project hub with header displaying name, status, and metrics, followed by six-tab navigation (Overview, Builds, Statistics, Deployments, Contributors, Settings) with role-based access control and real-time data updates.",
     "components": [
       "Project header with name, status badge (■/▣/□), and action buttons",
       "Six-tab navigation bar with active state indicators",
@@ -124,7 +124,7 @@
     ],
     "tabs": {
       "Overview": {
-        "description": "The Overview tab displays comprehensive project information including quick action buttons, project metadata cards, repository details, metrics dashboard, and recent commit history. The layout uses a 3-column info grid showing Project Information (category, language, visibility, license, created date), Repository details (URL, default branch, branch count, last commit), and Metrics (stars, forks, contributors, coverage percentage). Below the info grid, a description section shows the full project description, followed by a recent commits list with commit messages, authors, timestamps, and SHA hashes.",
+        "description": "Displays quick actions, 3-column metadata grid (Project Info, Repository, Metrics), project description, and recent commits with messages, authors, and timestamps.",
         "components": [
           "Quick actions bar with 4 buttons (CLONE, STAR, FORK, DEPLOY)",
           "3-column info grid (Project Information, Repository, Metrics)",
@@ -154,7 +154,7 @@
         ]
       },
       "Builds": {
-        "description": "The Builds tab presents a comprehensive view of all build executions for the project in a tabular format. The table shows build number, status with ASCII indicators (✓ success, ✕ failed, ⟳ running, ○ pending), branch name, commit SHA (7 characters), trigger type (push/PR/manual/schedule), duration formatted in minutes and seconds, completion timestamp, and action buttons for viewing logs or retrying failed builds. Running builds display with animated indicators and real-time progress updates.",
+        "description": "Tabular view of all builds showing number, status with ASCII indicators, branch, commit SHA, trigger type, duration, timestamp, and action buttons for logs or retry.",
         "components": [
           "Builds table with 8 columns (Build #, Status, Branch, Commit, Trigger, Duration, Finished, Actions)",
           "Table header with inverted colors (white on black)",
@@ -187,7 +187,7 @@
         ]
       },
       "Deployments": {
-        "description": "The Deployments tab tracks deployment history and current deployment status across all environments. It displays a table of deployments showing deployment ID, environment (Production/Staging/Development), version number, status with indicators, deployer name, deployment timestamp, and action buttons for viewing details or initiating rollback. Active deployments show real-time progress through deployment stages with visual indicators.",
+        "description": "Displays deployment table with ID, environment, version, status, deployer, timestamp, and action buttons. Active deployments show real-time progress through stages.",
         "components": [
           "Deployments table with 7 columns (Deployment #, Environment, Version, Status, Deployer, Deployed, Actions)",
           "Environment badges (PRODUCTION: filled black, STAGING: dashed border, DEVELOPMENT: gray)",
@@ -217,7 +217,7 @@
         ]
       },
       "Contributors": {
-        "description": "The Contributors tab displays all team members and contributors associated with the project in a grid layout. Each contributor card shows their name (or username), role badge (Owner/Maintainer/Developer/Viewer), avatar (or initials if no avatar), contribution statistics (commits, PRs, issues), and last active timestamp. The grid uses a responsive auto-fill layout with minimum 250px card width.",
+        "description": "Grid displaying contributor cards with name, role badge, avatar/initials, contribution stats (commits, PRs, issues), and last active timestamp in responsive layout.",
         "components": [
           "Contributors grid (auto-fill, minmax(250px, 1fr))",
           "Contributor cards with avatar, name, role, stats",
@@ -247,7 +247,7 @@
         ]
       },
       "Settings": {
-        "description": "The Settings tab provides quick access to essential project configuration options directly within the project detail page. It displays a summary of current settings with direct links to full configuration pages. The tab shows repository settings (URL, branch protection status), build settings (CI/CD enabled status, quality gates), deployment settings (auto-deploy toggles per environment), and notification settings (enabled channels). Each settings section includes a 'Configure' button navigating to the detailed configuration page.",
+        "description": "Quick access to configuration summary showing repository, build, deployment, and notification settings with 'Configure' buttons linking to detailed configuration pages.",
         "components": [
           "Settings summary grid (2 columns)",
           "Repository Settings card (URL, default branch, protection status)",
@@ -280,7 +280,7 @@
   "PROJ-003": {
     "name": "Project Configuration",
     "purpose": "Advanced project settings interface providing comprehensive configuration for general settings, repository connections, build pipelines, deployment strategies, notifications, and security policies.",
-    "description": "The project configuration page allows administrators and project owners to manage all aspects of project settings through a seven-section sidebar navigation. Each section contains detailed forms and controls for specific configuration areas. The interface implements form validation, dirty state tracking, and confirmation dialogs for destructive operations.",
+    "description": "Comprehensive settings management with seven-section sidebar navigation, detailed forms for each configuration area, validation, dirty state tracking, and confirmation dialogs for destructive actions.",
     "components": [
       "Sidebar navigation (250px fixed width) with 7 sections",
       "Active section indicator with left border",
@@ -299,7 +299,7 @@
     ],
     "tabs": {
       "General": {
-        "description": "The General settings section manages core project metadata including project name, slug (URL-safe identifier), description, category selection, visibility (public/private/internal), license type, default branch, and repository URL. The form includes validation for required fields, unique slug checking, and automatic slug generation from project name.",
+        "description": "Manages core metadata: project name, slug, description, category, visibility, license, default branch, and repository URL with validation and automatic slug generation.",
         "components": [
           "Project name input with validation (required, 3-50 characters)",
           "Slug input with auto-generation and uniqueness check",
@@ -329,7 +329,7 @@
         ]
       },
       "Repository": {
-        "description": "The Repository section configures Git repository connections, webhook settings, branch protection rules, and commit signing requirements. It displays connection status, allows testing the repository connection, manages webhook creation/deletion, and configures branch protection rules including required reviews, status checks, and restriction policies.",
+        "description": "Configures Git connections, webhooks, branch protection rules, and commit signing. Displays connection status, test functionality, and manages protection policies including reviews and status checks.",
         "components": [
           "Repository connection status indicator (● CONNECTED / ○ DISCONNECTED)",
           "Repository URL display with Test Connection button",
@@ -364,7 +364,7 @@
         ]
       },
       "Build": {
-        "description": "The Build section configures CI/CD pipeline settings including build triggers (on push, on PR, scheduled, manual), environment variables, build scripts, quality gates with thresholds, and artifact retention policies. It includes a script editor for build commands and comprehensive quality gate configuration for code coverage, test pass rate, security scans, and complexity thresholds.",
+        "description": "Configures CI/CD pipeline with build triggers, environment variables, scripts, quality gates (coverage, tests, security, complexity), and artifact retention policies.",
         "components": [
           "Build triggers checkbox group (4 options: Push, PR, Schedule, Manual)",
           "Schedule input (cron syntax) with validation",
@@ -402,7 +402,7 @@
         ]
       },
       "Deployment": {
-        "description": "The Deployment section manages deployment environments, strategies, and policies. It allows adding/removing environments, configuring deployment strategies (rolling, blue-green, canary), setting auto-deploy rules, configuring rollback policies, and managing deployment windows. Each environment can have specific settings for deployment strategy, health checks, and rollback triggers.",
+        "description": "Manages deployment environments, strategies (rolling, blue-green, canary), auto-deploy rules, rollback policies, health checks, and deployment windows with environment-specific settings.",
         "components": [
           "Environments list (cards)",
           "Add Environment button",
@@ -439,7 +439,7 @@
         ]
       },
       "Notifications": {
-        "description": "The Notifications section configures notification channels and event subscriptions. It allows enabling/disabling notification channels (Email, Slack, Webhooks), setting up channel-specific configuration (email addresses, Slack webhook URLs, custom webhook endpoints), and selecting which events trigger notifications (build events, deployment events, approval events, issue events, PR events). Each event type can be configured independently per channel.",
+        "description": "Configures notification channels (Email, Slack, Webhooks) with channel-specific settings and granular event subscriptions for builds, deployments, approvals, issues, and PRs.",
         "components": [
           "Notification channels list",
           "Email notifications section",
@@ -476,7 +476,7 @@
         ]
       },
       "Advanced": {
-        "description": "The Advanced section provides additional configuration options including project transfer, repository mirroring, custom domain setup, API access control, webhook secrets rotation, and integration with external tools. It includes technical settings for advanced users and administrators.",
+        "description": "Advanced options including project transfer, repository mirroring, custom domains, API access control, webhook secrets rotation, and external tool integrations for administrators.",
         "components": [
           "Project transfer section",
           "Transfer to user/organization dropdown",
@@ -512,7 +512,7 @@
         ]
       },
       "Danger Zone": {
-        "description": "The Danger Zone section contains destructive operations including project archiving, project transfer, and project deletion. Each operation requires explicit confirmation and some operations require typing a confirmation phrase. Archived projects become read-only, transfers require recipient acceptance, and deletion is permanent and irreversible.",
+        "description": "Contains destructive operations (archive, transfer, delete) requiring explicit confirmation. Archived projects become read-only, transfers need acceptance, deletion is permanent and irreversible.",
         "components": [
           "Danger zone container (dashed red border)",
           "Archive project section",
@@ -551,7 +551,7 @@
   "PROJ-004": {
     "name": "Project Pipelines",
     "purpose": "CI/CD pipeline management interface with comprehensive visualization of pipeline stages, execution history, configuration editor, and real-time monitoring of pipeline runs.",
-    "description": "The project pipelines page provides complete control over continuous integration and deployment pipelines through a four-tab interface. It displays pipeline status, allows configuration editing, shows execution history with logs, and manages pipeline settings.",
+    "description": "Four-tab interface for CI/CD pipeline management: displays status, configuration editing, execution history with logs, and pipeline settings control.",
     "components": [
       "Four-tab navigation (Overview, Configuration, History, Settings)",
       "Tab content area with conditional rendering",
@@ -568,7 +568,7 @@
     ],
     "tabs": {
       "Overview": {
-        "description": "The Overview tab displays the current pipeline execution status with a visual flow diagram showing all stages, their current status, and execution duration. It includes a pipeline run summary with branch, commit SHA, trigger type, start time, and overall status. Active pipeline runs show real-time progress with animated indicators for running stages.",
+        "description": "Visual flow diagram showing pipeline stages with status and duration. Includes run summary (branch, commit, trigger, time, status) with real-time progress indicators.",
         "components": [
           "Pipeline flow diagram with stage cards",
           "Stage cards showing name, status icon, duration",
@@ -599,7 +599,7 @@
         ]
       },
       "Configuration": {
-        "description": "The Configuration tab provides a YAML editor for defining pipeline stages, jobs, scripts, and dependencies. It includes syntax highlighting, validation, and a visual preview of the pipeline structure. The editor supports defining multiple stages with parallel and sequential jobs, environment variables, artifacts, and caching configuration.",
+        "description": "YAML editor with syntax highlighting and validation for defining pipeline stages, jobs, scripts, dependencies, environment variables, artifacts, and caching with visual structure preview.",
         "components": [
           "YAML editor with syntax highlighting",
           "Line numbers and code folding",
@@ -631,7 +631,7 @@
         ]
       },
       "History": {
-        "description": "The History tab displays a chronological list of all pipeline executions with filtering capabilities by status, branch, date range, and triggered by user. Each execution entry shows pipeline run number, status, branch, commit SHA, duration, start time, and provides access to full logs and re-run functionality for failed pipelines.",
+        "description": "Chronological list of pipeline executions with filtering (status, branch, date, user). Shows run number, status, branch, commit, duration, start time with logs access and re-run options.",
         "components": [
           "Filter controls bar (Status, Branch, Date Range, Triggered By)",
           "Pipeline runs table with 8 columns",
@@ -663,7 +663,7 @@
         ]
       },
       "Settings": {
-        "description": "The Settings tab manages pipeline-wide configuration including timeout settings, retry policies, artifact retention, concurrent execution limits, notification rules, and approval requirements. It provides controls for optimizing pipeline performance and reliability.",
+        "description": "Pipeline-wide configuration for timeouts, retry policies, artifact retention, concurrent execution, notifications, and approval requirements to optimize performance and reliability.",
         "components": [
           "Pipeline timeout section",
           "Global timeout input (minutes)",
@@ -709,7 +709,7 @@
   "PROJ-005": {
     "name": "New Project",
     "purpose": "Guided project creation wizard with four comprehensive steps to set up new agricultural software projects including basic information, repository configuration, CI/CD setup, and review.",
-    "description": "The new project page guides users through creating a new project with a sophisticated 4-step wizard interface. Step 1 (Basic Information) collects project name with automatic slug generation, description textarea, category selection from 10 agricultural domains, visibility (public/private), and license choice. Step 2 (Repository Setup) offers three options: create new repository with README initialization and .gitignore template selection, connect to existing repository via URL, or import from GitHub/GitLab/Bitbucket with authentication. Step 3 (CI/CD Configuration) enables build trigger selection (on push, on PR, scheduled, manual), environment configuration (ROS2 version, Python version, Node.js version), test settings (unit tests, integration tests, security scan), and quality thresholds (minimum coverage percentage, test pass rate). Step 4 (Review & Create) displays a comprehensive summary of all configured settings organized by section with estimated resource requirements (build time, storage, monthly cost). The wizard includes step validation, progress indicator, navigation controls, and responsive design.",
+    "description": "4-step wizard for project creation: (1) Basic info with name, description, category, visibility; (2) Repository setup (new/existing/import); (3) CI/CD config with triggers and quality thresholds; (4) Review summary with resource estimates.",
     "components": [
       "Four-step wizard header with step indicators",
       "Step indicator circles (active, completed, pending states)",
@@ -755,7 +755,7 @@
   "BUILD-001": {
     "name": "Builds Dashboard",
     "purpose": "Real-time monitoring of all CI/CD build pipelines across projects with comprehensive status tracking, log visualization, and build management capabilities.",
-    "description": "The builds dashboard aggregates all build activities across the platform in a sophisticated split-view interface. The left panel displays active builds with real-time progress indicators, stage-by-stage status (Build → Unit Tests → Integration Tests → Deploy → Smoke Tests → Health Check), progress bars, and expandable details showing project name, version, environment, branch, commit SHA, triggering user, and changelog. The right panel features a terminal-style log viewer with a black background and green text, displaying logs organized into collapsible sections with status-specific colors (green for success, red for errors, yellow for warnings, cyan for running). The page includes header statistics showing active builds count, success/failed counts for today, and overall success rate. A recent builds table at the bottom shows the last 10 completed builds with sortable columns, status badges, durations, and action buttons (View, Retry for failed builds).",
+    "description": "Split-view interface with active builds panel (real-time progress, 6-stage status) and terminal-style log viewer (collapsible sections, color-coded). Header shows statistics, bottom table displays 10 recent builds with actions.",
     "components": [
       "Page header with 'BUILD MONITOR' title and statistics (4 stat cards)",
       "Statistics: Active count, Success Today, Failed Today, Success Rate percentage",
@@ -807,7 +807,7 @@
   "TIME-001": {
     "name": "Timeline",
     "purpose": "Interactive Gantt chart visualization of project timelines, milestones, and deliverables across the 5-year A-SW initiative (2025.09 - 2029.12) with comprehensive tracking of 136 deliverables for all participating institutions.",
-    "description": "The timeline page provides a sophisticated Gantt chart visualization of the entire 5-year A-SW business plan using actual project data. The interface displays a phase indicator bar at the top showing Phase 1 (60%: 2025.09-2027.12 - Core Technology Development) and Phase 2 (40%: 2028.01-2029.12 - Integration & Verification). The header shows key statistics: 2 phases, 5 years, 5 institutions (KITECH, TYMICT, JBNU, VIA, OntarioTech), and 136 total deliverables. Users can switch between YEAR (showing 5 annual periods), QUARTER (showing Q3 2025 + 16 quarters), and MONTH (showing SEP-DEC 2025 + 48 months) views. The Gantt chart displays hierarchical tasks grouped by institution/phase/deliverable with expandable/collapsible groups, progress bars, milestone diamonds, and dependency lines. A 'TODAY' marker shows current progress. Task bars use different styles: parent tasks (solid black), completed (filled), in-progress (diagonal stripes), planned (hollow), delayed (dashed). A comprehensive legend explains all visual indicators. The bottom section displays institution summary cards with deliverable counts and progress percentages.",
+    "description": "Gantt chart for 5-year A-SW plan (2025.09-2029.12) with 136 deliverables across 5 institutions. Features phase indicator, three view modes (YEAR/QUARTER/MONTH), hierarchical tasks with progress bars, TODAY marker, and institution summaries.",
     "components": [
       "Page header with title 'PROJECT TIMELINE' and subtitle showing date range",
       "Statistics panel: 4 stat cards (2 Phases, 5 Years, 5 Institutions, 136 Deliverables)",
@@ -860,7 +860,7 @@
   "DEPLOY-001": {
     "name": "Deployments",
     "purpose": "Comprehensive deployment management dashboard showing deployment status, history, and controls across all environments (development, staging, production) with rollback capabilities and deployment window scheduling.",
-    "description": "The deployments page provides complete visibility into deployment activities across the platform through a sophisticated 5-tab interface. The Environments tab (Overview) displays 4 environment cards (Production KR, Production US, Staging, Development) each showing status (healthy/degraded/down/maintenance), current version, last deployment date, scheduled next deployment, URL, region (AWS/GCP), resource usage graphs (CPU, Memory, Storage with progress bars), instance count, and key metrics (uptime %, response time ms, error rate %, throughput/min). The Active Deployments tab shows currently running deployments with real-time progress through 6 check stages (Build → Unit Tests → Integration Tests → Deploy → Smoke Tests → Health Check), displaying project name, version, environment, branch, commit, deployer, timestamp, and change log with artifact information. The Deployment History tab provides a filterable table of past deployments with status, duration, and rollback options. The Deployment Windows tab schedules deployment time slots with environment and project associations. The Rollback Management tab lists all rollback-eligible deployments from the last 30 days with version comparison and one-click rollback execution.",
+    "description": "5-tab interface showing: (1) Environment cards with status, metrics, and resource usage; (2) Active deployments with 6-stage progress; (3) Filterable deployment history; (4) Deployment windows scheduling; (5) Rollback management for last 30 days.",
     "components": [
       "Page header with title 'DEPLOYMENT MANAGEMENT' and action buttons (Deployment Window, New Deployment)",
       "Five-tab navigation (Environments, Active Deployments, History, Windows, Rollback)",
@@ -921,7 +921,7 @@
   "APPR-001": {
     "name": "Approvals",
     "purpose": "Centralized approval workflow management for deployment requests, merge requests, and configuration changes with comprehensive quality gate checks and priority-based queue management.",
-    "description": "The approvals page provides a sophisticated interface for managing all pending approval requests across projects in a split-view layout. The left panel displays the approval queue as a scrollable list of cards, each showing priority badge (URGENT: filled black, HIGH: bordered, MEDIUM/LOW: hollow), approval type (deployment, merge, release, configuration, access), request title, description, project name, environment, requestor name, and time ago (formatted as '30m ago', '2h ago', etc.). Each card includes 5 quality check badges (Security, Tests, Coverage, Performance, Code Quality) with status indicators (✓ PASS: filled, ⚠ WARN: bordered, ✕ FAIL: strikethrough). The right panel shows detailed information for the selected approval including expandable quality gate checks with threshold values and details, file changes list with type indicators (ADDED, MODIFIED, DELETED), request metadata, and approval action buttons (Approve, Reject with reason, Hold). Header statistics show counts for urgent, pending, and approved today. Filters allow sorting by status, priority, and type.",
+    "description": "Split-view approval management with queue cards (priority, type, quality checks) on left and detailed panel on right (quality gates, file changes, metadata, actions). Header shows statistics, filters enable sorting.",
     "components": [
       "Page header with title 'APPROVAL QUEUE' and 3 statistics cards (Urgent: highlighted, Pending, Approved Today)",
       "Filters bar with 3 dropdowns (Status, Priority, Type) and results counter",
@@ -976,7 +976,7 @@
   "QUAL-001": {
     "name": "Quality Metrics",
     "purpose": "Comprehensive code quality analysis and reporting dashboard providing detailed insights into code quality, security vulnerabilities, test coverage, and dependency health with AI-powered recommendations.",
-    "description": "The quality metrics page provides in-depth code quality analysis through a sophisticated tabbed interface with visual score representations. The dashboard begins with project selection and analysis timestamp display, followed by a prominent overall score section showing a large circular score indicator (82/100 with B+ grade) and four category scores with progress bars: Code Quality (85% - 12 issues), Security (72% - 3 high vulnerabilities), Test Coverage (78% - 9716/12456 lines), and Dependencies (94% - 8 outdated). Five tabs provide detailed analysis: Overview tab displays a 30-day quality trend bar chart, quality criteria checklist (4 items with pass/warn/fail states), and AI recommendations (3 cards with icons); Code Quality tab shows total issues count, duplicate lines, complex functions table with complexity scores, function names, file locations, and line numbers; Security tab presents vulnerability summary (high/medium/low counts), security hotspots cards with type, severity, location, description, and action buttons; Coverage tab displays line and branch coverage with circular progress rings, and a list of low-coverage files with coverage bars; Dependencies tab shows package statistics, license compatibility grid with incompatible licenses highlighted, and SBOM (Software Bill of Materials) generation options.",
+    "description": "Quality dashboard with overall score (circular indicator, grade) and 4 category scores. Five tabs: (1) 30-day trend, criteria, AI recommendations; (2) Code issues and complexity; (3) Security vulnerabilities; (4) Test coverage; (5) Dependencies and SBOM.",
     "components": [
       "Page header with title 'QUALITY GATE' and action buttons (Configure Rules, Run Analysis)",
       "Project selector dropdown with last analysis timestamp",
@@ -1029,7 +1029,7 @@
   "SETT-001": {
     "name": "System Settings",
     "purpose": "Comprehensive platform-wide settings management for user profile, security, notifications, preferences, integrations, and data privacy with granular control over all system configurations.",
-    "description": "The settings page provides extensive configuration options across six major categories through a sophisticated sidebar navigation with tabbed content areas. Each tab contains detailed forms and controls for specific configuration areas including user profile management, security settings, notification preferences, UI customization, external service integrations, and data privacy controls.",
+    "description": "Six-category settings with sidebar navigation: Profile, Security, Notifications, Preferences, Integrations, and Data Privacy. Each section has detailed forms for comprehensive platform configuration.",
     "components": [
       "Page header with title 'SETTINGS', subtitle, unsaved changes indicator (● UNSAVED CHANGES), Save Changes button",
       "Sidebar navigation (250px fixed) with 6 tab buttons (Profile, Security, Notifications, Preferences, Integrations, Data)",
@@ -1049,7 +1049,7 @@
     ],
     "tabs": {
       "Profile": {
-        "description": "The Profile tab manages user information including username (unique identifier), email address, full name, department, role (read-only, assigned by admin), phone number, location, join date (read-only), and bio (max 500 characters). The form uses a 2-column grid layout with full-width bio field at the bottom.",
+        "description": "Manages user info: username, email, name, department, role (read-only), phone, location, join date (read-only), and bio (500 chars max) in 2-column grid layout.",
         "components": [
           "8 input fields in 2-column grid",
           "Username input (unique, 3-20 chars, alphanumeric + underscore)",
@@ -1077,7 +1077,7 @@
         ]
       },
       "Security": {
-        "description": "The Security tab handles password changes, two-factor authentication, API key management, and active session monitoring. Password section shows last changed date and includes a collapsible form for changing password. Two-factor authentication can be enabled/disabled with method selection (TOTP/SMS/App). API keys section allows generating new keys with custom permissions and expiration dates, displaying existing keys with masked values, and revoking keys. Active sessions section lists all current sessions with device, location, IP, browser info and allows terminating individual sessions.",
+        "description": "Handles password changes, 2FA (TOTP/SMS/App), API key management (generate with permissions/expiration, revoke), and active session monitoring with termination capability.",
         "components": [
           "Password section: last changed date, Change Password button, collapsible form (current, new, confirm)",
           "Password strength indicator",
@@ -1109,7 +1109,7 @@
         ]
       },
       "Notifications": {
-        "description": "The Notifications tab configures multi-channel notification preferences including Email, Slack, In-app, and SMS channels. Each channel can be enabled/disabled and configured with event-specific subscriptions. Users can select which events trigger notifications (builds, deployments, approvals, issues, mentions) per channel. A Do Not Disturb feature allows scheduling quiet periods with start and end times.",
+        "description": "Configures multi-channel notifications (Email, Slack, In-app, SMS) with per-channel event subscriptions (builds, deployments, approvals, issues, mentions) and Do Not Disturb scheduling.",
         "components": [
           "4 channel sections (Email, Slack, In-app, SMS)",
           "Channel enable toggle for each",
@@ -1138,7 +1138,7 @@
         ]
       },
       "Preferences": {
-        "description": "The Preferences tab customizes UI and regional settings including theme selection (Dark/Light/System), language (EN/KO/JA/ZH), timezone (major cities), date format (YYYY-MM-DD/DD-MM-YYYY/MM-DD-YYYY), time format (12h/24h), first day of week, number format, and default landing page view. All settings have immediate preview.",
+        "description": "Customizes UI and regional settings: theme, language, timezone, date/time formats, first day of week, number format, and default landing page with immediate preview.",
         "components": [
           "Theme dropdown (Dark/Light/System)",
           "Language dropdown (4 languages)",
@@ -1164,7 +1164,7 @@
         ]
       },
       "Integrations": {
-        "description": "The Integrations tab manages connections to external services including GitHub, GitLab, Jenkins, Slack, and SonarQube. Each integration card shows connection status, configured values, and Connect/Disconnect buttons. Configuration panels allow entering credentials, URLs, and testing connections. Integration status is tracked and displayed with visual indicators.",
+        "description": "Manages connections to GitHub, GitLab, Jenkins, Slack, and SonarQube. Each integration shows status, configuration, and Connect/Disconnect options with connection testing.",
         "components": [
           "5 integration cards in 2-column grid",
           "Integration cards: name, status (● CONNECTED / ○ DISCONNECTED), info display, action buttons",
@@ -1192,7 +1192,7 @@
         ]
       },
       "Data & Privacy": {
-        "description": "The Data & Privacy tab manages data retention policies, data export requests, and privacy settings. Users can configure retention periods for different data types (builds, logs, artifacts, analytics), request data exports in various formats (JSON/CSV/XML), view export history, and manage GDPR settings. A Danger Zone section allows account deletion with confirmation.",
+        "description": "Manages data retention policies, export requests (JSON/CSV/XML), GDPR settings, and account deletion. Configures retention for builds, logs, artifacts, and analytics with export history tracking.",
         "components": [
           "Data Retention section: 4 number inputs (days) for builds, logs, artifacts, analytics",
           "Data Export section: Request Export button, format selection dialog, export history table",

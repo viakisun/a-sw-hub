@@ -195,6 +195,13 @@ const OUTPUT_FORMAT = 'PRESENTATION';
 const TITLE_PAGE_LAYOUT = 'modern';
 
 /**
+ * 스크린샷 페이지 레이아웃 선택
+ * - 'default': 좌우 2단 구조 (스크린샷 좌측 + 설명 우측)
+ * - 'vertical': 1단 세로 구조 (Purpose → Components → Description → Screenshot)
+ */
+const LAYOUT_PAGE_STYLE = 'vertical';
+
+/**
  * 현재 선택된 포맷의 프리셋 반환
  * @returns {Object} 선택된 FORMAT_PRESETS 객체
  */
@@ -1380,7 +1387,7 @@ async function createDetailPageHTML(page, pageName, pageDescription, pageNum, to
   }
 }
 
-// Create layout page with screenshot and description (HTML-based, NEW vertical layout for A4 landscape)
+// Create layout page with screenshot and description
 async function createLayoutPageHTML(page, screenshotBuffer, pageName, pageDescription, pageNum, totalPages, lang, translations) {
   const { common } = translations;
   const preset = getActivePreset();
@@ -1398,7 +1405,165 @@ async function createLayoutPageHTML(page, screenshotBuffer, pageName, pageDescri
   // Screenshot image only
   const screenshotHTML = `<img src="data:image/png;base64,${screenshotBase64}" alt="${pageName}" style="display:block;border:1.5px solid #bcbcbc;box-shadow:none;margin:0;padding:0;width:${100 * SCREENSHOT_SCALE}%;max-width:none;" />`;
 
-  const html = `
+  // Choose layout based on LAYOUT_PAGE_STYLE
+  let html = '';
+
+  if (LAYOUT_PAGE_STYLE === 'vertical') {
+    // ===== VERTICAL LAYOUT (1단 세로 구조) =====
+    html = `
+    <!DOCTYPE html>
+    <html lang="${lang}">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${pageName}</title>
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; }
+        @page { size: A4 landscape; margin: 0; }
+        html, body { margin: 0; padding: 0; width: 297mm; height: 210mm; }
+        .page {
+          position: relative;
+          width: 297mm;
+          height: 210mm;
+          padding: 10mm 20mm 0 20mm;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          font-family: 'Noto Sans ${lang === 'ko' ? 'KR' : ''}', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          color: #000;
+          line-height: 1.5;
+        }
+        .title-section {
+          flex-shrink: 0;
+          height: 14mm;
+          padding-bottom: 0;
+          border-bottom: 1px solid #e0e0e0;
+          margin-bottom: 6mm;
+          display: flex;
+          align-items: center;
+        }
+        .page-title {
+          font-size: 20px;
+          font-weight: 700;
+          color: #000;
+        }
+        .content-section {
+          flex: 0 0 auto;
+          display: flex;
+          flex-direction: column;
+          gap: 5mm;
+          max-height: 50mm;
+          overflow: hidden;
+        }
+        .section {
+          display: flex;
+          flex-direction: column;
+          gap: 2mm;
+        }
+        .section-title {
+          font-size: 11px;
+          font-weight: 700;
+          color: #000;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          border-left: 3px solid #000;
+          padding-left: 6px;
+        }
+        .section-content {
+          font-size: 10px;
+          color: #333;
+          line-height: 1.6;
+          padding-left: 9px;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .section-content ul {
+          margin: 0;
+          padding: 0;
+          list-style: none;
+        }
+        .section-content li {
+          margin-bottom: 1.5mm;
+          padding-left: 0;
+        }
+        .section-content li:before {
+          content: "▪ ";
+          margin-right: 4px;
+          font-weight: bold;
+          color: #666;
+          font-size: 9px;
+        }
+        .screenshot-section {
+          flex: 0 0 auto;
+          height: 120mm;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-top: 5mm;
+          margin-bottom: 18mm;
+        }
+        .screenshot-section img {
+          max-width: 100%;
+          max-height: 100%;
+          display: block;
+          object-fit: contain;
+        }
+        .footer-section {
+          position: absolute;
+          bottom: 0;
+          left: ${preset.footer.left};
+          right: ${preset.footer.right};
+          height: ${preset.footer.height};
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: ${preset.footer.fontSize};
+          color: #666;
+          border-top: ${preset.footer.borderTop};
+          padding-top: ${preset.footer.paddingTop};
+          margin: 0;
+        }
+        .footer-left { flex: 1; text-align: left; }
+        .footer-right { flex: 1; text-align: right; }
+      </style>
+    </head>
+    <body>
+      <div class="page">
+        <div class="title-section">
+          <div class="page-title">${pageName}</div>
+        </div>
+        <div class="content-section">
+          ${pageDescription?.purpose ? `
+          <div class="section">
+            <div class="section-title">PURPOSE</div>
+            <div class="section-content">${pageDescription.purpose}</div>
+          </div>
+          ` : ''}
+          ${pageDescription?.description ? `
+          <div class="section">
+            <div class="section-title">DESCRIPTION</div>
+            <div class="section-content">${pageDescription.description}</div>
+          </div>
+          ` : ''}
+        </div>
+        <div class="screenshot-section">
+          ${screenshotHTML}
+        </div>
+        <div class="footer-section">
+          <div class="footer-left">Page ${pageNum} / ${totalPages}</div>
+          <div class="footer-right">${common.footer}</div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+  } else {
+    // ===== DEFAULT LAYOUT (좌우 2단 구조) =====
+    html = `
     <!DOCTYPE html>
     <html lang="${lang}">
     <head>
@@ -1507,6 +1672,7 @@ async function createLayoutPageHTML(page, screenshotBuffer, pageName, pageDescri
     </body>
     </html>
   `;
+  }
 
   try {
     await page.setContent(html);
