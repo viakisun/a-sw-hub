@@ -104,6 +104,14 @@ const FORMAT_PRESETS = {
       orgFull: '10px',
       participants: '10px',
       date: '10px'
+    },
+    footer: {
+      left: '20mm',
+      right: '20mm',
+      height: '14mm',
+      fontSize: '9px',
+      borderTop: '1px solid #e0e0e0',
+      paddingTop: '3mm'
     }
   },
 
@@ -154,6 +162,14 @@ const FORMAT_PRESETS = {
       orgFull: '14px',
       participants: '13px',
       date: '14px'
+    },
+    footer: {
+      left: '20mm',
+      right: '20mm',
+      height: '14mm',
+      fontSize: '9px',
+      borderTop: '1px solid #e0e0e0',
+      paddingTop: '3mm'
     }
   }
 };
@@ -953,6 +969,7 @@ async function mergePDFPages(pdfDoc, htmlPdfBuffer) {
 // Create table of contents page (HTML-based, A4 landscape)
 async function createTableOfContentsHTML(page, pages, lang, translations, totalPages = 0) {
   const { common } = translations;
+  const preset = getActivePreset();
 
   // Build table of contents list
   let pageNum = 3; // Start counting from page 3 (after title and TOC)
@@ -1074,16 +1091,16 @@ async function createTableOfContentsHTML(page, pages, lang, translations, totalP
         .page-footer {
           position: absolute;
           bottom: 0;
-          left: 20mm;
-          right: 20mm;
-          height: 14mm;
+          left: ${preset.footer.left};
+          right: ${preset.footer.right};
+          height: ${preset.footer.height};
           display: flex;
           justify-content: space-between;
           align-items: center;
-          font-size: 9px;
+          font-size: ${preset.footer.fontSize};
           color: #666;
-          border-top: 1px solid #e0e0e0;
-          padding-top: 3mm;
+          border-top: ${preset.footer.borderTop};
+          padding-top: ${preset.footer.paddingTop};
           margin: 0;
         }
 
@@ -1140,6 +1157,7 @@ async function createTableOfContentsHTML(page, pages, lang, translations, totalP
 // Create detail page with comprehensive page description (HTML-based, A4 landscape)
 async function createDetailPageHTML(page, pageName, pageDescription, pageNum, totalPages, lang, translations) {
   const { common } = translations;
+  const preset = getActivePreset();
 
   // Build features list
   const features = pageDescription?.features || [];
@@ -1272,16 +1290,16 @@ async function createDetailPageHTML(page, pageName, pageDescription, pageNum, to
         .footer-section {
           position: absolute;
           bottom: 0;
-          left: 20mm;
-          right: 20mm;
-          height: 14mm;
+          left: ${preset.footer.left};
+          right: ${preset.footer.right};
+          height: ${preset.footer.height};
           display: flex;
           justify-content: space-between;
           align-items: center;
-          font-size: 9px;
+          font-size: ${preset.footer.fontSize};
           color: #666;
-          border-top: 1px solid #e0e0e0;
-          padding-top: 3mm;
+          border-top: ${preset.footer.borderTop};
+          padding-top: ${preset.footer.paddingTop};
         }
         .footer-left { flex: 1; text-align: left; }
         .footer-right { flex: 1; text-align: right; }
@@ -1365,6 +1383,7 @@ async function createDetailPageHTML(page, pageName, pageDescription, pageNum, to
 // Create layout page with screenshot and description (HTML-based, NEW vertical layout for A4 landscape)
 async function createLayoutPageHTML(page, screenshotBuffer, pageName, pageDescription, pageNum, totalPages, lang, translations) {
   const { common } = translations;
+  const preset = getActivePreset();
 
   // Build components list (max 3 items)
   const componentsHtml = pageDescription?.components
@@ -1449,16 +1468,16 @@ async function createLayoutPageHTML(page, screenshotBuffer, pageName, pageDescri
         .footer-section {
           position: absolute;
           bottom: 0;
-          left: 20mm;
-          right: 20mm;
-          height: 14mm;
+          left: ${preset.footer.left};
+          right: ${preset.footer.right};
+          height: ${preset.footer.height};
           display: flex;
           justify-content: space-between;
           align-items: center;
-          font-size: 9px;
+          font-size: ${preset.footer.fontSize};
           color: #666;
-          border-top: 1px solid #e0e0e0;
-          padding-top: 3mm;
+          border-top: ${preset.footer.borderTop};
+          padding-top: ${preset.footer.paddingTop};
           margin: 0;
         }
         .footer-left { flex: 1; text-align: left; }
