@@ -14,7 +14,7 @@
  */
 
 import { chromium } from 'playwright';
-import { PDFDocument } from 'pdf-lib';
+import { PDFDocument, rgb, grayscale } from 'pdf-lib';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -34,7 +34,7 @@ const PAGE_FORMAT = {
   height: '297mm',   // A4 height
   margin: {
     top: '25mm',
-    right: '20mm',
+    right: '25mm',    // 오른쪽 여백 증가 (잘림 방지)
     bottom: '25mm',
     left: '20mm'
   }
@@ -46,28 +46,30 @@ const PAGE_FORMAT = {
 
 const REPORT_META = {
   ko: {
-    title: '농업기계 자율주행 소프트웨어 개발을 위한\n통합 협업 플랫폼(A-SW Hub) 구축\n용역 최종 결과보고서',
+    title: '농업기계 자율주행 소프트웨어 개발을 위한\n통합 협업 플랫폼(A-SW Hub) 구축\n용역 결과보고서',
     subtitle: '2025년 농업기계 디지털 전환형 개방형 A-SW 오픈소스 협력 개발 서비스 플랫폼 구축 사업',
     projectName: '농업기계 디지털전환형 개방형 A-SW 오픈소스 및 협력개발 서비스 플랫폼 구축',
+    projectNameShort: '2025 농업기계 디지털 전환형 개방형 A-SW 오픈소스 협력 개발 서비스 플랫폼 구축 사업',
     subProjectName: '무인자율 농작업을 위한 개방형 A-SW 개발 및 실증',
     leadInstitution: '한국생산기술연구원 (KITECH)',
     participants: 'KITECH · TYMICT · JBNU · VIA · OntarioTech',
-    developer: '(주)비아 VIASOFT.AI',
-    date: '2025년 1월',
-    securityLevel: '대외비',
-    documentType: '최종보고서'
+    developer: '(주)비아',
+    developerFull: '주식회사 비아 (VIASOFT.AI)',
+    projectPeriod: '2025년 9월 1일 ~ 2025년 10월 25일',
+    reportDate: '2025년 10월 26일'
   },
   en: {
-    title: 'Final Report:\nA-SW Hub - Integrated Collaborative Platform\nfor Autonomous Agricultural Machinery Software Development',
+    title: 'A-SW Hub - Integrated Collaborative Platform\nfor Autonomous Agricultural Machinery\nSoftware Development Report',
     subtitle: 'Open-Source A-SW and Collaborative Development Service Platform for Digital Transformation of Agricultural Machinery',
     projectName: 'Open-Source A-SW and Collaborative Development Service Platform for Digital Transformation of Agricultural Machinery',
+    projectNameShort: '2025 Open-Source A-SW Platform Development Project',
     subProjectName: 'Development and Demonstration of Open A-SW for Unmanned Autonomous Agricultural Operations',
     leadInstitution: 'Korea Institute of Industrial Technology (KITECH)',
     participants: 'KITECH · TYMICT · JBNU · VIA · OntarioTech',
-    developer: 'VIA Inc. VIASOFT.AI',
-    date: 'January 2025',
-    securityLevel: 'Confidential',
-    documentType: 'Final Report'
+    developer: 'VIA Inc.',
+    developerFull: 'VIA Inc. (VIASOFT.AI)',
+    projectPeriod: 'September 1, 2025 ~ October 25, 2025',
+    reportDate: 'October 26, 2025'
   }
 };
 
@@ -130,26 +132,7 @@ function generateCoverPage(lang, meta) {
 
         .header {
           text-align: center;
-          border-bottom: 3px solid #000;
-          padding-bottom: 15mm;
-        }
-
-        .security-level {
-          display: inline-block;
-          border: 2px solid #000;
-          padding: 3mm 8mm;
-          font-size: 11pt;
-          font-weight: 700;
-          letter-spacing: 2px;
-          text-transform: uppercase;
-          margin-bottom: 8mm;
-        }
-
-        .doc-type {
-          font-size: 14pt;
-          font-weight: 400;
-          letter-spacing: 1px;
-          margin-bottom: 3mm;
+          padding-bottom: 10mm;
         }
 
         .main-content {
@@ -221,17 +204,34 @@ function generateCoverPage(lang, meta) {
         }
 
         .date-box {
-          margin-top: 8mm;
+          margin-top: 6mm;
+          font-size: 11pt;
+          font-weight: 400;
+          display: flex;
+          flex-direction: column;
+          gap: 2mm;
+        }
+
+        .date-row {
+          display: flex;
+          justify-content: space-between;
+          font-size: 10pt;
+        }
+
+        .author-notice {
+          margin-top: 6mm;
+          padding: 4mm;
+          background: #fafafa;
+          border: 1px solid #ddd;
           text-align: center;
-          font-size: 14pt;
-          font-weight: 600;
+          font-size: 10pt;
+          font-weight: 500;
         }
       </style>
     </head>
     <body>
       <div class="header">
-        <div class="security-level">${meta.securityLevel}</div>
-        <div class="doc-type">${meta.documentType}</div>
+        <!-- 대외비/최종보고서 제거 -->
       </div>
 
       <div class="main-content">
@@ -253,12 +253,24 @@ function generateCoverPage(lang, meta) {
           <span class="info-value">${meta.participants}</span>
         </div>
 
-        <div class="institution-box">
-          <div class="institution-name">${meta.leadInstitution.split(' ')[0]}</div>
-          <div class="developer-name">${lang === 'ko' ? '개발' : 'Developed by'}: ${meta.developer}</div>
+        <div class="date-box">
+          <div class="date-row">
+            <span class="info-label">${lang === 'ko' ? '과업기간' : 'Project Period'}</span>
+            <span class="info-value">${meta.projectPeriod}</span>
+          </div>
+          <div class="date-row">
+            <span class="info-label">${lang === 'ko' ? '보고서 작성일' : 'Report Date'}</span>
+            <span class="info-value">${meta.reportDate}</span>
+          </div>
         </div>
 
-        <div class="date-box">${meta.date}</div>
+        <div class="author-notice">
+          ${lang === 'ko' ? '본 보고서는' : 'This report was prepared by'} <strong>${meta.developerFull}</strong>${lang === 'ko' ? '에서 작성하였습니다' : ''}.
+        </div>
+
+        <div class="institution-box">
+          <div class="institution-name">${meta.leadInstitution}</div>
+        </div>
       </div>
     </body>
     </html>
@@ -450,6 +462,10 @@ async function generateReport() {
       await addSectionToPDF(pdfDoc, page, sectionHTML);
     }
 
+    // Add page numbers and footer
+    console.log('  Adding page numbers and footer...');
+    await addPageNumbersAndFooter(pdfDoc, lang, meta);
+
     // Save PDF
     const outputPath = path.join(OUTPUT_DIR, lang, `a-sw-hub-final-report-${lang}.pdf`);
     const pdfBytes = await pdfDoc.save();
@@ -485,6 +501,45 @@ async function addSectionToPDF(pdfDoc, page, sectionHTML) {
   for (let i = 0; i < pageCount; i++) {
     const [copiedPage] = await pdfDoc.copyPages(sectionDoc, [i]);
     pdfDoc.addPage(copiedPage);
+  }
+}
+
+/**
+ * Add page numbers and footer to PDF
+ */
+async function addPageNumbersAndFooter(pdfDoc, lang, meta) {
+  const pages = pdfDoc.getPages();
+  const totalPages = pages.length;
+
+  // For Korean, use simplified project name (ASCII only)
+  const projectName = lang === 'ko'
+    ? '2025 A-SW Platform Project'
+    : meta.projectNameShort;
+
+  // Skip cover (page 0) and TOC (page 1)
+  for (let i = 2; i < totalPages; i++) {
+    const page = pages[i];
+    const { width, height } = page.getSize();
+    const pageNumber = i - 1; // 표지/목차 제외하고 1부터 시작
+
+    // Footer text
+    const footerLeft = projectName;
+    const footerRight = `${pageNumber} / ${totalPages - 2}`;
+
+    // Draw footer (using default Helvetica font for compatibility)
+    page.drawText(footerLeft, {
+      x: 20 * 2.83465, // 20mm to points
+      y: 15 * 2.83465, // 15mm from bottom
+      size: 7,
+      color: grayscale(0.4)
+    });
+
+    page.drawText(footerRight, {
+      x: width - (25 * 2.83465) - (footerRight.length * 3.5), // 25mm from right
+      y: 15 * 2.83465,
+      size: 7,
+      color: grayscale(0.4)
+    });
   }
 }
 

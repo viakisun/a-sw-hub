@@ -396,9 +396,9 @@ export const overviewContent = {
           <h4>1.5.1 전체 일정 개요</h4>
           <div class="timeline-summary">
             <ul>
-              <li><strong>1단계 (3년):</strong> 2025.09 ~ 2028.08 - 기반 플랫폼 구축 및 핵심 기능 개발</li>
-              <li><strong>2단계 (2년):</strong> 2028.09 ~ 2030.08 - 고도화 및 실증</li>
-              <li><strong>본 용역 기간:</strong> 2024.10 ~ 2025.01 (4개월) - A-SW Hub 플랫폼 구축</li>
+              <li><strong>1단계 (3년):</strong> 2025.09 ~ 2027.12 - 기반 플랫폼 구축 및 핵심 기능 개발</li>
+              <li><strong>2단계 (2년):</strong> 2028.01 ~ 2029.12 - 고도화 및 실증</li>
+              <li><strong>본 용역 기간:</strong> 2025.09.01 ~ 2025.10.25 - A-SW Hub 플랫폼 구축</li>
             </ul>
           </div>
 
@@ -415,7 +415,7 @@ export const overviewContent = {
               </thead>
               <tbody>
                 <tr>
-                  <td>2024.10</td>
+                  <td>2025.09.01~09.15</td>
                   <td>요구사항 분석 및 설계</td>
                   <td>
                     - 시스템 아키텍처 설계서<br>
@@ -425,7 +425,7 @@ export const overviewContent = {
                   <td>100%</td>
                 </tr>
                 <tr>
-                  <td>2024.11</td>
+                  <td>2025.09.16~09.30</td>
                   <td>핵심 기능 개발</td>
                   <td>
                     - 인증/권한 시스템<br>
@@ -435,7 +435,7 @@ export const overviewContent = {
                   <td>100%</td>
                 </tr>
                 <tr>
-                  <td>2024.12</td>
+                  <td>2025.10.01~10.15</td>
                   <td>고급 기능 개발</td>
                   <td>
                     - 대시보드 및 메트릭<br>
@@ -445,7 +445,7 @@ export const overviewContent = {
                   <td>100%</td>
                 </tr>
                 <tr>
-                  <td>2025.01</td>
+                  <td>2025.10.16~10.25</td>
                   <td>테스트 및 문서화</td>
                   <td>
                     - 통합 테스트<br>
@@ -460,23 +460,23 @@ export const overviewContent = {
 
           <h4>1.5.3 5개년 계획 주요 마일스톤</h4>
           <div class="five-year-plan">
-            <h5>1단계 (2025.09 ~ 2028.08)</h5>
+            <h5>1단계 (3년)</h5>
             <ul>
-              <li><strong>1차년도 (2025.09 ~ 2026.08):</strong>
+              <li><strong>1차년도 (2025.09 ~ 2025.12):</strong>
                 <ul>
                   <li>기관별 A-SW 모듈 개발 착수</li>
                   <li>A-SW Hub 플랫폼 실제 운영 개시</li>
                   <li>첫 통합 빌드 및 시뮬레이션 테스트</li>
                 </ul>
               </li>
-              <li><strong>2차년도 (2026.09 ~ 2027.08):</strong>
+              <li><strong>2차년도 (2026.01 ~ 2026.12):</strong>
                 <ul>
                   <li>모듈 간 통합 및 인터페이스 표준화</li>
                   <li>실내 테스트베드 구축 및 검증</li>
                   <li>성능 최적화 및 안전성 강화</li>
                 </ul>
               </li>
-              <li><strong>3차년도 (2027.09 ~ 2028.08):</strong>
+              <li><strong>3차년도 (2027.01 ~ 2027.12):</strong>
                 <ul>
                   <li>실외 필드 테스트 (소규모)</li>
                   <li>사용자 피드백 반영</li>
@@ -485,16 +485,16 @@ export const overviewContent = {
               </li>
             </ul>
 
-            <h5>2단계 (2028.09 ~ 2030.08)</h5>
+            <h5>2단계 (2년)</h5>
             <ul>
-              <li><strong>4차년도 (2028.09 ~ 2029.08):</strong>
+              <li><strong>2단계 1차년도 (2028.01 ~ 2028.12):</strong>
                 <ul>
                   <li>대규모 실증 사업 (5개 지역)</li>
                   <li>농가 보급형 버전 개발</li>
                   <li>국제 표준 인증</li>
                 </ul>
               </li>
-              <li><strong>5차년도 (2029.09 ~ 2030.08):</strong>
+              <li><strong>2단계 2차년도 (2029.01 ~ 2029.12):</strong>
                 <ul>
                   <li>상용화 준비</li>
                   <li>양산 체계 구축</li>
