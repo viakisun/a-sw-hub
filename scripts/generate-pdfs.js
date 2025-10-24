@@ -55,6 +55,15 @@ const FORMAT_PRESETS = {
       infoListGap: '32px',
       infoListMarginBottom: '45px',
       footerPaddingTop: '30px'
+    },
+    coverFontSize: {
+      title: '125px',
+      subtitle: '25px',
+      infoText: '15px',
+      orgName: '18px',
+      orgFull: '10px',
+      participants: '10px',
+      date: '10px'
     }
   },
 
@@ -96,6 +105,15 @@ const FORMAT_PRESETS = {
       infoListGap: '45px',
       infoListMarginBottom: '60px',
       footerPaddingTop: '40px'
+    },
+    coverFontSize: {
+      title: '170px',
+      subtitle: '34px',
+      infoText: '20px',
+      orgName: '24px',
+      orgFull: '14px',
+      participants: '13px',
+      date: '14px'
     }
   }
 };
@@ -628,7 +646,7 @@ function getTitlePageLayoutModern(lang, common, roleName, today, role) {
         }
 
         .title {
-          font-size: calc(${preset.fontSize.coverTitle} * 5);
+          font-size: ${preset.coverFontSize.title};
           font-weight: 900;
           line-height: 1.0;
           letter-spacing: -6px;
@@ -637,7 +655,7 @@ function getTitlePageLayoutModern(lang, common, roleName, today, role) {
         }
 
         .subtitle {
-          font-size: calc(${preset.fontSize.coverTitle} * 1.0);
+          font-size: ${preset.coverFontSize.subtitle};
           font-weight: 300;
           line-height: 1.6;
           color: #333333;
@@ -671,21 +689,21 @@ function getTitlePageLayoutModern(lang, common, roleName, today, role) {
         }
 
         .info-text {
-          font-size: calc(${preset.fontSize.coverBody} * 1.5);
+          font-size: ${preset.coverFontSize.infoText};
           font-weight: 400;
           line-height: 1.7;
           color: #000000;
         }
 
         .org-name {
-          font-size: calc(${preset.fontSize.coverTitle} * 0.7);
+          font-size: ${preset.coverFontSize.orgName};
           font-weight: 700;
           color: #000000;
           margin-bottom: 5px;
         }
 
         .org-full {
-          font-size: ${preset.fontSize.coverBody};
+          font-size: ${preset.coverFontSize.orgFull};
           font-weight: 300;
           color: #666666;
         }
@@ -699,14 +717,14 @@ function getTitlePageLayoutModern(lang, common, roleName, today, role) {
         }
 
         .participants {
-          font-size: ${preset.fontSize.coverSubtitle};
+          font-size: ${preset.coverFontSize.participants};
           font-weight: 400;
           color: #666666;
           letter-spacing: 2px;
         }
 
         .date {
-          font-size: ${preset.fontSize.coverBody};
+          font-size: ${preset.coverFontSize.date};
           font-weight: 300;
           color: #999999;
         }
