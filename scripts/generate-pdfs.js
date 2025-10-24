@@ -13,19 +13,92 @@ const OUTPUT_DIR = path.join(__dirname, '../pdfs');
 const FONTS_DIR = path.join(__dirname, '../fonts');
 const TRANSLATIONS_DIR = path.join(__dirname, '../translations');
 
-// PDF Generation Configuration
-const VIEWPORT_HEIGHT = 1350;       // PDF 출력 영역에 맞춤
-const MAX_FEATURES = 9;             // Key Features 최대 개수
-const MAX_COMPONENTS = 17;          // Components 최대 개수
+// ============================================================
+// PDF OUTPUT FORMAT PRESETS
+// ============================================================
+const FORMAT_PRESETS = {
+  PRINT: {
+    name: 'A4 Print',
+    description: 'A4 landscape format for printing',
+    pageFormat: 'A4',
+    orientation: 'landscape',
+    dimensions: { width: '297mm', height: '210mm' },
+    viewport: { width: 1920, height: 1350 },
+    padding: { page: '35mm 40mm', toc: '30mm' },
+    fontSize: {
+      coverTitle: '34px',
+      coverSubtitle: '12px',
+      coverBody: '13px',
+      coverSmall: '10px',
+      tocTitle: '32px',
+      tocItem: '13px',
+      detailTitle: '28px',
+      detailBody: '14px',
+      detailSmall: '11px'
+    },
+    screenshot: {
+      scale: 1.00,
+      flexRatio: 7.5,
+      descriptionFlexRatio: 2.5
+    },
+    content: {
+      maxFeatures: 9,
+      maxComponents: 17
+    }
+  },
 
-// Screenshot Layout Configuration
-const SCREENSHOT_SCALE = 1.00;      // 스크린샷 이미지 크기 (115%)
-const SCREENSHOT_FLEX_RATIO = 7.5;    // 스크린샷 영역 비율 (70%)
-const DESCRIPTION_FLEX_RATIO = 2.5;   // 설명 영역 비율 (30%)
+  PRESENTATION: {
+    name: '16:9 Presentation',
+    description: '1920×1080 format for screen presentation',
+    pageFormat: null, // Custom size
+    orientation: 'landscape',
+    dimensions: { width: '1920px', height: '1080px' },
+    viewport: { width: 1920, height: 1080 },
+    padding: { page: '40px 60px', toc: '40px 60px' },
+    fontSize: {
+      coverTitle: '48px',
+      coverSubtitle: '18px',
+      coverBody: '20px',
+      coverSmall: '14px',
+      tocTitle: '42px',
+      tocItem: '18px',
+      detailTitle: '36px',
+      detailBody: '18px',
+      detailSmall: '14px'
+    },
+    screenshot: {
+      scale: 1.15,
+      flexRatio: 8,
+      descriptionFlexRatio: 2
+    },
+    content: {
+      maxFeatures: 12,
+      maxComponents: 20
+    }
+  }
+};
 
-// Title Page Layout Configuration
-// Options: 'layout1' (left-aligned), 'layout2' (top-header), 'layout3' (two-column)
-const TITLE_PAGE_LAYOUT = 'layout3';  // 표지 레이아웃 선택
+// ============================================================
+// CONFIGURATION
+// ============================================================
+// Output Format: 'PRINT' or 'PRESENTATION'
+const OUTPUT_FORMAT = 'PRESENTATION';
+
+// Title Page Layout: 'layout1', 'layout2', 'layout3', or 'modern'
+const TITLE_PAGE_LAYOUT = 'modern';
+
+// Helper function to get active preset
+function getActivePreset() {
+  return FORMAT_PRESETS[OUTPUT_FORMAT];
+}
+
+// Legacy configuration (for backward compatibility)
+const VIEWPORT_HEIGHT = getActivePreset().viewport.height;
+const MAX_FEATURES = getActivePreset().content.maxFeatures;
+const MAX_COMPONENTS = getActivePreset().content.maxComponents;
+const SCREENSHOT_SCALE = getActivePreset().screenshot.scale;
+const SCREENSHOT_FLEX_RATIO = getActivePreset().screenshot.flexRatio;
+const DESCRIPTION_FLEX_RATIO = getActivePreset().screenshot.descriptionFlexRatio;
 
 // Role-based account configurations
 const ACCOUNTS = {
@@ -155,6 +228,11 @@ function loadTranslations(lang) {
 
 // Layout 1: Left-Aligned Modern Style
 function getTitlePageLayout1(lang, common, roleName, today) {
+  const preset = getActivePreset();
+  const pageStyle = preset.pageFormat
+    ? `size: ${preset.pageFormat} ${preset.orientation};`
+    : `size: ${preset.dimensions.width} ${preset.dimensions.height};`;
+
   return `
     <!DOCTYPE html>
     <html lang="${lang}">
@@ -163,37 +241,37 @@ function getTitlePageLayout1(lang, common, roleName, today) {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>${common.title}</title>
       <style>
-        @page { size: A4 landscape; margin: 0; }
+        @page { ${pageStyle} margin: 0; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { width: 297mm; height: 210mm; }
+        html, body { width: ${preset.dimensions.width}; height: ${preset.dimensions.height}; }
         body {
           font-family: 'Noto Sans ${lang === 'ko' ? 'KR' : ''}', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          padding: 30mm 35mm;
+          padding: ${preset.padding.page};
           color: #000;
         }
         .content { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 18px; }
         .header { text-align: left; margin-bottom: 15px; }
-        h1 { font-size: 38px; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 6px; }
-        .presented-by { font-size: 13px; color: #666; letter-spacing: 0.8px; }
+        h1 { font-size: ${preset.fontSize.coverTitle}; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 6px; }
+        .presented-by { font-size: ${preset.fontSize.coverSubtitle}; color: #666; letter-spacing: 0.8px; }
         .kitech-section { margin: 12px 0; }
-        .kitech-abbr { font-size: 24px; font-weight: 700; color: #000; }
-        .kitech-name { font-size: 14px; color: #333; margin-top: 3px; }
-        .kitech-english { font-size: 11px; color: #666; margin-top: 2px; font-style: italic; }
+        .kitech-abbr { font-size: calc(${preset.fontSize.coverTitle} * 0.7); font-weight: 700; color: #000; }
+        .kitech-name { font-size: ${preset.fontSize.coverBody}; color: #333; margin-top: 3px; }
+        .kitech-english { font-size: ${preset.fontSize.coverSmall}; color: #666; margin-top: 2px; font-style: italic; }
         .divider { width: 60%; height: 2px; background: #000; margin: 15px 0; }
         .project-info { background: #f5f5f5; padding: 15px 20px; border-left: 3px solid #000; margin: 8px 0; }
-        .project-label { font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
-        .project-title { font-size: ${lang === 'ko' ? '14px' : '13px'}; font-weight: 500; color: #000; line-height: 1.4; }
+        .project-label { font-size: ${preset.fontSize.coverSmall}; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+        .project-title { font-size: ${preset.fontSize.coverBody}; font-weight: 500; color: #000; line-height: 1.4; }
         .platform-desc { background: #fafafa; padding: 15px 20px; border-left: 3px solid #666; margin: 8px 0; }
-        .platform-desc-label { font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; margin-bottom: 5px; }
-        .platform-desc-text { font-size: ${lang === 'ko' ? '12px' : '11px'}; color: #333; line-height: 1.5; }
+        .platform-desc-label { font-size: ${preset.fontSize.coverSmall}; font-weight: 600; color: #666; text-transform: uppercase; margin-bottom: 5px; }
+        .platform-desc-text { font-size: calc(${preset.fontSize.coverBody} * 0.9); color: #333; line-height: 1.5; }
         .footer-info { margin-top: 15px; text-align: left; }
-        .role-text { font-size: 11px; color: #666; margin-bottom: 3px; }
-        .role-name { font-size: 20px; font-weight: 600; color: #000; }
-        .doc-date { font-size: 10px; color: #999; margin-top: 8px; }
-        .copyright { font-size: 9px; color: #999; padding-top: 12px; border-top: 1px solid #e0e0e0; }
+        .role-text { font-size: ${preset.fontSize.coverSmall}; color: #666; margin-bottom: 3px; }
+        .role-name { font-size: calc(${preset.fontSize.coverTitle} * 0.6); font-weight: 600; color: #000; }
+        .doc-date { font-size: ${preset.fontSize.coverSmall}; color: #999; margin-top: 8px; }
+        .copyright { font-size: calc(${preset.fontSize.coverSmall} * 0.9); color: #999; padding-top: 12px; border-top: 1px solid #e0e0e0; }
       </style>
     </head>
     <body>
@@ -235,6 +313,11 @@ function getTitlePageLayout1(lang, common, roleName, today) {
 
 // Layout 2: Top Header Style (KITECH Emphasized)
 function getTitlePageLayout2(lang, common, roleName, today) {
+  const preset = getActivePreset();
+  const pageStyle = preset.pageFormat
+    ? `size: ${preset.pageFormat} ${preset.orientation};`
+    : `size: ${preset.dimensions.width} ${preset.dimensions.height};`;
+
   return `
     <!DOCTYPE html>
     <html lang="${lang}">
@@ -243,35 +326,35 @@ function getTitlePageLayout2(lang, common, roleName, today) {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>${common.title}</title>
       <style>
-        @page { size: A4 landscape; margin: 0; }
+        @page { ${pageStyle} margin: 0; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { width: 297mm; height: 210mm; }
+        html, body { width: ${preset.dimensions.width}; height: ${preset.dimensions.height}; }
         body {
           font-family: 'Noto Sans ${lang === 'ko' ? 'KR' : ''}', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          padding: 25mm 35mm;
+          padding: ${preset.padding.page};
           color: #000;
         }
         .content { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 16px; }
         .kitech-header { background: #000; color: #fff; padding: 18px 25px; text-align: center; margin-bottom: 20px; }
-        .kitech-abbr { font-size: 28px; font-weight: 700; letter-spacing: 1px; }
-        .kitech-name { font-size: 13px; margin-top: 5px; font-weight: 400; }
-        .kitech-english { font-size: 11px; margin-top: 3px; opacity: 0.9; font-style: italic; }
+        .kitech-abbr { font-size: calc(${preset.fontSize.coverTitle} * 0.85); font-weight: 700; letter-spacing: 1px; }
+        .kitech-name { font-size: ${preset.fontSize.coverSubtitle}; margin-top: 5px; font-weight: 400; }
+        .kitech-english { font-size: ${preset.fontSize.coverSmall}; margin-top: 3px; opacity: 0.9; font-style: italic; }
         .title-section { text-align: center; margin: 15px 0; }
-        h1 { font-size: 36px; font-weight: 600; margin-bottom: 6px; }
-        .presented-by { font-size: 13px; color: #666; letter-spacing: 0.8px; }
+        h1 { font-size: ${preset.fontSize.coverTitle}; font-weight: 600; margin-bottom: 6px; }
+        .presented-by { font-size: ${preset.fontSize.coverSubtitle}; color: #666; letter-spacing: 0.8px; }
         .info-box { background: #f8f8f8; padding: 14px 20px; margin: 7px 0; border-top: 2px solid #000; border-bottom: 2px solid #000; }
-        .info-label { font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; margin-bottom: 4px; }
-        .info-text { font-size: ${lang === 'ko' ? '13px' : '12px'}; color: #000; line-height: 1.4; }
+        .info-label { font-size: ${preset.fontSize.coverSmall}; font-weight: 600; color: #666; text-transform: uppercase; margin-bottom: 4px; }
+        .info-text { font-size: ${preset.fontSize.coverBody}; color: #000; line-height: 1.4; }
         .platform-box { background: #fafafa; padding: 14px 20px; margin: 7px 0; border: 1px solid #ddd; }
-        .platform-text { font-size: ${lang === 'ko' ? '11px' : '10px'}; color: #333; line-height: 1.5; }
+        .platform-text { font-size: calc(${preset.fontSize.coverBody} * 0.85); color: #333; line-height: 1.5; }
         .footer-section { text-align: center; margin-top: 18px; }
-        .role-label { font-size: 10px; color: #666; margin-bottom: 5px; }
-        .role-value { font-size: 22px; font-weight: 600; color: #000; }
-        .doc-date { font-size: 10px; color: #999; margin-top: 8px; }
-        .copyright { font-size: 9px; color: #999; text-align: center; padding-top: 10px; border-top: 1px solid #e0e0e0; }
+        .role-label { font-size: ${preset.fontSize.coverSmall}; color: #666; margin-bottom: 5px; }
+        .role-value { font-size: calc(${preset.fontSize.coverTitle} * 0.65); font-weight: 600; color: #000; }
+        .doc-date { font-size: ${preset.fontSize.coverSmall}; color: #999; margin-top: 8px; }
+        .copyright { font-size: calc(${preset.fontSize.coverSmall} * 0.9); color: #999; text-align: center; padding-top: 10px; border-top: 1px solid #e0e0e0; }
       </style>
     </head>
     <body>
@@ -311,6 +394,11 @@ function getTitlePageLayout2(lang, common, roleName, today) {
 
 // Layout 3: Two-Column Style
 function getTitlePageLayout3(lang, common, roleName, today) {
+  const preset = getActivePreset();
+  const pageStyle = preset.pageFormat
+    ? `size: ${preset.pageFormat} ${preset.orientation};`
+    : `size: ${preset.dimensions.width} ${preset.dimensions.height};`;
+
   return `
     <!DOCTYPE html>
     <html lang="${lang}">
@@ -319,41 +407,41 @@ function getTitlePageLayout3(lang, common, roleName, today) {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>${common.title}</title>
       <style>
-        @page { size: A4 landscape; margin: 0; }
+        @page { ${pageStyle} margin: 0; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { width: 297mm; height: 210mm; }
+        html, body { width: ${preset.dimensions.width}; height: ${preset.dimensions.height}; }
         body {
           font-family: 'Noto Sans ${lang === 'ko' ? 'KR' : ''}', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          padding: 28mm 35mm;
+          padding: ${preset.padding.page};
           color: #000;
         }
         .content { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 16px; }
         .top-section { display: flex; gap: 25px; align-items: stretch; margin-bottom: 18px; padding-bottom: 18px; border-bottom: 2px solid #000; }
         .left-col { flex: 1; display: flex; flex-direction: column; justify-content: center; }
         .right-col { flex: 1; background: #f5f5f5; padding: 20px; display: flex; flex-direction: column; justify-content: center; border-left: 4px solid #000; }
-        h1 { font-size: 34px; font-weight: 600; margin-bottom: 8px; }
-        .presented-by { font-size: 12px; color: #666; letter-spacing: 0.8px; }
+        h1 { font-size: ${preset.fontSize.coverTitle}; font-weight: 600; margin-bottom: 8px; }
+        .presented-by { font-size: ${preset.fontSize.coverSubtitle}; color: #666; letter-spacing: 0.8px; }
         .kitech-box { margin-top: 10px; }
-        .kitech-label { font-size: 10px; color: #666; text-transform: uppercase; margin-bottom: 5px; }
-        .kitech-abbr { font-size: 26px; font-weight: 700; color: #000; }
-        .kitech-name { font-size: 13px; color: #333; margin-top: 4px; }
-        .kitech-english { font-size: 10px; color: #666; margin-top: 2px; font-style: italic; }
+        .kitech-label { font-size: ${preset.fontSize.coverSmall}; color: #666; text-transform: uppercase; margin-bottom: 5px; }
+        .kitech-abbr { font-size: calc(${preset.fontSize.coverTitle} * 0.75); font-weight: 700; color: #000; }
+        .kitech-name { font-size: ${preset.fontSize.coverBody}; color: #333; margin-top: 4px; }
+        .kitech-english { font-size: ${preset.fontSize.coverSmall}; color: #666; margin-top: 2px; font-style: italic; }
         .project-section { margin: 10px 0; }
         .project-item { margin: 10px 0; }
-        .project-label { font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; margin-bottom: 4px; }
-        .project-text { font-size: ${lang === 'ko' ? '13px' : '12px'}; color: #000; line-height: 1.4; padding-left: 8px; border-left: 2px solid #ccc; }
+        .project-label { font-size: ${preset.fontSize.coverSmall}; font-weight: 600; color: #666; text-transform: uppercase; margin-bottom: 4px; }
+        .project-text { font-size: ${preset.fontSize.coverBody}; color: #000; line-height: 1.4; padding-left: 8px; border-left: 2px solid #ccc; }
         .platform-section { background: #fafafa; padding: 14px 18px; margin: 10px 0; border: 1px solid #ddd; }
-        .platform-label { font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; margin-bottom: 5px; }
-        .platform-text { font-size: ${lang === 'ko' ? '11px' : '10px'}; color: #333; line-height: 1.5; }
+        .platform-label { font-size: ${preset.fontSize.coverSmall}; font-weight: 600; color: #666; text-transform: uppercase; margin-bottom: 5px; }
+        .platform-text { font-size: calc(${preset.fontSize.coverBody} * 0.85); color: #333; line-height: 1.5; }
         .footer-row { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
         .role-info { text-align: left; }
-        .role-label { font-size: 10px; color: #666; margin-bottom: 3px; }
-        .role-value { font-size: 20px; font-weight: 600; color: #000; }
-        .date-info { text-align: right; font-size: 10px; color: #999; }
-        .copyright { font-size: 9px; color: #999; text-align: center; padding-top: 10px; border-top: 1px solid #e0e0e0; }
+        .role-label { font-size: ${preset.fontSize.coverSmall}; color: #666; margin-bottom: 3px; }
+        .role-value { font-size: calc(${preset.fontSize.coverTitle} * 0.6); font-weight: 600; color: #000; }
+        .date-info { text-align: right; font-size: ${preset.fontSize.coverSmall}; color: #999; }
+        .copyright { font-size: calc(${preset.fontSize.coverSmall} * 0.9); color: #999; text-align: center; padding-top: 10px; border-top: 1px solid #e0e0e0; }
       </style>
     </head>
     <body>
@@ -398,6 +486,262 @@ function getTitlePageLayout3(lang, common, roleName, today) {
   `;
 }
 
+// Layout Modern: Minimalist Typography-focused (based on HTML templates)
+function getTitlePageLayoutModern(lang, common, roleName, today, role) {
+  const preset = getActivePreset();
+  const pageStyle = preset.pageFormat
+    ? `size: ${preset.pageFormat} ${preset.orientation};`
+    : `size: ${preset.dimensions.width} ${preset.dimensions.height};`;
+
+  // Role-based badge styling
+  const roleBadgeStyles = {
+    admin: { bg: '#000000', color: '#ffffff', dotColor: '#ffffff' },
+    developer: { bg: '#2563eb', color: '#ffffff', dotColor: '#ffffff' },
+    viewer: { bg: '#f0f0f0', color: '#000000', dotColor: '#16a34a', border: '1px solid #e0e0e0' }
+  };
+
+  const badgeStyle = roleBadgeStyles[role] || roleBadgeStyles.admin;
+
+  return `
+    <!DOCTYPE html>
+    <html lang="${lang}">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>A-SW HUB - ${roleName}</title>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+      <style>
+        @page { ${pageStyle} margin: 0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: ${preset.dimensions.width}; height: ${preset.dimensions.height}; }
+
+        body {
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+          background: #ffffff;
+          color: #000000;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+        }
+
+        .container {
+          width: 100%;
+          height: 100%;
+          position: relative;
+          background: #ffffff;
+          padding: ${preset.padding.page};
+          display: flex;
+          flex-direction: column;
+        }
+
+        .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: calc(${preset.fontSize.coverTitle} * 0.7);
+        }
+
+        .left-header {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .company {
+          font-size: calc(${preset.fontSize.coverSubtitle} * 1.3);
+          font-weight: 600;
+          letter-spacing: 3px;
+          text-transform: uppercase;
+          color: #000000;
+        }
+
+        .company-sub {
+          font-size: ${preset.fontSize.coverSubtitle};
+          font-weight: 300;
+          color: #666666;
+        }
+
+        .role-badge {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 20px;
+          background: ${badgeStyle.bg};
+          ${badgeStyle.border ? `border: ${badgeStyle.border};` : ''}
+          border-radius: 4px;
+        }
+
+        .role-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: ${badgeStyle.dotColor};
+        }
+
+        .role-text {
+          font-size: ${preset.fontSize.coverSubtitle};
+          font-weight: 600;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          color: ${badgeStyle.color};
+        }
+
+        .main-content {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          padding-bottom: 60px;
+        }
+
+        .platform-label {
+          font-size: ${preset.fontSize.coverSubtitle};
+          font-weight: 600;
+          letter-spacing: 3px;
+          text-transform: uppercase;
+          color: #999999;
+          margin-bottom: calc(${preset.fontSize.coverTitle} * 0.3);
+        }
+
+        .title {
+          font-size: calc(${preset.fontSize.coverTitle} * 5);
+          font-weight: 900;
+          line-height: 1.0;
+          letter-spacing: -6px;
+          color: #000000;
+          margin-bottom: calc(${preset.fontSize.coverTitle} * 1.8);
+        }
+
+        .subtitle {
+          font-size: calc(${preset.fontSize.coverTitle} * 1.0);
+          font-weight: 300;
+          line-height: 1.6;
+          color: #333333;
+          max-width: 80%;
+        }
+
+        .bottom-section {
+          padding-top: 50px;
+          border-top: 1px solid #e0e0e0;
+        }
+
+        .info-list {
+          display: flex;
+          flex-direction: column;
+          gap: 45px;
+          margin-bottom: 60px;
+        }
+
+        .info-item {
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        .info-label {
+          font-size: ${preset.fontSize.coverSmall};
+          font-weight: 600;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          color: #999999;
+        }
+
+        .info-text {
+          font-size: calc(${preset.fontSize.coverBody} * 1.5);
+          font-weight: 400;
+          line-height: 1.7;
+          color: #000000;
+        }
+
+        .org-name {
+          font-size: calc(${preset.fontSize.coverTitle} * 0.7);
+          font-weight: 700;
+          color: #000000;
+          margin-bottom: 5px;
+        }
+
+        .org-full {
+          font-size: ${preset.fontSize.coverBody};
+          font-weight: 300;
+          color: #666666;
+        }
+
+        .footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-top: 40px;
+          border-top: 1px solid #f0f0f0;
+        }
+
+        .participants {
+          font-size: ${preset.fontSize.coverSubtitle};
+          font-weight: 400;
+          color: #666666;
+          letter-spacing: 2px;
+        }
+
+        .date {
+          font-size: ${preset.fontSize.coverBody};
+          font-weight: 300;
+          color: #999999;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <div class="left-header">
+            <div class="company">${common.presentedByCompany}</div>
+            <div class="company-sub">${common.presentedByCompanySub}</div>
+          </div>
+
+          <div class="role-badge">
+            <div class="role-dot"></div>
+            <div class="role-text">${roleName}</div>
+          </div>
+        </div>
+
+        <div class="main-content">
+          <div class="platform-label">${common.platformLabel}</div>
+
+          <div class="title">A-SW HUB</div>
+
+          <div class="subtitle">${common.platformTagline}</div>
+        </div>
+
+        <div class="bottom-section">
+          <div class="info-list">
+            <div class="info-item">
+              <div class="info-label">${common.projectLabel}</div>
+              <div class="info-text">${common.projectTitle}</div>
+            </div>
+
+            <div class="info-item">
+              <div class="info-label">${common.subProjectLabel}</div>
+              <div class="info-text">${common.subProjectTitle}</div>
+            </div>
+
+            <div class="info-item">
+              <div class="info-label">${common.leadInstitution}</div>
+              <div class="org-name">${common.companyAbbr}</div>
+              <div class="org-full">${common.company}</div>
+            </div>
+          </div>
+
+          <div class="footer">
+            <div class="participants">${common.participants}</div>
+            <div class="date">${today}</div>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
 // Create HTML for title page and convert to PDF buffer (A4 landscape)
 async function createTitlePageHTML(page, role, lang, common, totalPages = 0) {
   const today = new Date().toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', {
@@ -416,6 +760,9 @@ async function createTitlePageHTML(page, role, lang, common, totalPages = 0) {
       break;
     case 'layout3':
       layoutHTML = getTitlePageLayout3(lang, common, roleName, today);
+      break;
+    case 'modern':
+      layoutHTML = getTitlePageLayoutModern(lang, common, roleName, today, role);
       break;
     case 'layout1':
     default:
