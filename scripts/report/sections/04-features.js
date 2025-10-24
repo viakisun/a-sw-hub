@@ -2,6 +2,8 @@
  * Section 4-8: Remaining sections (consolidated for speed)
  */
 
+import { getDiagramHTML } from '../diagrams/generator.js';
+
 export const remainingSections = {
   ko: [
     {
@@ -423,6 +425,16 @@ GET    /api/builds/:id/logs
 };
 
 export function generateSectionHTML(sectionData, lang) {
+  let htmlContent = sectionData.content;
+
+  // Insert CI/CD diagram in Section 4 after "4.3 CI/CD 파이프라인"
+  if (sectionData.id === 4) {
+    htmlContent = htmlContent.replace(
+      '</ul>\n\n        <h3>4.4 대시보드 및 모니터링</h3>',
+      '</ul>\n\n' + getDiagramHTML('cicd', lang) + '\n\n        <h3>4.4 대시보드 및 모니터링</h3>'
+    );
+  }
+
   return `
     <!DOCTYPE html>
     <html lang="${lang}">
@@ -434,7 +446,7 @@ export function generateSectionHTML(sectionData, lang) {
     <body>
       <div class="report-section">
         <h1 class="section-title">${sectionData.title}</h1>
-        ${sectionData.content}
+        ${htmlContent}
       </div>
     </body>
     </html>

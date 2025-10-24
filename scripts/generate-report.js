@@ -384,6 +384,7 @@ import { generateOverviewHTML } from './report/sections/01-overview.js';
 import { generateArchitectureHTML } from './report/sections/02-architecture.js';
 import { generateDesignHTML } from './report/sections/03-design.js';
 import { remainingSections, generateSectionHTML } from './report/sections/04-features.js';
+import { generateAllDiagrams, getDiagramHTML } from './report/diagrams/generator.js';
 
 // ============================================================
 // Main Generation Function
@@ -401,6 +402,11 @@ async function generateReport() {
       fs.mkdirSync(dir, { recursive: true });
     }
   });
+
+  // Generate all diagrams first
+  console.log('Generating diagrams...');
+  await generateAllDiagrams();
+  console.log('');
 
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();

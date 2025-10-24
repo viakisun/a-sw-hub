@@ -2,6 +2,8 @@
  * Section 1: 연구개발과제 개요 / Project Overview
  */
 
+import { getDiagramHTML } from '../diagrams/generator.js';
+
 export const overviewContent = {
   ko: {
     title: '제1장 연구개발과제 개요',
@@ -638,7 +640,23 @@ export const overviewContent = {
  */
 export function generateOverviewHTML(lang) {
   const content = overviewContent[lang];
-  const subsectionsHTML = content.subsections.map(sub => sub.content).join('\n');
+
+  // Process subsections and insert diagrams
+  let subsectionsHTML = content.subsections.map(sub => {
+    let html = sub.content;
+
+    // Insert collaboration diagram after section 1.4 (참여기관)
+    if (sub.id === '1.4') {
+      html = html + '\n' + getDiagramHTML('collaboration', lang);
+    }
+
+    // Insert timeline diagram after section 1.5 (일정)
+    if (sub.id === '1.5') {
+      html = html + '\n' + getDiagramHTML('timeline', lang);
+    }
+
+    return html;
+  }).join('\n');
 
   return `
     <!DOCTYPE html>

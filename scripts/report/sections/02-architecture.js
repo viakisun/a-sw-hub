@@ -2,6 +2,8 @@
  * Section 2: 시스템 설계 / System Architecture
  */
 
+import { getDiagramHTML } from '../diagrams/generator.js';
+
 export const architectureContent = {
   ko: {
     title: '제2장 시스템 설계',
@@ -453,6 +455,21 @@ interface Project {
 export function generateArchitectureHTML(lang) {
   const content = architectureContent[lang];
 
+  // Insert diagrams into content
+  let htmlContent = content.content;
+
+  // Insert architecture diagram after "2.1.1 전체 시스템 구조"
+  htmlContent = htmlContent.replace(
+    '</div>\n\n      <h4>2.1.2 디렉토리 구조</h4>',
+    '</div>\n\n' + getDiagramHTML('architecture', lang) + '\n\n      <h4>2.1.2 디렉토리 구조</h4>'
+  );
+
+  // Insert domain diagram after "2.3.1 사업계획 데이터 모델"
+  htmlContent = htmlContent.replace(
+    '</div>\n\n      <h4>2.3.2 프로젝트 데이터 모델</h4>',
+    '</div>\n\n' + getDiagramHTML('domain', lang) + '\n\n      <h4>2.3.2 프로젝트 데이터 모델</h4>'
+  );
+
   return `
     <!DOCTYPE html>
     <html lang="${lang}">
@@ -489,7 +506,7 @@ export function generateArchitectureHTML(lang) {
     <body>
       <div class="report-section">
         <h1 class="section-title">${content.title}</h1>
-        ${content.content}
+        ${htmlContent}
       </div>
     </body>
     </html>

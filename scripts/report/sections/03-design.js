@@ -2,6 +2,8 @@
  * Section 3: UX/UI 디자인 시스템 / UX/UI Design System
  */
 
+import { getDiagramHTML } from '../diagrams/generator.js';
+
 export const designContent = {
   ko: {
     title: '제3장 UX/UI 디자인 시스템',
@@ -327,6 +329,14 @@ Error: ▒▒▒▒▒ (Diagonal lines)
 
 export function generateDesignHTML(lang) {
   const content = designContent[lang];
+
+  // Insert designSystem diagram after "3.2 컴포넌트 시스템"
+  let htmlContent = content.content;
+  htmlContent = htmlContent.replace(
+    '<h3>3.2 컴포넌트 시스템</h3>',
+    '<h3>3.2 컴포넌트 시스템</h3>\n\n' + getDiagramHTML('designSystem', lang)
+  );
+
   return `
     <!DOCTYPE html>
     <html lang="${lang}">
@@ -338,7 +348,7 @@ export function generateDesignHTML(lang) {
     <body>
       <div class="report-section">
         <h1 class="section-title">${content.title}</h1>
-        ${content.content}
+        ${htmlContent}
       </div>
     </body>
     </html>
