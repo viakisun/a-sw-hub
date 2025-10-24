@@ -303,7 +303,7 @@ GET    /api/builds/:id/logs
 
         <h3>부록 C. 용어 정의</h3>
         <ul>
-          <li><strong>A-SW:</strong> Autonomous Software (자율주행 소프트웨어)</li>
+          <li><strong>A-SW:</strong> Agricultural Open-Source Software (농기계 개방형 오픈소스 소프트웨어)</li>
           <li><strong>CI/CD:</strong> Continuous Integration/Continuous Deployment</li>
           <li><strong>DDD:</strong> Domain-Driven Design</li>
           <li><strong>RBAC:</strong> Role-Based Access Control</li>
@@ -456,7 +456,7 @@ export function generateSectionHTML(sectionData, lang) {
 function getStyles(lang) {
   return `
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    @page { size: A4 portrait; margin: 25mm 20mm; }
+    @page { size: A4 portrait; margin: 25mm 25mm 25mm 20mm; }
     html, body { width: 210mm; }
     body {
       font-family: 'Noto Sans ${lang === 'ko' ? 'KR' : ''}', sans-serif;

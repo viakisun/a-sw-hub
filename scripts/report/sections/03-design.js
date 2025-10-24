@@ -358,7 +358,7 @@ export function generateDesignHTML(lang) {
 function getStyles(lang) {
   return `
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    @page { size: A4 portrait; margin: 25mm 20mm; }
+    @page { size: A4 portrait; margin: 25mm 25mm 25mm 20mm; }
     html, body { width: 210mm; }
     body {
       font-family: 'Noto Sans ${lang === 'ko' ? 'KR' : ''}', sans-serif;

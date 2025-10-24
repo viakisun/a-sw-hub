@@ -650,11 +650,6 @@ export function generateOverviewHTML(lang) {
       html = html + '\n' + getDiagramHTML('collaboration', lang);
     }
 
-    // Insert timeline diagram after section 1.5 (일정)
-    if (sub.id === '1.5') {
-      html = html + '\n' + getDiagramHTML('timeline', lang);
-    }
-
     return html;
   }).join('\n');
 
@@ -684,7 +679,7 @@ export function generateOverviewHTML(lang) {
 function getReportStyles(lang) {
   return `
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    @page { size: A4 portrait; margin: 25mm 20mm; }
+    @page { size: A4 portrait; margin: 25mm 25mm 25mm 20mm; }
     html, body { width: 210mm; }
     body {
       font-family: 'Noto Sans ${lang === 'ko' ? 'KR' : ''}', -apple-system, BlinkMacSystemFont, sans-serif;

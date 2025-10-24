@@ -14,7 +14,7 @@
  */
 
 import { chromium } from 'playwright';
-import { PDFDocument, rgb, grayscale } from 'pdf-lib';
+import { PDFDocument, rgb, grayscale, PDFName } from 'pdf-lib';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -512,6 +512,9 @@ async function addSectionToPDF(pdfDoc, page, sectionHTML) {
 async function addPageNumbersAndFooter(pdfDoc, lang, meta) {
   const pages = pdfDoc.getPages();
   const totalPages = pages.length;
+
+  // Set PDF viewer preference: single page view
+  pdfDoc.catalog.set(PDFName.of('PageLayout'), PDFName.of('OneColumn'));
 
   // For Korean, use simplified project name (ASCII only)
   const projectName = lang === 'ko'
