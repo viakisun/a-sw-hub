@@ -1,3 +1,32 @@
+/**
+ * ============================================================
+ * A-SW HUB - PDF Documentation Generator
+ * ============================================================
+ *
+ * 이 스크립트는 A-SW HUB 플랫폼의 역할별(Admin/Developer/Viewer)
+ * 사용자 문서를 자동으로 생성합니다.
+ *
+ * 주요 기능:
+ * 1. 웹 페이지 스크린샷 자동 캡처 (Playwright 사용)
+ * 2. 역할별/언어별 PDF 생성 (6개 조합)
+ * 3. 표지, 목차, 상세 페이지 자동 구성
+ * 4. 2가지 출력 포맷 지원 (PRINT/PRESENTATION)
+ *
+ * 파일 구조:
+ * - 상수 및 설정 (lines 1-260)
+ * - 타이틀 페이지 레이아웃 함수들 (lines 270-785)
+ * - PDF 생성 함수들 (lines 786-1391)
+ * - 페이지 캡처 함수들 (lines 1392-1486)
+ * - 메인 실행 로직 (lines 1487-1735)
+ *
+ * 사용법:
+ *   npm run generate-pdfs
+ *
+ * 출력:
+ *   pdfs/en/ - 영어 PDF 파일들
+ *   pdfs/ko/ - 한국어 PDF 파일들
+ */
+
 import { chromium } from 'playwright';
 import path from 'path';
 import fs from 'fs';
@@ -8,14 +37,30 @@ import fontkit from '@pdf-lib/fontkit';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const BASE_URL = 'http://localhost:5174';
-const OUTPUT_DIR = path.join(__dirname, '../pdfs');
-const FONTS_DIR = path.join(__dirname, '../fonts');
-const TRANSLATIONS_DIR = path.join(__dirname, '../translations');
+// ============================================================
+// 기본 경로 설정
+// ============================================================
+const BASE_URL = 'http://localhost:5174';              // 개발 서버 URL
+const OUTPUT_DIR = path.join(__dirname, '../pdfs');    // PDF 출력 폴더
+const FONTS_DIR = path.join(__dirname, '../fonts');    // 폰트 파일 폴더
+const TRANSLATIONS_DIR = path.join(__dirname, '../translations'); // 번역 파일 폴더
 
 // ============================================================
-// PDF OUTPUT FORMAT PRESETS
+// PDF 출력 포맷 프리셋
 // ============================================================
+/**
+ * PDF 출력 포맷별 설정
+ *
+ * PRINT: A4 landscape (297×210mm) - 인쇄용
+ * PRESENTATION: 16:9 (1920×1080px) - 화면 발표용
+ *
+ * 각 프리셋 포함 항목:
+ * - dimensions: 페이지 크기
+ * - fontSize: 요소별 폰트 크기
+ * - screenshot: 스크린샷 영역 비율 (3:1)
+ * - spacing: 표지 페이지 여백
+ * - coverFontSize: 표지 페이지 전용 폰트
+ */
 const FORMAT_PRESETS = {
   PRINT: {
     name: 'A4 Print',
@@ -119,20 +164,36 @@ const FORMAT_PRESETS = {
 };
 
 // ============================================================
-// CONFIGURATION
+// 사용자 설정 (이 부분만 수정하세요!)
 // ============================================================
-// Output Format: 'PRINT' or 'PRESENTATION'
+
+/**
+ * 출력 포맷 선택
+ * - 'PRINT': A4 인쇄용
+ * - 'PRESENTATION': 16:9 화면 발표용
+ */
 const OUTPUT_FORMAT = 'PRESENTATION';
 
-// Title Page Layout: 'layout1', 'layout2', 'layout3', or 'modern'
+/**
+ * 표지 페이지 레이아웃 선택
+ * - 'layout1': 왼쪽 정렬
+ * - 'layout2': 상단 헤더
+ * - 'layout3': 2단 구성
+ * - 'modern': 현대적 디자인 (권장)
+ */
 const TITLE_PAGE_LAYOUT = 'modern';
 
-// Helper function to get active preset
+/**
+ * 현재 선택된 포맷의 프리셋 반환
+ * @returns {Object} 선택된 FORMAT_PRESETS 객체
+ */
 function getActivePreset() {
   return FORMAT_PRESETS[OUTPUT_FORMAT];
 }
 
-// Legacy configuration (for backward compatibility)
+// ============================================================
+// 하위 호환성을 위한 변수들 (직접 수정 금지)
+// ============================================================
 const VIEWPORT_HEIGHT = getActivePreset().viewport.height;
 const MAX_FEATURES = getActivePreset().content.maxFeatures;
 const MAX_COMPONENTS = getActivePreset().content.maxComponents;
@@ -140,7 +201,21 @@ const SCREENSHOT_SCALE = getActivePreset().screenshot.scale;
 const SCREENSHOT_FLEX_RATIO = getActivePreset().screenshot.flexRatio;
 const DESCRIPTION_FLEX_RATIO = getActivePreset().screenshot.descriptionFlexRatio;
 
-// Role-based account configurations
+// ============================================================
+// 역할별 계정 및 페이지 설정
+// ============================================================
+/**
+ * 역할별(Admin/Developer/Viewer) 로그인 정보 및 캡처할 페이지 목록
+ *
+ * 각 역할은 다음을 포함:
+ * - email/password: 자동 로그인용 계정 정보
+ * - pages: 캡처할 페이지 배열
+ *   - route: 페이지 경로
+ *   - name: 페이지 이름
+ *   - code: 페이지 고유 코드 (DASH-001 등)
+ *   - tabs: 탭이 있는 페이지의 탭 목록 (선택사항)
+ *   - modals: 모달이 있는 페이지의 모달 목록 (선택사항)
+ */
 const ACCOUNTS = {
   'admin': {
     email: 'admin@a-sw-hub.com',
@@ -256,7 +331,15 @@ const ACCOUNTS = {
   }
 };
 
-// Load translations
+// ============================================================
+// 유틸리티 함수들
+// ============================================================
+
+/**
+ * 번역 파일 로드
+ * @param {string} lang - 언어 코드 ('en' 또는 'ko')
+ * @returns {Object} 페이지 및 공통 번역 객체
+ */
 function loadTranslations(lang) {
   const pagesPath = path.join(TRANSLATIONS_DIR, `pages-${lang}.json`);
   const commonPath = path.join(TRANSLATIONS_DIR, `common-${lang}.json`);
@@ -266,7 +349,18 @@ function loadTranslations(lang) {
   };
 }
 
-// Layout 1: Left-Aligned Modern Style
+// ============================================================
+// 표지 페이지 레이아웃 템플릿들
+// ============================================================
+
+/**
+ * 표지 레이아웃 1: 왼쪽 정렬 현대적 스타일
+ * @param {string} lang - 언어 코드
+ * @param {Object} common - 공통 번역 객체
+ * @param {string} roleName - 역할 이름
+ * @param {string} today - 오늘 날짜
+ * @returns {string} HTML 문자열
+ */
 function getTitlePageLayout1(lang, common, roleName, today) {
   const preset = getActivePreset();
   const pageStyle = preset.pageFormat
@@ -351,7 +445,14 @@ function getTitlePageLayout1(lang, common, roleName, today) {
   `;
 }
 
-// Layout 2: Top Header Style (KITECH Emphasized)
+/**
+ * 표지 레이아웃 2: 상단 헤더 스타일 (KITECH 강조)
+ * @param {string} lang - 언어 코드
+ * @param {Object} common - 공통 번역 객체
+ * @param {string} roleName - 역할 이름
+ * @param {string} today - 오늘 날짜
+ * @returns {string} HTML 문자열
+ */
 function getTitlePageLayout2(lang, common, roleName, today) {
   const preset = getActivePreset();
   const pageStyle = preset.pageFormat
@@ -432,7 +533,14 @@ function getTitlePageLayout2(lang, common, roleName, today) {
   `;
 }
 
-// Layout 3: Two-Column Style
+/**
+ * 표지 레이아웃 3: 2단 구성 스타일
+ * @param {string} lang - 언어 코드
+ * @param {Object} common - 공통 번역 객체
+ * @param {string} roleName - 역할 이름
+ * @param {string} today - 오늘 날짜
+ * @returns {string} HTML 문자열
+ */
 function getTitlePageLayout3(lang, common, roleName, today) {
   const preset = getActivePreset();
   const pageStyle = preset.pageFormat
@@ -526,7 +634,17 @@ function getTitlePageLayout3(lang, common, roleName, today) {
   `;
 }
 
-// Layout Modern: Minimalist Typography-focused (based on HTML templates)
+/**
+ * 표지 레이아웃 Modern: 미니멀 타이포그래피 중심 (권장)
+ * HTML 템플릿 기반으로 제작된 현대적 디자인
+ *
+ * @param {string} lang - 언어 코드
+ * @param {Object} common - 공통 번역 객체
+ * @param {string} roleName - 역할 이름 (한글/영문)
+ * @param {string} today - 오늘 날짜
+ * @param {string} role - 역할 코드 ('admin', 'developer', 'viewer')
+ * @returns {string} HTML 문자열
+ */
 function getTitlePageLayoutModern(lang, common, roleName, today, role) {
   const preset = getActivePreset();
   const pageStyle = preset.pageFormat
@@ -782,7 +900,21 @@ function getTitlePageLayoutModern(lang, common, roleName, today, role) {
   `;
 }
 
-// Create HTML for title page and convert to PDF buffer (A4 landscape)
+// ============================================================
+// PDF 페이지 생성 함수들
+// ============================================================
+
+/**
+ * 표지 페이지 생성
+ * 선택된 레이아웃(layout1/layout2/layout3/modern)으로 표지 HTML 생성 후 PDF로 변환
+ *
+ * @param {Object} page - Playwright 페이지 객체
+ * @param {string} role - 역할 코드 ('admin', 'developer', 'viewer')
+ * @param {string} lang - 언어 코드 ('en', 'ko')
+ * @param {Object} common - 공통 번역 객체
+ * @param {number} totalPages - 전체 페이지 수
+ * @returns {Promise<Buffer>} PDF 버퍼
+ */
 async function createTitlePageHTML(page, role, lang, common, totalPages = 0) {
   const today = new Date().toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', {
     year: 'numeric',
