@@ -1088,17 +1088,15 @@ async function createDetailPageHTML(page, pageName, pageDescription, pageNum, to
           flex-shrink: 0;
           height: 14mm;
           padding-bottom: 0;
-          border-bottom: 2px solid #000;
+          border-bottom: 1px solid #e0e0e0;
           margin-bottom: 6mm;
           display: flex;
           align-items: center;
         }
         .page-title {
-          font-size: 18px;
+          font-size: 20px;
           font-weight: 700;
           color: #000;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
         }
         .content-section {
           flex: 1;
