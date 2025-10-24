@@ -156,7 +156,7 @@
       <nav class="settings-nav">
         {#each ['PROFILE', 'SECURITY', 'NOTIFICATIONS', 'PREFERENCES', 'INTEGRATIONS', 'DATA'] as tab}
           <button
-            class="nav-item"
+            class="nav-item tab"
             class:active={activeTab === tab}
             on:click={() => activeTab = tab as any}
             type="button"

@@ -166,12 +166,12 @@ const ACCOUNTS = {
         name: 'System Settings',
         code: 'SETT-001',
         tabs: [
-          { selector: 'button.tab:has-text("PROFILE")', name: 'Profile' },
-          { selector: 'button.tab:has-text("SECURITY")', name: 'Security' },
-          { selector: 'button.tab:has-text("NOTIFICATIONS")', name: 'Notifications' },
-          { selector: 'button.tab:has-text("PREFERENCES")', name: 'Preferences' },
-          { selector: 'button.tab:has-text("INTEGRATIONS")', name: 'Integrations' },
-          { selector: 'button.tab:has-text("DATA")', name: 'Data & Privacy' }
+          { selector: 'button.tab .nav-label:has-text("PROFILE")', name: 'Profile' },
+          { selector: 'button.tab .nav-label:has-text("SECURITY")', name: 'Security' },
+          { selector: 'button.tab .nav-label:has-text("NOTIFICATIONS")', name: 'Notifications' },
+          { selector: 'button.tab .nav-label:has-text("PREFERENCES")', name: 'Preferences' },
+          { selector: 'button.tab .nav-label:has-text("INTEGRATIONS")', name: 'Integrations' },
+          { selector: 'button.tab .nav-label:has-text("DATA")', name: 'Data & Privacy' }
         ]
       }
     ],
