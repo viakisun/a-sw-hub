@@ -267,10 +267,6 @@ function generateCoverPage(lang, meta) {
         <div class="author-notice">
           ${lang === 'ko' ? '본 보고서는' : 'This report was prepared by'} <strong>${meta.developerFull}</strong>${lang === 'ko' ? '에서 작성하였습니다' : ''}.
         </div>
-
-        <div class="institution-box">
-          <div class="institution-name">${meta.leadInstitution}</div>
-        </div>
       </div>
     </body>
     </html>
