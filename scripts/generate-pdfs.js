@@ -1425,9 +1425,10 @@ async function capturePageWithTabs(page, pageInfo, screenshots) {
         });
 
         screenshots.push({
-          name: `${pageInfo.name} - ${tab.name}`,
+          name: `${pageInfo.name} › ${tab.name}`,
           code: pageInfo.code,
           tabName: tab.name,
+          isTab: true,
           buffer: tabScreenshot,
         });
       } catch (error) {
@@ -1450,8 +1451,9 @@ async function capturePageWithTabs(page, pageInfo, screenshots) {
         });
 
         screenshots.push({
-          name: `${pageInfo.name} - ${modal.name}`,
+          name: `${pageInfo.name} › ${modal.name}`,
           code: pageInfo.code,
+          isModal: true,
           buffer: modalScreenshot,
         });
 
@@ -1593,7 +1595,7 @@ async function generatePDFForRoleAndLanguage(
     if (detailPdfBuffer) {
       pagePdfBuffers.push({
         buffer: detailPdfBuffer,
-        name: `${screenshot.name} - Detail`,
+        name: `${screenshot.name} › Detail`,
         pageNum: detailPageNum
       });
     }
