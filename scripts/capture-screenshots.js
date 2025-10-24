@@ -14,7 +14,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const OUTPUT_DIR = path.join(__dirname, '..', 'screenshots', 'app');
-const BASE_URL = 'http://localhost:5173';
+const BASE_URL = 'http://localhost:5174';
 
 // 캡처할 페이지 목록 (순서대로)
 const SCREENSHOTS = [
@@ -118,23 +118,22 @@ const SCREENSHOTS = [
 ];
 
 /**
- * Mock 로그인 (localStorage에 토큰 설정)
+ * 실제 로그인 (이메일/비밀번호 입력)
  */
-async function mockLogin(page) {
-  await page.goto(BASE_URL);
+async function login(page) {
+  console.log('  Logging in...');
+  await page.goto(`${BASE_URL}/login`);
+  await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
-  // Mock auth token 설정
-  await page.evaluate(() => {
-    localStorage.setItem('auth_token', 'mock-token-for-screenshots');
-    localStorage.setItem('user', JSON.stringify({
-      id: 'user-1',
-      email: 'admin@viasoft.ai',
-      name: 'Admin User',
-      role: 'admin'
-    }));
-  });
+  // 로그인 폼 입력
+  await page.fill('input[type="email"]', 'admin@example.com');
+  await page.fill('input[type="password"]', 'password123');
+  await page.click('button[type="submit"]');
 
-  console.log('  ✓ Mock login completed');
+  // 대시보드로 리다이렉트 대기
+  await page.waitForURL('**/dashboard', { timeout: 10000 });
+  await page.waitForTimeout(1000);
+  console.log('  ✓ Logged in successfully');
 }
 
 /**
@@ -218,9 +217,9 @@ async function main() {
   let authDone = false;
 
   for (const config of SCREENSHOTS) {
-    // 인증이 필요한 페이지인 경우 mock login
+    // 인증이 필요한 페이지인 경우 실제 로그인
     if (config.needsAuth && !authDone) {
-      await mockLogin(page);
+      await login(page);
       authDone = true;
     }
 
