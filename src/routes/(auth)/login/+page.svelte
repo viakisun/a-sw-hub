@@ -69,7 +69,7 @@
 </script>
 
 <svelte:head>
-  <title>Login | A-SW HUB</title>
+  <title>Login | agrithing.ai</title>
 </svelte:head>
 
 <div class="login-page">
@@ -78,7 +78,10 @@
     <div class="login-form__container">
       <div class="logo">
         <span class="logo__block"></span>
-        <h1 class="logo__text">A-SW HUB</h1>
+        <div class="logo__content">
+          <h1 class="logo__text">agrithing.ai</h1>
+          <span class="logo__subtitle">A-SW 서비스 플랫폼</span>
+        </div>
       </div>
 
       <div class="login-form__header">
@@ -153,51 +156,53 @@
   <!-- Right Side - Pitch -->
   <div class="login-pitch">
     <div class="pitch-content">
-      <h2 class="pitch-title">SECURE AGRICULTURAL MANAGEMENT SYSTEM</h2>
+      <h2 class="pitch-title">농업기계 자율주행 소프트웨어 협력 개발 플랫폼</h2>
 
       <div class="features">
         <div class="feature">
           <span class="feature__icon">■</span>
           <div class="feature__content">
-            <h3>CROP OPTIMIZATION</h3>
-            <p>Real-time monitoring and automated decision systems</p>
+            <h3>CI/CD 파이프라인</h3>
+            <p>자동화된 빌드, 테스트, 배포 워크플로우</p>
           </div>
         </div>
 
         <div class="feature">
           <span class="feature__icon">▦</span>
           <div class="feature__content">
-            <h3>SUPPLY CHAIN</h3>
-            <p>Complete traceability from farm to distribution</p>
+            <h3>프로젝트 관리</h3>
+            <p>오픈소스 기반 협력 개발 및 버전 관리</p>
           </div>
         </div>
 
         <div class="feature">
           <span class="feature__icon">▣</span>
           <div class="feature__content">
-            <h3>DATA ANALYTICS</h3>
-            <p>Predictive insights and performance metrics</p>
+            <h3>품질 관리</h3>
+            <p>코드 리뷰, 테스트 커버리지, 정적 분석</p>
           </div>
         </div>
 
         <div class="feature">
           <span class="feature__icon">☐</span>
           <div class="feature__content">
-            <h3>COMPLIANCE</h3>
-            <p>Automated regulatory and certification tracking</p>
+            <h3>배포 자동화</h3>
+            <p>농업기계 타겟 환경별 빌드 및 배포</p>
           </div>
         </div>
       </div>
 
-      <div class="security-badges">
-        <span class="badge">ISO 27001</span>
-        <span class="badge">GDPR</span>
-        <span class="badge">SOC 2</span>
+      <div class="participants">
+        <span class="participant">KITECH</span>
+        <span class="participant">TYMICT</span>
+        <span class="participant">JBNU</span>
+        <span class="participant">VIA</span>
+        <span class="participant">OntarioTech</span>
       </div>
     </div>
 
     <div class="pitch-footer">
-      <p>© 2024 A-SW TECHNOLOGIES. ALL RIGHTS RESERVED.</p>
+      <p>© 2025 한국생산기술연구원. ALL RIGHTS RESERVED.</p>
     </div>
   </div>
 </div>
@@ -238,10 +243,23 @@
     background: var(--fg);
   }
 
+  .logo__content {
+    display: flex;
+    flex-direction: column;
+  }
+
   .logo__text {
     font-size: var(--text-24);
     font-weight: var(--weight-semibold);
     letter-spacing: var(--tracking-wide);
+  }
+
+  .logo__subtitle {
+    font-size: var(--text-11);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+    margin-top: var(--space-1);
   }
 
   .login-form__header {
@@ -396,12 +414,13 @@
     line-height: var(--leading-normal);
   }
 
-  .security-badges {
+  .participants {
     display: flex;
-    gap: var(--space-3);
+    flex-wrap: wrap;
+    gap: var(--space-2);
   }
 
-  .badge {
+  .participant {
     padding: var(--space-2) var(--space-3);
     border: 1px solid var(--bg);
     font-size: var(--text-11);

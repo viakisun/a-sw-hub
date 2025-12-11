@@ -19,7 +19,10 @@
     <div class="sidebar__header">
       <div class="logo">
         <span class="logo__block"></span>
-        <span class="logo__text">A-SW HUB</span>
+        <div class="logo__content">
+          <span class="logo__text">agrithing.ai</span>
+          <span class="logo__subtitle">A-SW 서비스 플랫폼</span>
+        </div>
       </div>
     </div>
 
@@ -107,7 +110,7 @@
       </button>
 
       <div class="header__title">
-        <slot name="title">A-SW HUB</slot>
+        <slot name="title">agrithing.ai</slot>
       </div>
 
       <div class="header__actions">
@@ -168,10 +171,23 @@
     background: var(--fg);
   }
 
+  .logo__content {
+    display: flex;
+    flex-direction: column;
+  }
+
   .logo__text {
     font-size: var(--text-16);
     font-weight: var(--weight-semibold);
     letter-spacing: var(--tracking-wide);
+  }
+
+  .logo__subtitle {
+    font-size: var(--text-10);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+    margin-top: 2px;
   }
 
   .sidebar__nav {
