@@ -13,7 +13,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "generate-pdfs": "node scripts/generate-pdfs.js",
-    "generate-report": "node scripts/generate-report.js"
+    "generate-report": "node scripts/generate-report.js",
+    "generate-project-docs": "node scripts/generate-project-docs-pdf.js"
   },
   "devDependencies": {
     "@fontsource/noto-sans-kr": "^5.2.8",
@@ -33,6 +34,7 @@
     "chart.js": "^4.4.0",
     "date-fns": "^3.0.0",
     "lucide-svelte": "^0.546.0",
+    "marked": "^16.4.1",
     "nanoid": "^5.0.0",
     "pdf-lib": "^1.17.1",
     "playwright": "^1.49.1",
