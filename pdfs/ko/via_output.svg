@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980">
+  <defs>
+    <style>
+      .title { font: 700 28px "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif; fill:#111; }
+      .subtitle { font: 500 14px "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif; fill:#444; }
+      .year { font: 700 18px "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif; fill:#111; }
+      .phase { font: 600 13px "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif; fill:#555; }
+      .cardTitle { font: 700 14px "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif; color:#111; }
+      .cardBody { font: 500 12.5px "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif; color:#222; line-height: 1.35; }
+      .muted { color:#666; }
+      .box { fill:#fff; stroke:#D0D5DD; stroke-width:1.2; }
+      .boxHead { fill:#F8FAFC; stroke:#D0D5DD; stroke-width:1.2; }
+      .divider { stroke:#E5E7EB; stroke-width:1; }
+      .rail { stroke:#111; stroke-width:2; stroke-linecap:round; opacity:0.15; }
+      .dot { fill:#111; opacity:0.25; }
+      .colGuide { stroke:#EEF2F6; stroke-width:1; }
+      .badge1 { fill:#EEF2FF; }
+      .badge2 { fill:#ECFDF3; }
+      .badgeText { font: 700 11px "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif; fill:#111; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect x="0" y="0" width="1600" height="980" fill="#FFFFFF"/>
+
+  <!-- Header -->
+  <text x="60" y="64" class="title">연차별 연구개발 산출물 타임라인 (SVG)</text>
+  <text x="60" y="92" class="subtitle">
+    범위: 1단계(2026~2027) / 2단계(2028~2030) · 과종: 배/사과 동시 적용을 위한 표준·플랫폼·모델·피드백 루프 연계
+  </text>
+
+  <!-- Timeline rail -->
+  <line x1="80" y1="150" x2="1520" y2="150" class="rail"/>
+  <!-- Dots (years) -->
+  <circle cx="180" cy="150" r="6" class="dot"/>
+  <circle cx="470" cy="150" r="6" class="dot"/>
+  <circle cx="760" cy="150" r="6" class="dot"/>
+  <circle cx="1050" cy="150" r="6" class="dot"/>
+  <circle cx="1340" cy="150" r="6" class="dot"/>
+
+  <!-- Column guides -->
+  <line x1="325" y1="130" x2="325" y2="930" class="colGuide"/>
+  <line x1="615" y1="130" x2="615" y2="930" class="colGuide"/>
+  <line x1="905" y1="130" x2="905" y2="930" class="colGuide"/>
+  <line x1="1195" y1="130" x2="1195" y2="930" class="colGuide"/>
+
+  <!-- Year Labels -->
+  <text x="150" y="130" class="year">2026</text>
+  <text x="420" y="130" class="year">2027</text>
+  <text x="710" y="130" class="year">2028</text>
+  <text x="1000" y="130" class="year">2029</text>
+  <text x="1265" y="130" class="year">2030</text>
+
+  <!-- Phase Labels -->
+  <text x="150" y="172" class="phase">1단계 · 1년차</text>
+  <text x="420" y="172" class="phase">1단계 · 2년차</text>
+  <text x="710" y="172" class="phase">2단계 · 3년차</text>
+  <text x="1000" y="172" class="phase">2단계 · 4년차</text>
+  <text x="1265" y="172" class="phase">2단계 · 5년차 (원문:2020 표기)</text>
+
+  <!-- ===== Column 1 : 2026 ===== -->
+  <!-- Card 1 -->
+  <rect x="70" y="220" rx="14" ry="14" width="510" height="210" class="box"/>
+  <rect x="70" y="220" rx="14" ry="14" width="510" height="44" class="boxHead"/>
+  <text x="92" y="248" class="subtitle" style="font-weight:700; fill:#111;">[표준·API] 과종별 입력데이터 표준화 + 알고리즘 구조/구현 최적화 + API 설계</text>
+  <foreignObject x="92" y="274" width="470" height="140">
+    <div xmlns="http://www.w3.org/1999/xhtml" class="cardBody">
+      <div>• 배/사과 동시 적용 가능한 표준 스키마·ID 체계·버전 정책 수립</div>
+      <div>• 입력(Input) 정의: 영상·센서·기상·관수/양액·메타데이터(거리/조도/촬영조건)</div>
+      <div>• 출력(Output) 정의: 품질등급/장해등급 + 신뢰도 + 근거 피처(설명 가능 항목)</div>
+      <div class="muted">※ API는 추후 예측/피드백 루프/현장시험 로그 연동을 고려하여 확장성 확보</div>
+    </div>
+  </foreignObject>
+
+  <!-- Card 2 -->
+  <rect x="70" y="450" rx="14" ry="14" width="510" height="250" class="box"/>
+  <rect x="70" y="450" rx="14" ry="14" width="510" height="44" class="boxHead"/>
+  <text x="92" y="478" class="subtitle" style="font-weight:700; fill:#111;">[수집] 멀티모달 데이터 수집 파이프라인 구축(연계 방안 제시)</text>
+  <foreignObject x="92" y="504" width="470" height="180">
+    <div xmlns="http://www.w3.org/1999/xhtml" class="cardBody">
+      <div>• 양액/관수 플랫폼 연동: 센서·제어·영상 정보 수집/동기화 파이프라인 설계</div>
+      <div>• 위성영상 수집 파이프라인(수집 주기/좌표정합/품질지표 후보 생성) 방안 제시</div>
+      <div>• 드론영상 수집 파이프라인(비행계획/해상도/정사영상/주기) 방안 제시</div>
+      <div class="muted">※ 데이터 품질(QA): 결측/중복/오염 처리 규칙 + 현장 운영 로그 표준 포함</div>
+    </div>
+  </foreignObject>
+
+  <!-- Card 3 -->
+  <rect x="70" y="720" rx="14" ry="14" width="510" height="210" class="box"/>
+  <rect x="70" y="720" rx="14" ry="14" width="510" height="44" class="boxHead"/>
+  <text x="92" y="748" class="subtitle" style="font-weight:700; fill:#111;">[아키텍처] Edge+Cloud 실시간 통합 플랫폼 아키텍처 수립</text>
+  <foreignObject x="92" y="774" width="470" height="140">
+    <div xmlns="http://www.w3.org/1999/xhtml" class="cardBody">
+      <div>• Edge 추론(현장) + Cloud 학습/관리(중앙) 구조로 실시간 서비스 시나리오 정의</div>
+      <div>• 워크플로 오케스트레이션: Prefect(우선) 또는 Airflow 검토 및 선택 기준 제시</div>
+      <div>• 오프라인 스풀링(통신불가 시 저장) + 재전송 + 버전 추적(데이터/모델) 포함</div>
+    </div>
+  </foreignObject>
+
+  <!-- ===== Column 2 : 2027 ===== -->
+  <rect x="360" y="220" rx="14" ry="14" width="510" height="250" class="box"/>
+  <rect x="360" y="220" rx="14" ry="14" width="510" height="44" class="boxHead"/>
+  <text x="382" y="248" class="subtitle" style="font-weight:700; fill:#111;">[진단모델] 영상 기반 배 과실 품질 진단 모델 개발(생육 이벤트 반영)</text>
+  <foreignObject x="382" y="274" width="470" height="180">
+    <div xmlns="http://www.w3.org/1999/xhtml" class="cardBody">
+      <div>• 개화/적과 시기 등 생육 이벤트 연계 영상(꽃, 적과기 열매) 활용 방안 반영</div>
+      <div>• 단기 한파(꽃샘추위) 영향 파악을 위한 Feature 확보(기상 급변 지표/열스트레스 후보)</div>
+      <div class="muted">※ 모델 목표: 오프라인 시험에서 베이스라인 대비 성능 유의미 개선(일반화 검증 포함)</div>
+    </div>
+  </foreignObject>
+
+  <rect x="360" y="490" rx="14" ry="14" width="510" height="200" class="box"/>
+  <rect x="360" y="490" rx="14" ry="14" width="510" height="44" class="boxHead"/>
+  <text x="382" y="518" class="subtitle" style="font-weight:700; fill:#111;">[표준·API 고도화] 과종별 표준/구조 최적화 및 API 고도화</text>
+  <foreignObject x="382" y="544" width="470" height="130">
+    <div xmlns="http://www.w3.org/1999/xhtml" class="cardBody">
+      <div>• 배/사과 동시 적용 관점에서 입력표준·모델 구조·구현 방식 개선</div>
+      <div>• API 확장: 품질진단 결과 + 원인근거 + 현장시험 로그/버전 메타 연동</div>
+      <div class="muted">※ “시험 재현성”을 위한 버전 잠금(데이터/모델/파라미터) 필수</div>
+    </div>
+  </foreignObject>
+
+  <!-- ===== Column 3 : 2028 ===== -->
+  <rect x="650" y="220" rx="14" ry="14" width="510" height="250" class="box"/>
+  <rect x="650" y="220" rx="14" ry="14" width="510" height="44" class="boxHead"/>
+  <text x="672" y="248" class="subtitle" style="font-weight:700; fill:#111;">[진단모델 고도화] 배 과실 품질 진단 고도화(기상·토양·비파괴 지표)</text>
+  <foreignObject x="672" y="274" width="470" height="180">
+    <div xmlns="http://www.w3.org/1999/xhtml" class="cardBody">
+      <div>• 기상데이터 연동: 토양 마름(건조) 지표와 영상 융합 분석 방안 제시</div>
+      <div>• 비파괴 진단(당/산비 최적화) 목적의 영상 기반 지표 추출/추정 접근 설계</div>
+      <div class="muted">※ 2단계부터 교차과원/교차연도 일반화 시험을 공식 시나리오로 포함 권고</div>
+    </div>
+  </foreignObject>
+
+  <!-- ===== Column 4 : 2029 ===== -->
+  <rect x="940" y="220" rx="14" ry="14" width="510" height="230" class="box"/>
+  <rect x="940" y="220" rx="14" ry="14" width="510" height="44" class="boxHead"/>
+  <text x="962" y="248" class="subtitle" style="font-weight:700; fill:#111;">[예측 알고리즘] 과종별 품질 데이터 기반 예측 AI 고도화(주관 연계)</text>
+  <foreignObject x="962" y="274" width="470" height="160">
+    <div xmlns="http://www.w3.org/1999/xhtml" class="cardBody">
+      <div>• 배/사과 동시 적용: 예측 타깃(Δ7/Δ14/수확시점 등) 및 피처 체계 표준 반영</div>
+      <div>• 드리프트(연도/계절/과원) 감지·대응(재학습 트리거) 포함</div>
+    </div>
+  </foreignObject>
+
+  <rect x="940" y="470" rx="14" ry="14" width="510" height="270" class="box"/>
+  <rect x="940" y="470" rx="14" ry="14" width="510" height="44" class="boxHead"/>
+  <text x="962" y="498" class="subtitle" style="font-weight:700; fill:#111;">[Closed-Loop] 피드백 루프 구현을 통한 플랫폼 고도화</text>
+  <foreignObject x="962" y="524" width="470" height="200">
+    <div xmlns="http://www.w3.org/1999/xhtml" class="cardBody">
+      <div>• 오류 분석 리포트(실패모드·원인·재현절차·개선방안) 자동 생성 체계</div>
+      <div>• 데이터/라벨 개선 프로세스: 라벨 품질 QC, 표준 업데이트, 샘플링 재수집</div>
+      <div>• 재학습 후보 큐: 드리프트/오류율/현장조건 기반 재학습 대상 자동 선정</div>
+      <div class="muted">※ 운영형 MLOps(버전관리·승인·배포·롤백) 정착이 KPI 달성의 핵심</div>
+    </div>
+  </foreignObject>
+
+  <!-- ===== Column 5 : 2030 ===== -->
+  <rect x="1230" y="220" rx="14" ry="14" width="340" height="520" class="box"/>
+  <rect x="1230" y="220" rx="14" ry="14" width="340" height="44" class="boxHead"/>
+  <text x="1252" y="248" class="subtitle" style="font-weight:700; fill:#111;">[현장 성능평가·보완] 통합 시스템 최종 실증(주관 연계)</text>
+  <foreignObject x="1252" y="274" width="300" height="450">
+    <div xmlns="http://www.w3.org/1999/xhtml" class="cardBody">
+      <div>• 멀티모달 데이터 수집 파이프라인 현장 적용 성능평가 및 보완</div>
+      <div>• 통합 플랫폼 + 피드백 루프(Closed-Loop) 운영 성능평가 및 보완</div>
+      <div>• 과종별(배/사과) 진단/예측 알고리즘 고도화 최종 반영</div>
+      <div class="muted" style="margin-top:8px;">
+        ※ 최종 제출물 권고: 시험 로그 원본 + 정답지(GT) 원본 + 모델/데이터 버전 매칭표 + 성적서
+      </div>
+    </div>
+  </foreignObject>
+
+  <!-- Badges legend -->
+  <rect x="60" y="940" width="18" height="18" rx="4" class="badge1"/>
+  <text x="86" y="954" class="badgeText">표준·API·플랫폼(구조/연계)</text>
+  <rect x="320" y="940" width="18" height="18" rx="4" class="badge2"/>
+  <text x="346" y="954" class="badgeText">모델(진단/예측)·피드백 루프(운영형 개선)</text>
+</svg>
